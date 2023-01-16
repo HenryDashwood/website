@@ -1,22 +1,54 @@
-import Head from "next/head";
-import Image from "next/image";
-import styles from "./nav.module.css";
 import Link from "next/link";
+import styles from "./nav.module.css";
 
-export default function NavBar({ allPostsData }) {
+export const navLinks = [
+  {
+    name: "Weltanschauung",
+    path: "weltanschauung",
+  },
+  {
+    name: "Books",
+    path: "books",
+  },
+  {
+    name: "Courses",
+    path: "courses",
+  },
+  {
+    name: "Publications",
+    path: "publications",
+  },
+  {
+    name: "Notes",
+    path: "notes",
+  },
+  {
+    name: "Politics",
+    path: "politics",
+  },
+  {
+    name: "Places",
+    path: "places",
+  },
+  {
+    name: "Bioinformatics",
+    path: "bioinformatics",
+  },
+];
+
+export default function NavBar() {
   return (
     <div className={styles.container}>
-      <Link href={`/things/Weltanschauung`}>Weltanschauung</Link>
-      <Link href={`/things/books`}>Books</Link>
-      <Link href={`/things/courses`}>Courses</Link>
-      <Link href={`/things/publications`}>Publications</Link>
-      <Link href={`/things/notes`}>Notes</Link>
-      <Link href={`/things/politics`}>Politics</Link>
-      <Link href={`/things/places`}>Places</Link>
+      <Link href={`/`}>Home</Link>
+      <Link href={`/post-list`}>Blog Posts</Link>
+      {navLinks.map(({ name, path }, key) => (
+        <Link href={`/content/things/${path}`} key={key}>
+          {name}
+        </Link>
+      ))}
       <Link href={`https://henrydashwood.github.io/data-science-notes/`}>
         Data Science Notes
       </Link>
-      <Link href={`/things/bioinformatics`}>Bioinformatics</Link>
     </div>
   );
 }
