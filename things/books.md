@@ -6,6 +6,8 @@ This list includes books, plays, and book-length essays or papers that I have re
 
 ## 2023
 
+More Money Than God: Hedge Funds and the Making of a New Elite - Sebastian Mallaby
+
 The Big Short: Inside the Doomsday Machine - Michael Lewis
 
 A Brief History of the Anglo-Saxons - Geoffrey Hindley
