@@ -8,7 +8,7 @@ In documentaries on the history of mathematics, there is often a scene where the
 So what do we mean by the discovery of the number zero? It became clear when I was reading _The Joy of X_ ([Bookshop](https://uk.bookshop.org/a/3247/9781848878457), [Amazon](https://amzn.to/38B51Kb)) by Steven Strogatz. In Rome, they would obviously have known that:
 
 $$
-𐆖III - 𐆖III = nihil
+XIII - XIII = nihil
 $$
 
 But this isn't actually very useful. Maths is about what you do with numbers that exist, not numbers that don't. So why do we care so much about zero? To realise why, we have to stop thinking about the the number line. Counting in Roman numerals is like counting with tally marks. You just keep adding lines. There are some shortcuts. The symbol for a 5 is V, you can put a lesser symbol before a greater symbol to indicate that it is one unit less instead of writing 4 or 9 units etc.
