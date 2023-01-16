@@ -24,3 +24,15 @@ img {
   max-width: 100%;
   display: block;
 }
+
+table,
+th,
+td {
+  border: 1px;
+  border-style: solid;
+  border-collapse: collapse;
+}
+
+/* .hljs {
+  background-color: green;
+} */

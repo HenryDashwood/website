@@ -1,11 +1,9 @@
 .container {
   background-color: #faad19;
   padding: 1rem;
-  line-height: 2;
+  line-height: 1rem;
 }
 
-.navItem > * {
-  font-size: 1rem;
-  width: 80%;
-  height: 100px;
+.navItem {
+  height: 30px;
 }
