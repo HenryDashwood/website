@@ -39,16 +39,22 @@ export const navLinks = [
 export default function NavBar() {
   return (
     <div className={styles.container}>
-      <Link href={`/`}>Home</Link>
-      <Link href={`/post-list`}>Blog Posts</Link>
+      <div className={styles.navItem}>
+        <Link href={`/`}>Home</Link>
+      </div>
+      <div className={styles.navItem}>
+        <Link href={`/post-list`}>Blog Posts</Link>
+      </div>
       {navLinks.map(({ name, path }, key) => (
-        <Link href={`/content/things/${path}`} key={key}>
-          {name}
-        </Link>
+        <div className={styles.navItem} key={key}>
+          <Link href={`/content/things/${path}`}>{name}</Link>
+        </div>
       ))}
-      <Link href={`https://henrydashwood.github.io/data-science-notes/`}>
-        Data Science Notes
-      </Link>
+      <div className={styles.navItem}>
+        <Link href={`https://henrydashwood.github.io/data-science-notes/`}>
+          Data Science Notes
+        </Link>
+      </div>
     </div>
   );
 }
