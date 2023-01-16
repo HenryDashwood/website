@@ -1,5 +1,7 @@
 .container {
+  display: grid;
   background-color: #faad19;
+  padding: 0 1rem;
 }
 
 .item {
