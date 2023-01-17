@@ -1,9 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import styles from "./content.module.css";
-import utilStyles from "../styles/utils.module.css";
 
-export const siteTitle = "Next.js Sample Website";
+export const siteTitle = "Henry Dashwood";
 
 export default function Content({ children, home }) {
   return (

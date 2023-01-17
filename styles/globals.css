@@ -25,14 +25,6 @@ img {
   display: block;
 }
 
-table,
-th,
-td {
-  border: 1px;
-  border-style: solid;
-  border-collapse: collapse;
+.remark-highlight {
+  font-size: 15px;
 }
-
-/* .hljs {
-  background-color: green;
-} */

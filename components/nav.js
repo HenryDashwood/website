@@ -40,7 +40,9 @@ export default function NavBar() {
   return (
     <div className={styles.container}>
       <div className={styles.navItem}>
-        <Link href={`/`}>Home</Link>
+        <Link href={`/`}>
+          <b>Home</b>
+        </Link>
       </div>
       <div className={styles.navItem}>
         <Link href={`/post-list`}>Blog Posts</Link>
