@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Content, { siteTitle } from "../components/content";
-import utilStyles from "../styles/utils.module.css";
+import contentStyles from "../components/content.module.css";
 import NavBar from "../components/nav";
 import Wrapper from "../components/wrapper";
 
@@ -16,12 +16,12 @@ export default function Home() {
         <Image
           priority
           src="/images/profile.jpg"
-          className={utilStyles.borderCircle}
-          height={200}
-          width={200}
+          className={contentStyles.displayImg}
+          height={300}
+          width={300}
           alt="A photo of Henry Dashwood"
         />
-        <section className={utilStyles.headingMd}>
+        <section>
           <p>
             Hello. My name is Henry Dashwood. This is my website. I am from
             originally from Northamptonshire. I currently work as a machine

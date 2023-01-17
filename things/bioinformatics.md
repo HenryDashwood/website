@@ -174,7 +174,7 @@ def naive(p, t):
 - [MultiC](https://multiqc.info/)
 - SAMTools
 - [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
-  http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf
+- [Trimmomatic manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf)
 - [STAR](https://github.com/alexdobin/STAR)
 - HTSeq
   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4287950/

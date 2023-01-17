@@ -1,11 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
-import Content, { siteTitle } from "../components/content";
+import Content from "../components/content";
 import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import Date from "../components/date";
 import NavBar from "../components/nav";
 import Wrapper from "../components/wrapper";
+
+export const pageTitle = "Blog Posts";
 
 export async function getStaticProps() {
   const allPostsData = getSortedPostsData();
@@ -22,7 +24,7 @@ export default function PostList({ allPostsData }) {
       <NavBar />
       <Content home>
         <Head>
-          <title>{siteTitle}</title>
+          <title>{pageTitle}</title>
         </Head>
         <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
           <h2 className={utilStyles.headingLg}>Blog</h2>

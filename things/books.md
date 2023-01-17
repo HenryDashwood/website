@@ -6,6 +6,8 @@ This list includes books, plays, and book-length essays or papers that I have re
 
 ## 2023
 
+As You Like It - William Shakespeare
+
 More Money Than God: Hedge Funds and the Making of a New Elite - Sebastian Mallaby
 
 The Big Short: Inside the Doomsday Machine - Michael Lewis
