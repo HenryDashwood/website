@@ -53,7 +53,7 @@ export default function NavBar() {
         </div>
       ))}
       <div className={styles.navItem}>
-        <Link href={`https://henrydashwood.github.io/data-science-notes/`}>
+        <Link href={`https://data-science-notes.henrydashwood.com`}>
           Data Science Notes
         </Link>
       </div>
