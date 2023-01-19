@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.9fr);
   justify-content: center;
+  place-items: center;
 }
 
 @media (min-width: 750px) {
@@ -42,7 +43,7 @@
 }
 
 .displayImg {
-  display: block;
+  display: inline;
   margin-left: auto;
   margin-right: auto;
 }
@@ -65,4 +66,23 @@
   border: 1px;
   border-style: solid;
   border-collapse: collapse;
+}
+
+.imgContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.socialBanner {
+  display: flex;
+  width: 30%;
+  margin: auto;
+  justify-content: center;
+}
+
+.displayImg {
+  margin: auto;
+  padding: 5px;
+  flex-grow: 1;
 }

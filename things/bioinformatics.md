@@ -176,8 +176,7 @@ def naive(p, t):
 - [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
 - [Trimmomatic manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf)
 - [STAR](https://github.com/alexdobin/STAR)
-- HTSeq
-  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4287950/
+- [HTSeq](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4287950/)
 - FastP
 - [Pysam](https://github.com/pysam-developers/pysam)
 - Kraken2

@@ -10,5 +10,5 @@ npm run dev
 
 ## TODO
 
-- Stop loading images/svgs from s3
+- Improve the nav bar on narrow screens
 - Better CMS than storing markdown files in the repo

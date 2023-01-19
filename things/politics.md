@@ -8,7 +8,7 @@ My attempt to summarise the current state of my political opinions on the issues
 
 The most important issue in politics is housing. We don't build enough, especially in places with well-paid jobs. This means people spend massive percentages of their income on rent. That means they can't spend as much on other things or save to buy a place of their own. It might be a decent system if you are a landlord who inherited a property or bought it years ago when it was cheaper. However, it's probably still bad for you because the growth of the economy is massively constrained by people not being able to move to places where they would be productive.
 
-![](https://henry-dashwood-public-assets.s3.eu-west-2.amazonaws.com/post-imgs/politics/wages-vs-house-prices.svg)
+![](/images/things/politics/wages-vs-house-prices.svg)
 
 ### Street Votes
 
@@ -46,7 +46,7 @@ Things get worse when we introduce price controls. At the lower price, $$Price_{
 
 You might point out that the consumers more than make that up because of the region $$B$$ switching from being producer surplus to being consumer surplus. And it's true that if you do manage to buy the same good at an artificially low price you have done well. But notice the gap between supply and demand at $$Quantity_{ceiling}$$. We've now created a shortage. There will be a lucky few who are living comfortably in their cheap home. But for everyone else, it doesn't that that homes are nominally cheap because there aren't any for them to move into. This is why in places with rent control like Stockholm you get long queues of people waiting for a cheap apartment to become available. It would be much better if developers could just build as much as the market demands.
 
-![](https://henry-dashwood-public-assets.s3.eu-west-2.amazonaws.com/post-imgs/politics/price-controls.svg)
+![](/images/things/politics/price-controls.svg)
 
 There can be negative externalities caused by developments and ideally, something like a [section 106 agreement](https://www.kslaw.co.uk/site/library/kslaw_legal_news/what-is-a-section-106) could be used to offset this damage. But it's worth noting that most of the taxable value will come from the general tax due from the developer, and in the long run from the incomes of the people who live in the development.
 
@@ -58,7 +58,7 @@ People are always complaining about declining high streets. Sometimes people pro
 
 It's generally better to give people cash than some sort of benefit in kind. So I tend to think that we should move towards something resembling a Negative Income Tax. This means that if you earn below a certain some, the government tops you up by a percentage rather than taking a percentage of your money from you. Here is a plot I made of an example of this system. The actual numbers are just for illustration. In this example, we have decided that the lowest income anyone over the age of 18 should receive £15,000 a year. So if you earnt nothing, the government would give you £15,000. Furthermore, once you start earning the government keeps topping you up until you are on £25,000 a year. That's the point in this example where you neither receive nor pay any money. Any money earned above between £25,000 and £60,000 in this example is taxed at 40% and any money earned above £60,000 is taxed at 50%
 
-![](https://henry-dashwood-public-assets.s3.eu-west-2.amazonaws.com/post-imgs/politics/negative-income-tax.svg)
+![](/images/things/politics/negative-income-tax.svg)
 
 ## Taxation
 
