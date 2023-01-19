@@ -1,10 +1,10 @@
 import Head from "next/head";
-import Content from "../../../components/content";
+import Content from "../../../components/content/content";
 import { getAllPostIds, getPostData } from "../../../lib/posts";
-import Date from "../../../components/date";
+import Date from "../../../components/date/date";
 import utilStyles from "../../../styles/utils.module.css";
-import NavBar from "../../../components/nav";
-import Wrapper from "../../../components/wrapper";
+import NavBar from "../../../components/nav/nav";
+import Wrapper from "../../../components/wrapper/wrapper";
 
 export async function getStaticProps({ params }) {
   const postData = await getPostData(params.id);

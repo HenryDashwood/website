@@ -1,9 +1,9 @@
 import Head from "next/head";
-import Content from "../../../components/content";
+import Content from "../../../components/content/content";
 import { getAllThingIds, getThingData } from "../../../lib/things";
 import utilStyles from "../../../styles/utils.module.css";
-import NavBar from "../../../components/nav";
-import Wrapper from "../../../components/wrapper";
+import NavBar from "../../../components/nav/nav";
+import Wrapper from "../../../components/wrapper/wrapper";
 
 export async function getStaticProps({ params }) {
   const thingData = await getThingData(params.id);
