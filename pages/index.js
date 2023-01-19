@@ -1,10 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import Content, { siteTitle } from "../components/content";
-import contentStyles from "../components/content.module.css";
-import NavBar from "../components/nav";
-import Wrapper from "../components/wrapper";
+import Content, { siteTitle } from "../components/content/content";
+import contentStyles from "../components/content/content.module.css";
+import NavBar from "../components/nav/nav";
+import Wrapper from "../components/wrapper/wrapper";
 
 export default function Home() {
   return (

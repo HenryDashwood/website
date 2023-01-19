@@ -1,11 +1,11 @@
 import Head from "next/head";
 import Link from "next/link";
-import Content from "../components/content";
+import Content from "../components/content/content";
 import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
-import Date from "../components/date";
-import NavBar from "../components/nav";
-import Wrapper from "../components/wrapper";
+import Date from "../components/date/date";
+import NavBar from "../components/nav/nav";
+import Wrapper from "../components/wrapper/wrapper";
 
 export const pageTitle = "Blog Posts";
 
