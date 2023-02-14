@@ -6,6 +6,14 @@ This list includes books, plays, and book-length essays or papers that I have re
 
 ## 2023
 
+The Apochrypha
+
+King John - William Shakespeare
+
+A Brief History of the Vikings - Johnathan Clements
+
+Mathematics for the Nonmathematician - Morris Kline
+
 As You Like It - William Shakespeare
 
 More Money Than God: Hedge Funds and the Making of a New Elite - Sebastian Mallaby

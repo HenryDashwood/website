@@ -132,3 +132,5 @@ Currently, we run our road network like a club where you have to pay whether you
 
 - Lack of investment
 - - https://riancwhitton.substack.com/p/britains-exceptional-lack-of-automation?r=f4m42&s=w&utm_campaign=post&utm_medium=web
+
+- - https://archy.deberker.com/the-uk-is-wasting-a-lot-of-wind-power/
