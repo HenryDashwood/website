@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 import Content, { siteTitle } from "../components/content/content";
 import contentStyles from "../components/content/content.module.css";
@@ -15,9 +15,9 @@ export default function Home() {
           <title>{siteTitle}</title>
         </Head>
         <div className={contentStyles.imgContainer}>
-          <Image
+          <CldImage
             priority
-            src="/images/index/profile.jpg"
+            src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510963/website-cms/index/profile_y62uzm.jpg"
             className={contentStyles.displayImg}
             height={300}
             width={300}
@@ -39,9 +39,9 @@ export default function Home() {
         </section>
         <div className={contentStyles.socialBanner}>
           <Link href="https://github.com/HenryDashwood" target="_blank">
-            <Image
+            <CldImage
               priority
-              src="/images/index/github.svg"
+              src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/github_qrrmcq.svg"
               className={contentStyles.displayImg}
               height={50}
               width={50}
@@ -52,9 +52,9 @@ export default function Home() {
             href="https://www.linkedin.com/in/henry-dashwood-42497969/"
             target="_blank"
           >
-            <Image
+            <CldImage
               priority
-              src="/images/index/linkedin.svg"
+              src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/linkedin_ipkort.svg"
               className={contentStyles.displayImg}
               height={50}
               width={50}
@@ -62,9 +62,9 @@ export default function Home() {
             />
           </Link>
           <Link href="https://twitter.com/hcndashwood" target="_blank">
-            <Image
+            <CldImage
               priority
-              src="/images/index/twitter.svg"
+              src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/twitter_tt3pql.svg"
               className={contentStyles.displayImg}
               height={50}
               width={50}
