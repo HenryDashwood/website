@@ -10,5 +10,5 @@ npm run dev
 
 ## TODO
 
-- Improve the nav bar on narrow screens
-- Better CMS than storing markdown files in the repo
+- Order posts by date
+- Social icons are squashed on narrow screens
