@@ -14,7 +14,7 @@ export const pageTitle = "Blog Posts";
 
 function PostList() {
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/posts?pagination[page]=1&pagination[pageSize]=5`,
+    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc&pagination[page]=1&pagination[pageSize]=5`,
     fetcher
   );
   return (

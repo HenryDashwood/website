@@ -80,7 +80,7 @@
 
 .socialBanner {
   display: flex;
-  width: 30%;
+  width: 100%;
   margin: auto;
   justify-content: center;
 }

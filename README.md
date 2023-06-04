@@ -9,6 +9,3 @@ npm run dev
 ```
 
 ## TODO
-
-- Order posts by date
-- Social icons are squashed on narrow screens
