@@ -9,3 +9,6 @@ npm run dev
 ```
 
 ## TODO
+
+- make things just be normal posts. Can have separete tags for posts vs living documents
+- Add a HomePage Single Type and add content to there

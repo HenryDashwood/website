@@ -8,7 +8,7 @@ import markdownToHTML from "../../../../lib/markdownToHTML";
 
 export async function generateStaticParams() {
   const thingsData = await fetcher(
-    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/things`
+    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/things`
   );
   const output = thingsData.data.map((thing) => ({
     slug: thing.attributes.slug.toString(),
@@ -18,12 +18,12 @@ export async function generateStaticParams() {
 
 async function getContent(params) {
   const thingData = await fetcher(
-    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/slugify/slugs/thing/${params.slug}?populate=*`
+    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/things?filters[slug][$eq]=${params.slug}`
   );
   if (thingData.data) {
-    const content = await markdownToHTML(thingData.data.attributes.content);
+    const content = await markdownToHTML(thingData.data[0].attributes.content);
     return {
-      title: thingData.data.attributes.title,
+      title: thingData.data[0].attributes.title,
       content: content,
     };
   } else {

@@ -9,7 +9,7 @@ import markdownToHTML from "../../../../lib/markdownToHTML";
 
 export async function generateStaticParams() {
   const thingsData = await fetcher(
-    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/posts`
+    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts`
   );
   const output = thingsData.data.map((thing) => ({
     slug: thing.attributes.slug.toString(),
@@ -19,14 +19,21 @@ export async function generateStaticParams() {
 
 async function getContent(params) {
   const thingData = await fetcher(
-    `${process.env.NEXT_PUBLIC_PUBLIC_STRAPI_URL}/slugify/slugs/post/${params.slug}`
+    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
   );
   if (thingData.data) {
-    const content = await markdownToHTML(thingData.data.attributes.content);
+    const content = await markdownToHTML(thingData.data[0].attributes.content);
+    let tagsArray = [];
+    if (thingData.data[0].attributes.tags.data) {
+      tagsArray = thingData.data[0].attributes.tags.data.map((tag) => {
+        return tag.attributes.name;
+      });
+    }
     return {
-      title: thingData.data.attributes.title,
-      published: thingData.data.attributes.published,
+      title: thingData.data[0].attributes.title,
+      published: thingData.data[0].attributes.published,
       content: content,
+      tags: tagsArray,
     };
   } else {
     return {
@@ -36,7 +43,8 @@ async function getContent(params) {
 }
 
 async function Post({ params }) {
-  const { title, published, content } = await getContent(params);
+  const { title, published, content, tags } = await getContent(params);
+  console.log(tags);
   return (
     <Wrapper>
       <NavBar />
@@ -50,6 +58,8 @@ async function Post({ params }) {
             <Date dateString={published} />
           </div>
           <div dangerouslySetInnerHTML={{ __html: content }} />
+
+          <div className={utilStyles.lightText}>Tags: {tags}</div>
         </article>
       </Content>
     </Wrapper>

@@ -6,12 +6,20 @@ import Content from "../components/content/content";
 import contentStyles from "../components/content/content.module.css";
 import NavBar from "../components/nav/nav";
 import Wrapper from "../components/wrapper/wrapper";
+import LinkBox from "../components/LinkBox";
+import LinkBoxContainer from "../components/LinkBoxContainer";
+import { fetcher } from "../lib/api";
+import useSWR from "swr";
 
 export const metadata = {
   title: "Homepage",
 };
 
 function HomePage() {
+  const { data: tagsData, error } = useSWR(
+    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/tags`,
+    fetcher
+  );
   return (
     <Wrapper>
       <NavBar allThingsData />
@@ -74,6 +82,12 @@ function HomePage() {
             />
           </Link>
         </div>
+        <LinkBoxContainer>
+          {tagsData &&
+            tagsData.data.map((tag) => (
+              <LinkBox key={tag.id} title={tag.attributes.name} />
+            ))}
+        </LinkBoxContainer>
       </Content>
     </Wrapper>
   );
