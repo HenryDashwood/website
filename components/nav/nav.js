@@ -11,28 +11,8 @@ export const navLinks = [
     path: "books",
   },
   {
-    name: "Courses",
-    path: "courses",
-  },
-  {
     name: "Publications",
     path: "publications",
-  },
-  {
-    name: "Notes",
-    path: "notes",
-  },
-  {
-    name: "Politics",
-    path: "politics",
-  },
-  {
-    name: "Places",
-    path: "places",
-  },
-  {
-    name: "Bioinformatics",
-    path: "bioinformatics",
   },
 ];
 
@@ -49,7 +29,7 @@ export default function NavBar() {
       </div>
       {navLinks.map(({ name, path }, key) => (
         <div className={styles.navItem} key={key}>
-          <Link href={`/content/things/${path}`}>{name}</Link>
+          <Link href={`/posts/${path}`}>{name}</Link>
         </div>
       ))}
       <div className={styles.navItem}>

@@ -17,7 +17,7 @@ export const metadata = {
 
 function HomePage() {
   const { data: tagsData, error } = useSWR(
-    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/tags`,
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/tags`,
     fetcher
   );
   return (

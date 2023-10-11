@@ -1,15 +1,15 @@
 import Head from "next/head";
-import Content from "../../../../components/content/content";
-import Date from "../../../../components/date/date";
-import utilStyles from "../../../../styles/utils.module.css";
-import NavBar from "../../../../components/nav/nav";
-import Wrapper from "../../../../components/wrapper/wrapper";
-import { fetcher } from "../../../../lib/api";
-import markdownToHTML from "../../../../lib/markdownToHTML";
+import Content from "../../../components/content/content";
+import Date from "../../../components/date/date";
+import utilStyles from "../../../styles/utils.module.css";
+import NavBar from "../../../components/nav/nav";
+import Wrapper from "../../../components/wrapper/wrapper";
+import { fetcher } from "../../../lib/api";
+import markdownToHTML from "../../../lib/markdownToHTML";
 
 export async function generateStaticParams() {
   const thingsData = await fetcher(
-    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts`
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts`
   );
   const output = thingsData.data.map((thing) => ({
     slug: thing.attributes.slug.toString(),
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 
 async function getContent(params) {
   const thingData = await fetcher(
-    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
   );
   if (thingData.data) {
     const content = await markdownToHTML(thingData.data[0].attributes.content);
@@ -44,7 +44,6 @@ async function getContent(params) {
 
 async function Post({ params }) {
   const { title, published, content, tags } = await getContent(params);
-  console.log(tags);
   return (
     <Wrapper>
       <NavBar />

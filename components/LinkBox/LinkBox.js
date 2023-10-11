@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 function LinkBox({ title }) {
   const { data: postsData } = useSWR(
-    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts?filters[tags][name][$eq]=${title}`,
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[tags][name][$eq]=${title}`,
     fetcher
   );
 
@@ -15,7 +15,7 @@ function LinkBox({ title }) {
         {postsData && postsData.data.length > 0 ? (
           postsData.data.map((post) => (
             <li key={post.id}>
-              <a href={`/content/posts/${post.attributes.slug}`}>
+              <a href={`/posts/${post.attributes.slug}`}>
                 {post.attributes.title}
               </a>
             </li>

@@ -14,7 +14,7 @@ export const pageTitle = "Blog Posts";
 
 function PostList() {
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_LOCAL_STRAPI_URL}/posts?sort[0]=published:desc`,
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`,
     fetcher
   );
   return (
@@ -31,7 +31,7 @@ function PostList() {
               data.data.map((post) => {
                 return (
                   <li className={utilStyles.listItem} key={post.id}>
-                    <Link href={`/content/posts/` + post.attributes.slug}>
+                    <Link href={`/posts/` + post.attributes.slug}>
                       {post.attributes.title}
                     </Link>
                     <br />

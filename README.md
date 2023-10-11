@@ -10,5 +10,5 @@ npm run dev
 
 ## TODO
 
-- make things just be normal posts. Can have separete tags for posts vs living documents
+- delete thing type from cms
 - Add a HomePage Single Type and add content to there
