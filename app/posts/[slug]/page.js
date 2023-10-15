@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Content from "../../../components/content/content";
 import Date from "../../../components/date/date";
 import utilStyles from "../../../styles/utils.module.css";
@@ -48,21 +47,24 @@ async function Post({ params }) {
     <Wrapper>
       <NavBar />
       <Content>
-        <Head>
-          <title>{title}</title>
-        </Head>
         <article>
           <h1 className={utilStyles.headingXl}>{title}</h1>
           <div className={utilStyles.lightText}>
             <Date dateString={published} />
           </div>
           <div dangerouslySetInnerHTML={{ __html: content }} />
-
           <div className={utilStyles.lightText}>Tags: {tags}</div>
         </article>
       </Content>
     </Wrapper>
   );
+}
+
+export async function generateMetadata({ params }) {
+  const { title, published, content, tags } = await getContent(params);
+  return {
+    title: title,
+  };
 }
 
 export default Post;

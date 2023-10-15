@@ -1,6 +1,5 @@
 "use client";
 
-import Head from "next/head";
 import Link from "next/link";
 import Content from "../../components/content/content";
 import utilStyles from "../../styles/utils.module.css";
@@ -9,8 +8,6 @@ import NavBar from "../../components/nav/nav";
 import Wrapper from "../../components/wrapper/wrapper";
 import { fetcher } from "../../lib/api";
 import useSWR from "swr";
-
-export const pageTitle = "Blog Posts";
 
 function PostList() {
   const { data } = useSWR(
@@ -21,9 +18,6 @@ function PostList() {
     <Wrapper>
       <NavBar />
       <Content home>
-        <Head>
-          <title>{pageTitle}</title>
-        </Head>
         <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
           <h2 className={utilStyles.headingLg}>Blog</h2>
           <ul className={utilStyles.list}>

@@ -11,10 +11,6 @@ import LinkBoxContainer from "../components/LinkBoxContainer";
 import { fetcher } from "../lib/api";
 import useSWR from "swr";
 
-export const metadata = {
-  title: "Homepage",
-};
-
 function HomePage() {
   const { data: tagsData, error } = useSWR(
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/tags`,

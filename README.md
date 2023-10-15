@@ -10,5 +10,5 @@ npm run dev
 
 ## TODO
 
-- delete thing type from cms
 - Add a HomePage Single Type and add content to there
+- improve post css, typora theme insporation

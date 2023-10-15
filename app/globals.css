@@ -4,7 +4,7 @@ body {
   padding: 0;
   margin: 0;
   font-family: "times new roman", serif;
-  font-size: 17px;
+  font-size: 1rem;
 }
 
 * {
@@ -28,3 +28,7 @@ img {
 .remark-highlight {
   font-size: 15px;
 }
+
+/* .katex {
+  font-size: 2px; 
+} */
