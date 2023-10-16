@@ -6,6 +6,8 @@ import Wrapper from "../../../components/Wrapper";
 import { fetcher } from "../../../lib/api";
 import markdownToHTML from "../../../lib/markdownToHTML";
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const thingsData = await fetcher(
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts`

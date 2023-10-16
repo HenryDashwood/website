@@ -9,6 +9,8 @@ import Wrapper from "../../components/Wrapper";
 import { fetcher } from "../../lib/api";
 import useSWR from "swr";
 
+export const revalidate = 3600;
+
 function PostList() {
   const { data } = useSWR(
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`,
