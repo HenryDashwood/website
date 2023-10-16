@@ -1,6 +1,12 @@
 import "./globals.css";
 import "katex/dist/katex.min.css";
 import { Analytics } from "@vercel/analytics/react";
+import { Open_Sans } from "next/font/google";
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata = {
   title: "Henry Dashwood",
@@ -8,7 +14,7 @@ export const metadata = {
 
 function RootLayout({ children }) {
   return (
-    <html>
+    <html lang="en" className={openSans.className}>
       <body>
         {children}
         <Analytics />

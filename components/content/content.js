@@ -1,8 +1,8 @@
-import styles from "./content.module.css";
+import styles from "./Content.module.css";
 
 export const siteTitle = "Henry Dashwood";
 
-export default function Content({ children }) {
+function Content({ children }) {
   return (
     <div className={styles.container}>
       <main>{children}</main>

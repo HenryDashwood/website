@@ -3,8 +3,8 @@ body {
   background-color: #f9e9cb;
   padding: 0;
   margin: 0;
-  font-family: "times new roman", serif;
-  font-size: 1rem;
+  font-size: 14px;
+  color: #333333;
 }
 
 * {
@@ -26,9 +26,5 @@ img {
 }
 
 .remark-highlight {
-  font-size: 15px;
+  font-size: 14px;
 }
-
-/* .katex {
-  font-size: 2px; 
-} */

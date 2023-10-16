@@ -1,5 +1,5 @@
-import styles from "./wrapper.module.css";
+import styles from "./Wrapper.module.css";
 
-export default function Wrapper({ children }) {
+function Wrapper({ children }) {
   return <div className={styles.wrapper}>{children}</div>;
 }
