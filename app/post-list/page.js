@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Content from "../../components/content/content";
+import Content from "../../components/Content";
 import utilStyles from "../../styles/utils.module.css";
-import Date from "../../components/date/date";
-import NavBar from "../../components/nav/nav";
-import Wrapper from "../../components/wrapper/wrapper";
+import Date from "../../components/Date";
+import NavBar from "../../components/Nav";
+import Wrapper from "../../components/Wrapper";
 import { fetcher } from "../../lib/api";
 import useSWR from "swr";
 

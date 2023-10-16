@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./Nav.module.css";
 
-export const navLinks = [
+const navLinks = [
   {
     name: "Weltanschauung",
     path: "weltanschauung",
@@ -16,7 +16,7 @@ export const navLinks = [
   },
 ];
 
-function NavBar() {
+function Nav() {
   return (
     <div className={styles.container}>
       <div className={styles.navItem}>
@@ -40,3 +40,5 @@ function NavBar() {
     </div>
   );
 }
+
+export default Nav;

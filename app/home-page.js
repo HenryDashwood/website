@@ -2,10 +2,10 @@
 
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
-import Content from "../components/content/content";
-import contentStyles from "../components/content/content.module.css";
-import NavBar from "../components/nav/nav";
-import Wrapper from "../components/wrapper/wrapper";
+import Content from "../components/Content";
+import contentStyles from "../components/Content/Content.module.css";
+import Nav from "../components/Nav";
+import Wrapper from "../components/Wrapper";
 import LinkBox from "../components/LinkBox";
 import LinkBoxContainer from "../components/LinkBoxContainer";
 import { fetcher } from "../lib/api";
@@ -18,7 +18,7 @@ function HomePage() {
   );
   return (
     <Wrapper>
-      <NavBar allThingsData />
+      <Nav allThingsData />
       <Content home>
         <div className={contentStyles.imgContainer}>
           <CldImage
