@@ -1,8 +1,8 @@
-import Content from "../../../components/content/content";
-import Date from "../../../components/date/date";
+import Content from "../../../components/Content";
+import Date from "../../../components/Date";
 import utilStyles from "../../../styles/utils.module.css";
-import NavBar from "../../../components/nav/nav";
-import Wrapper from "../../../components/wrapper/wrapper";
+import NavBar from "../../../components/Nav";
+import Wrapper from "../../../components/Wrapper";
 import { fetcher } from "../../../lib/api";
 import markdownToHTML from "../../../lib/markdownToHTML";
 
