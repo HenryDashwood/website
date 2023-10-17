@@ -1,19 +1,16 @@
 import styles from "./LinkBox.module.css";
 import { fetcher } from "../../lib/api";
-import useSWR from "swr";
 
-function LinkBox({ title }) {
-  const { data: postsData } = useSWR(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[tags][name][$eq]=${title}`,
-    fetcher
+async function LinkBox({ title }) {
+  const { data: postsData } = await fetcher(
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[tags][name][$eq]=${title}`
   );
-
   return (
     <div className={styles.container}>
       <h2>{title}</h2>
       <ul>
-        {postsData && postsData.data.length > 0 ? (
-          postsData.data.map((post) => (
+        {postsData && postsData.length > 0 ? (
+          postsData.map((post) => (
             <li key={post.id}>
               <a href={`/posts/${post.attributes.slug}`}>
                 {post.attributes.title}

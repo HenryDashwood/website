@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Content from "../../components/Content";
 import utilStyles from "../../styles/utils.module.css";
@@ -7,14 +5,12 @@ import Date from "../../components/Date";
 import NavBar from "../../components/Nav";
 import Wrapper from "../../components/Wrapper";
 import { fetcher } from "../../lib/api";
-import useSWR from "swr";
 
 export const revalidate = 3600;
 
-function PostList() {
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`,
-    fetcher
+async function PostList() {
+  const { data } = await fetcher(
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`
   );
   return (
     <Wrapper>
@@ -24,7 +20,7 @@ function PostList() {
           <h2 className={utilStyles.headingLg}>Blog</h2>
           <ul className={utilStyles.list}>
             {data &&
-              data.data.map((post) => {
+              data.map((post) => {
                 return (
                   <li className={utilStyles.listItem} key={post.id}>
                     <Link href={`/posts/` + post.attributes.slug}>

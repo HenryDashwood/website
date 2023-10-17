@@ -86,4 +86,5 @@
   margin: auto;
   padding: 5px;
   flex-grow: 1;
+  border-radius: 10px;
 }
