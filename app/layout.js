@@ -1,4 +1,4 @@
-import "./globals.css";
+import "../styles/globals.css";
 import "katex/dist/katex.min.css";
 import { Analytics } from "@vercel/analytics/react";
 import { Open_Sans } from "next/font/google";

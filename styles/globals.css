@@ -19,12 +19,3 @@ a {
 a:hover {
   text-decoration: underline;
 }
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-.remark-highlight {
-  font-size: 14px;
-}

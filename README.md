@@ -10,6 +10,5 @@ npm run dev
 
 ## TODO
 
-- Why is content scrolling horizontally on narrow screens?
 - More content to HomePage single type?
 - Am I loading content when just titles dates will do?

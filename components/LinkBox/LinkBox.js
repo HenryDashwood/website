@@ -8,10 +8,10 @@ async function LinkBox({ title }) {
   return (
     <div className={styles.container}>
       <h2>{title}</h2>
-      <ul>
+      <ul className={styles.list}>
         {postsData && postsData.length > 0 ? (
           postsData.map((post) => (
-            <li key={post.id}>
+            <li key={post.id} className={styles.listItem}>
               <a href={`/posts/${post.attributes.slug}`}>
                 {post.attributes.title}
               </a>

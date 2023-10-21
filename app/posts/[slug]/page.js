@@ -1,10 +1,10 @@
 import Content from "../../../components/Content";
 import Date from "../../../components/Date";
-import utilStyles from "../../../styles/utils.module.css";
 import NavBar from "../../../components/Nav";
 import Wrapper from "../../../components/Wrapper";
 import { fetcher } from "../../../lib/api";
 import markdownToHTML from "../../../lib/markdownToHTML";
+import utilStyles from "../../../styles/utils.module.css";
 
 export const revalidate = 3600;
 
@@ -49,14 +49,12 @@ async function Post({ params }) {
     <Wrapper>
       <NavBar />
       <Content>
-        <article>
-          <h1 className={utilStyles.headingXl}>{title}</h1>
-          <div className={utilStyles.lightText}>
-            <Date dateString={published} />
-          </div>
-          <div dangerouslySetInnerHTML={{ __html: content }} />
-          <div className={utilStyles.lightText}>Tags: {tags}</div>
-        </article>
+        <h1 className={utilStyles.headingXl}>{title}</h1>
+        <div className={utilStyles.lightText}>
+          <Date dateString={published} />
+        </div>
+        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div className={utilStyles.lightText}>Tags: {tags}</div>
       </Content>
     </Wrapper>
   );

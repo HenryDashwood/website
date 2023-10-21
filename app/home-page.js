@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import Content from "../components/Content";
-import contentStyles from "../components/Content/Content.module.css";
 import Nav from "../components/Nav";
 import Wrapper from "../components/Wrapper";
 import LinkBox from "../components/LinkBox";
 import LinkBoxContainer from "../components/LinkBoxContainer";
 import { fetcher } from "../lib/api";
 import markdownToHTML from "../lib/markdownToHTML";
+import utilStyles from "../styles/utils.module.css";
 
 async function getContent() {
   const introData = await fetcher(
@@ -50,22 +50,18 @@ async function HomePage() {
     <Wrapper>
       <Nav allThingsData />
       <Content home>
-        <div className={contentStyles.imgContainer}>
-          <Image
-            priority
-            className={contentStyles.displayImg}
-            src={picture}
-            width={300}
-            height={300}
-            alt="Picture of Henry Dashwood"
-          />
-        </div>
+        <Image
+          priority
+          src={picture}
+          width={300}
+          height={300}
+          alt="Picture of Henry Dashwood"
+        />
         <div dangerouslySetInnerHTML={{ __html: description }} />
-        <div className={contentStyles.socialBanner}>
+        <div className={utilStyles.socialBanner}>
           <Link href="https://github.com/HenryDashwood" target="_blank">
             <Image
               priority
-              className={contentStyles.displayImg}
               src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/github_qrrmcq.svg"
               width={50}
               height={50}
@@ -78,7 +74,6 @@ async function HomePage() {
           >
             <Image
               priority
-              className={contentStyles.displayImg}
               src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/linkedin_ipkort.svg"
               width={50}
               height={50}
@@ -88,7 +83,6 @@ async function HomePage() {
           <Link href="https://twitter.com/hcndashwood" target="_blank">
             <Image
               priority
-              className={contentStyles.displayImg}
               src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/twitter_tt3pql.svg"
               width={50}
               height={50}

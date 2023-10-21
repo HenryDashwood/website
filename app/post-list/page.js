@@ -16,25 +16,23 @@ async function PostList() {
     <Wrapper>
       <NavBar />
       <Content home>
-        <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-          <h2 className={utilStyles.headingLg}>Blog</h2>
-          <ul className={utilStyles.list}>
-            {data &&
-              data.map((post) => {
-                return (
-                  <li className={utilStyles.listItem} key={post.id}>
-                    <Link href={`/posts/` + post.attributes.slug}>
-                      {post.attributes.title}
-                    </Link>
-                    <br />
-                    <small className={utilStyles.lightText}>
-                      <Date dateString={post.attributes.published} />
-                    </small>
-                  </li>
-                );
-              })}
-          </ul>
-        </section>
+        <h1>Blog Posts</h1>
+        <ul className={utilStyles.list}>
+          {data &&
+            data.map((post) => {
+              return (
+                <li className={utilStyles.listItem} key={post.id}>
+                  <Link href={`/posts/` + post.attributes.slug}>
+                    {post.attributes.title}
+                  </Link>
+                  <br />
+                  <small className={utilStyles.lightText}>
+                    <Date dateString={post.attributes.published} />
+                  </small>
+                </li>
+              );
+            })}
+        </ul>
       </Content>
     </Wrapper>
   );
