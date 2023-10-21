@@ -1,13 +1,14 @@
 .container {
-  display: flex;
-  padding: 10px;
+  width: 100%;
+  padding: 0 2.5% 2.5% 2.5%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-@media (min-width: 750px) {
+@media (min-width: 800px) {
   .container {
-    display: grid;
-    grid-template-columns: max(750px);
-    justify-content: center;
+    max-width: 800px;
+    margin: auto;
   }
 }
 
@@ -22,17 +23,19 @@
 }
 
 .container img {
-  max-width: 100%;
-  height: auto;
-  padding: 5px;
-  border-radius: 10px;
   display: block;
   margin: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 .container table {
-  border: 2px;
+  max-width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
+  border: 2px;
+  overflow-x: auto;
 }
 
 .container td {
@@ -43,4 +46,35 @@
 .container th {
   border: 2px;
   border-style: solid;
+}
+
+.container code {
+  background-color: #eee8d5;
+  font-size: 1rem;
+  border-left: 2px solid #faad19;
+  padding: 1rem;
+  max-width: 100%;
+  display: block;
+  line-height: 1.5rem;
+  counter-reset: line;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.container code > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: gray;
+}
+
+.container code[data-line-numbers-max-digits="2"] > [data-line]::before {
+  width: 2rem;
+}
+
+.container code[data-line-numbers-max-digits="3"] > [data-line]::before {
+  width: 3rem;
 }
