@@ -52,6 +52,7 @@ async function HomePage() {
       <Content home>
         <Image
           priority
+          id={`${utilStyles.profilePicture}`}
           src={picture}
           width={300}
           height={300}
