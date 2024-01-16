@@ -39,7 +39,7 @@ function Nav() {
       </div>
       <div className={styles.navItem}>
         <Link href={`https://gen-ai-notes.henrydashwood.com`}>
-          Data Science Notes
+          Generative AI Notes
         </Link>
       </div>
     </div>
