@@ -1,5 +1,4 @@
 import RSS from "rss";
-import he from "he";
 
 import { fetcher } from "../../lib/api";
 
@@ -23,7 +22,13 @@ export async function GET() {
       title: post.attributes.title,
       url: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
       date: post.attributes.published,
-      description: he.encode(post.attributes.content),
+      custom_elements: [
+        {
+          "content:encoded": {
+            _cdata: post.attributes.content,
+          },
+        },
+      ],
     });
   });
 
