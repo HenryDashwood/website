@@ -8,6 +8,7 @@
   "dependencies": {
     "@vercel/analytics": "^1.0.0",
     "date-fns": "^2.29.3",
+    "he": "^1.2.0",
     "katex": "^0.16.9",
     "next": "^14.0.4",
     "next-cloudinary": "^5.18.0",
