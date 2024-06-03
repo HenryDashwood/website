@@ -90,6 +90,15 @@ async function HomePage() {
               alt="Twitter logo"
             />
           </Link>
+          <Link href="/feed.xml" target="_blank">
+            <Image
+              priority
+              src="https://res.cloudinary.com/henrydashwood/image/upload/v1717438680/rss_81837ee370.svg"
+              width={50}
+              height={50}
+              alt="RSS feed"
+            />
+          </Link>
         </div>
         <LinkBoxContainer>
           {tags &&
