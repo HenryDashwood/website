@@ -10,6 +10,11 @@ const openSans = Open_Sans({
 
 export const metadata = {
   title: "Henry Dashwood",
+  alternates: {
+    types: {
+      "application/rss+xml": `${process.env.WEBSITE_URL}/feed.xml`,
+    },
+  },
 };
 
 function RootLayout({ children }) {

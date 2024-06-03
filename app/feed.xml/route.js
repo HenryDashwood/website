@@ -1,6 +1,7 @@
 import RSS from "rss";
 
 import { fetcher } from "../../lib/api";
+import markdownToHTML from "../../lib/markdownToHTML";
 
 export async function GET() {
   const { data } = await fetcher(
@@ -17,22 +18,19 @@ export async function GET() {
     pubDate: new Date(),
   });
 
-  data.forEach((post) => {
+  for (const post of data) {
+    const htmlContent = await markdownToHTML(post.attributes.content);
+
     feed.item({
       title: post.attributes.title,
+      pubDate: post.attributes.published,
+      guid: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
       url: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
-      date: post.attributes.published,
-      custom_elements: [
-        {
-          "content:encoded": {
-            _cdata: post.attributes.content,
-          },
-        },
-      ],
+      description: htmlContent,
     });
-  });
+  }
 
-  return new Response(feed.xml(), {
+  return new Response(feed.xml({ indent: true }), {
     headers: {
       "Content-Type": "application/rss+xml; charset=utf-8",
     },
