@@ -13,6 +13,7 @@ export async function GET() {
     description: "The RSS feed of henrydashwood.com",
     site_url: process.env.WEBSITE_URL,
     feed_url: `${process.env.WEBSITE_URL}/feed.xml`,
+    image_url: `${process.env.WEBSITE_URL}/favicon.ico`,
     copyright: `${new Date().getFullYear()} Henry Dashwood`,
     language: "en",
     pubDate: new Date(),
