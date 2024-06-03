@@ -22,17 +22,18 @@ export async function GET() {
     const htmlContent = await markdownToHTML(post.attributes.content);
 
     feed.item({
-      title: post.attributes.title,
-      pubDate: post.attributes.published,
-      guid: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
-      url: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
       description: htmlContent,
+      title: post.attributes.title,
+      url: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
+      guid: `${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`,
+      author: "Henry Dashwood",
+      date: post.attributes.published,
     });
   }
 
   return new Response(feed.xml({ indent: true }), {
     headers: {
-      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Content-Type": "application/atom+xml; charset=utf-8",
     },
   });
 }
