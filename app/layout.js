@@ -27,7 +27,7 @@ export const metadata = {
     site_name: "Henry Dashwood",
     images: [
       {
-        url: "./favicon.ico",
+        url: `${process.env.WEBSITE_URL}/favicon.ico`,
         width: 1200,
         height: 630,
         alt: "Favicon",
@@ -40,7 +40,7 @@ export const metadata = {
     description: "My personal website",
     images: [
       {
-        url: "./favicon.ico",
+        url: `${process.env.WEBSITE_URL}/favicon.ico`,
         width: 1200,
         height: 630,
         alt: "Favicon",

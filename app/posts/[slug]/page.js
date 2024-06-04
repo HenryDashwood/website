@@ -64,7 +64,31 @@ export async function generateMetadata({ params }) {
   const { title, published, content, tags } = await getContent(params);
   return {
     title: title,
-    description: content.replace(/<[^>]*>/g, "").substring(0, 200),
+    openGraph: {
+      title: title,
+      description: content.replace(/<[^>]*>/g, "").substring(0, 200),
+      images: [
+        {
+          url: `${process.env.WEBSITE_URL}/posts/${params.slug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Post Image",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: content.replace(/<[^>]*>/g, "").substring(0, 200),
+      images: [
+        {
+          url: `${process.env.WEBSITE_URL}/posts/${params.slug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Post Image",
+        },
+      ],
+    },
   };
 }
 
