@@ -16,6 +16,7 @@ export default async function Image({ params }) {
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
   );
   const title = postData.data[0].attributes.title;
+  const description = postData.data[0].attributes.content.substring(0, 200);
 
   return new ImageResponse(
     (

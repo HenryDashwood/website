@@ -64,6 +64,7 @@ export async function generateMetadata({ params }) {
   const { title, published, content, tags } = await getContent(params);
   return {
     title: title,
+    description: content.replace(/<[^>]*>/g, "").substring(0, 200),
   };
 }
 
