@@ -6,8 +6,6 @@ export async function GET(request) {
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`
   );
 
-  const limitedData = data.slice(0, 3);
-
   const feed = `<?xml version="1.0" encoding="UTF-8" ?>
     <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
         <channel>
@@ -19,7 +17,7 @@ export async function GET(request) {
               process.env.WEBSITE_URL
             }/feed.xml" rel="self" type="application/rss+xml" />
             ${await Promise.all(
-              limitedData.map(async (post) => {
+              data.map(async (post) => {
                 const contentHTML = await markdownToHTML(
                   post.attributes.content
                 );
