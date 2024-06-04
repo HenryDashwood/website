@@ -34,6 +34,19 @@ export const metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Henry Dashwood",
+    description: "My personal website",
+    images: [
+      {
+        url: "./favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "Favicon",
+      },
+    ],
+  },
 };
 
 function RootLayout({ children }) {
