@@ -10,10 +10,29 @@ const openSans = Open_Sans({
 
 export const metadata = {
   title: "Henry Dashwood",
+  metadataBase: new URL(process.env.WEBSITE_URL),
   alternates: {
+    canonical: "/",
+    languages: {
+      "en-UK": "/en-UK",
+    },
     types: {
       "application/rss+xml": `${process.env.WEBSITE_URL}/feed.xml`,
     },
+  },
+  openGraph: {
+    title: "Henry Dashwood",
+    type: "website",
+    url: process.env.WEBSITE_URL,
+    site_name: "Henry Dashwood",
+    images: [
+      {
+        url: "./favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "Favicon",
+      },
+    ],
   },
 };
 
