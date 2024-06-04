@@ -12,7 +12,7 @@ export async function GET(request) {
     <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
         <channel>
             <title>Henry Dashwood</title>
-            <link>https://henrydashwood.com</link>
+            <link>${process.env.WEBSITE_URL}</link>
             <description>The RSS feed of henrydashwood.com</description>
             <language>en-uk</language>
             <atom:link href="${
