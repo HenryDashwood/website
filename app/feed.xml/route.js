@@ -2,11 +2,12 @@ import { fetcher } from "../../lib/api";
 import markdownToHTML from "../../lib/markdownToHTML";
 
 export async function GET(request) {
-  let { data } = await fetcher(
+  const { data } = await fetcher(
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?sort[0]=published:desc`
   );
 
-  const feed = `<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  const feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
   <channel>
     <title>Henry Dashwood</title>
     <link>${process.env.WEBSITE_URL}</link>
@@ -24,12 +25,14 @@ export async function GET(request) {
         const pubDate = new Date(post.attributes.published).toUTCString();
         return `
       <item>
-        <title>${post.attributes.title}</title>
+        <title><![CDATA[${post.attributes.title}]]></title>
         <link>${`${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`}</link>
         <guid>${`${process.env.WEBSITE_URL}/posts/${post.attributes.slug}`}</guid>
-        <dc:creator>Henry Dashwood</dc:creator>
+        <dc:creator><![CDATA[Henry Dashwood]]></dc:creator>
         <pubDate>${pubDate}</pubDate>
-        <description>${post.attributes.content.slice(0, 100)}...</description>
+        <description><![CDATA[${post.attributes.content
+          .slice(0, 100)
+          .replace(/\n/g, " ")}...]]></description>
         <content:encoded><![CDATA[${contentHTML}]]></content:encoded>
       </item>`;
       })
@@ -39,6 +42,6 @@ export async function GET(request) {
 
   return new Response(feed, {
     status: 200,
-    headers: { "Content-Type": "application/rss+xml" },
+    headers: { "Content-Type": "application/xml" },
   });
 }
