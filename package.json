@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@remark-embedder/transformer-oembed": "^5.0.0",
     "@vercel/analytics": "^1.0.0",
     "date-fns": "^2.29.3",
     "katex": "^0.16.9",
