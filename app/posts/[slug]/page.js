@@ -1,5 +1,6 @@
 import NavBar from "../../../components/Nav";
 import PostContent from "../../../components/PostContent";
+import TwitterScript from "../../../components/TwitterScript";
 import Wrapper from "../../../components/Wrapper";
 import { fetcher } from "../../../lib/api";
 import markdownToHTML from "../../../lib/markdownToHTML";
@@ -21,7 +22,9 @@ async function getContent(params) {
     `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
   );
   if (thingData.data) {
-    const content = await markdownToHTML(thingData.data[0].attributes.content);
+    const { content, hasTwitterEmbed } = await markdownToHTML(
+      thingData.data[0].attributes.content
+    );
     let tagsArray = [];
     if (thingData.data[0].attributes.tags.data) {
       tagsArray = thingData.data[0].attributes.tags.data.map((tag) => {
@@ -33,6 +36,7 @@ async function getContent(params) {
       published: thingData.data[0].attributes.published,
       content: content,
       tags: tagsArray,
+      hasTwitterEmbed: hasTwitterEmbed,
     };
   } else {
     return {
@@ -42,7 +46,9 @@ async function getContent(params) {
 }
 
 async function Post({ params }) {
-  const { title, published, content, tags } = await getContent(params);
+  const { title, published, content, tags, hasTwitterEmbed } = await getContent(
+    params
+  );
   return (
     <Wrapper>
       <NavBar />
@@ -52,6 +58,7 @@ async function Post({ params }) {
         content={content}
         tags={tags}
       />
+      <TwitterScript hasTwitterEmbed={hasTwitterEmbed} />
     </Wrapper>
   );
 }

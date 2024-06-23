@@ -3,6 +3,7 @@
 import Content from "../Content";
 import Date from "../Date";
 import utilStyles from "../../styles/utils.module.css";
+import { useEffect } from "react";
 
 function PostContent({ title, published, content, tags }) {
   return (
