@@ -18,10 +18,8 @@ export async function GET(request) {
     }/feed.xml" rel="self" type="application/rss+xml" />
     ${await Promise.all(
       data.map(async (post) => {
-        let contentHTML = await markdownToHTML(post.attributes.content);
-        contentHTML = contentHTML
-          .replace(/[^\x00-\x7F]/g, "")
-          .replace(/\n/g, "");
+        let { content, _ } = await markdownToHTML(post.attributes.content);
+        content = content.replace(/[^\x00-\x7F]/g, "").replace(/\n/g, "");
         const pubDate = new Date(post.attributes.published).toUTCString();
         return `
       <item>
@@ -33,7 +31,7 @@ export async function GET(request) {
         <description><![CDATA[${post.attributes.content
           .slice(0, 100)
           .replace(/\n/g, " ")}...]]></description>
-        <content:encoded><![CDATA[${contentHTML}]]></content:encoded>
+        <content:encoded><![CDATA[${content}]]></content:encoded>
       </item>`;
       })
     ).then((items) => items.join(""))}

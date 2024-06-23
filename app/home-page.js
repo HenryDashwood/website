@@ -16,7 +16,7 @@ async function getContent() {
   const tagsData = await fetcher(`${process.env.NEXT_PUBLIC_STRAPI_URL}/tags`);
 
   if (introData.data && tagsData.data) {
-    const description = await markdownToHTML(
+    const { content: description } = await markdownToHTML(
       introData.data.attributes.introduction.description
     );
     const picture =
