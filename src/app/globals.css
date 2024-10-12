@@ -20,6 +20,32 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+h1 {
+  @apply text-4xl border-b-2 border-[#faad19] mb-4;
+}
+
+h2 {
+  @apply text-3xl border-b-2 border-[#faad19] mb-4;
+}
+
+a {
+  color: #0070f3;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+
+ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

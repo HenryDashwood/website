@@ -23,11 +23,11 @@ async function PostList() {
     <NavContentWrapper>
       <Content>
         <h1>Blog Posts</h1>
-        <ul>
+        <ul className="list-none p-0">
           {data &&
             data.data.map((post: Post) => {
               return (
-                <li key={post.id}>
+                <li key={post.id} className="mb-4">
                   <Link href={`/posts/` + post.attributes.slug}>
                     {post.attributes.title}
                   </Link>
