@@ -16,12 +16,12 @@ async function LinkBoxContainer() {
   ).then((res) => res.json());
 
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] border-2 border-[#faad19] rounded-lg">
       {tagsData &&
         tagsData.data.map((tag: Tag) => (
           <LinkBox key={tag.id} title={tag.attributes.name} />
         ))}
-    </>
+    </div>
   );
 }
 
