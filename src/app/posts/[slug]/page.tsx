@@ -1,41 +1,38 @@
 import NavContentWrapper from "@/components/NavContentWrapper";
+import DateComponent from "@/components/Date";
+import MdxImage from "@/components/MdxImage";
 import { MDXRemote } from "next-mdx-remote/rsc";
+
+import { readFileSync } from "fs";
+import matter from "gray-matter";
 
 export const revalidate = 3600;
 
-interface Post {
-  attributes: {
-    title: string;
-    content: string;
-    published: string;
-    slug: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
+async function GetPost(params: { slug: string }) {
+  const postFile = readFileSync(`posts/${params.slug}/post.mdx`, "utf8");
+  const { data, content } = matter(postFile);
+  return {
+    data: data,
+    content: content,
   };
 }
 
-export async function generateStaticParams() {
-  const thingsData = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts`
-  ).then((res) => res.json());
-  const output = thingsData.data.map((thing: Post) => ({
-    slug: thing.attributes.slug.toString(),
-  }));
-  return output;
-}
+const components = { MdxImage };
 
 async function RemoteMdxPage({ params }: { params: { slug: string } }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/posts?filters[slug][$eq]=${params.slug}&populate[0]=tags`
-  ).then((res) => res.json());
+  const { data, content } = await GetPost(params);
 
-  const markdown = res.data[0].attributes.content;
-  return (
-    <NavContentWrapper>
-      <MDXRemote source={markdown} />
-    </NavContentWrapper>
-  );
+  if (content) {
+    return (
+      <NavContentWrapper>
+        <h1>{data.title}</h1>
+        <p>
+          <DateComponent dateString={data.published.toISOString()} />
+        </p>
+        <MDXRemote source={content} components={components} />
+      </NavContentWrapper>
+    );
+  }
 }
 
 export default RemoteMdxPage;

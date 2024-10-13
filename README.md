@@ -39,3 +39,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 - https://bun.sh/guides/ecosystem/nextjs
 - https://www.solanky.dev/blog/solving-commonjs-vs-es-modules-issues-nextjs-mdx-integration
+- https://www.klastic.me/articles/workaround-for-nextjs-14-image-component-bug-in-mdx-files
+
+https://website-cms.herokuapp.com/api/posts?filters[slug][$eq]=on-zero&populate[0]=tags
