@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import "./globals.css";
-import Script from "next/script";
+import "katex/dist/katex.min.css";
+
+// import Script from "next/script";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -22,6 +24,13 @@ export const metadata: Metadata = {
       "application/rss+xml": `${process.env.WEBSITE_URL}/feed.xml`,
     },
   },
+  openGraph: {
+    images: [
+      {
+        url: `${process.env.WEBSITE_URL}/api/og`,
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -31,10 +40,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Script
-        src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"
-        strategy="lazyOnload"
-      />
       <body
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

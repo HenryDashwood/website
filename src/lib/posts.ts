@@ -1,63 +1,63 @@
 import path from "path";
-import { readdirSync, readFileSync } from "fs";
-import matter from "gray-matter";
+import { readdirSync, readFileSync, statSync } from "fs";
 
-interface PostMetadata {
+export interface PostMetadata {
   id: number;
   title: string;
   slug: string;
-  published: Date;
+  published: string;
   tags: string[];
 }
 
 interface Post {
-  metadata: PostMetadata;
+  postMetadata: PostMetadata;
   content: string | null;
 }
 
 export async function GetPosts(withContent: boolean) {
-  const postDirectories = readdirSync(path.join(process.cwd(), "posts"));
+  const postsPath = path.join(process.cwd(), "src/app/posts");
+  const postDirectories = readdirSync(postsPath).filter(
+    (item) =>
+      statSync(path.join(postsPath, item)).isDirectory() &&
+      !item.startsWith("[")
+  );
 
   const posts: Post[] = [];
   for (const postDirectory of postDirectories) {
     const post = await GetPost(postDirectory, withContent);
     posts.push({
-      metadata: {
-        ...post.metadata,
-        slug: postDirectory,
-        published: new Date(post.metadata.published),
+      postMetadata: {
+        ...post.postMetadata,
+        published: post.postMetadata.published,
       },
       content: post.content,
     } as Post);
   }
 
   posts.sort(
-    (a, b) => b.metadata.published.getTime() - a.metadata.published.getTime()
+    (a, b) =>
+      new Date(b.postMetadata.published).getTime() -
+      new Date(a.postMetadata.published).getTime()
   );
   return posts;
 }
 
 export async function GetPost(slug: string, withContent: boolean) {
-  const postFile = readFileSync(`posts/${slug}/post.mdx`, "utf8");
+  const { postMetadata } = await import(`../app/posts/${slug}/page`);
 
   const post: Post = {
-    metadata: {
-      id: -1,
-      title: "",
-      slug: "",
-      published: new Date(),
-      tags: [],
+    postMetadata: {
+      ...postMetadata,
+      published: postMetadata.published,
     },
     content: null,
   };
 
-  if (withContent === false) {
-    const { data } = matter(postFile);
-    post.metadata = data as PostMetadata;
-  } else {
-    const { data, content } = matter(postFile);
-    post.metadata = data as PostMetadata;
-    post.content = content;
+  if (withContent === true) {
+    const postFile = readFileSync(
+      path.join(process.cwd(), `src/app/posts/${slug}/post.mdx`)
+    );
+    post.content = postFile.toString("utf-8");
   }
 
   return post;
