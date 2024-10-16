@@ -3,12 +3,12 @@ import PostPage from "@/components/PostPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Microeconomics for managers chapter 2",
-  description: "Microeconomics for managers chapter 2",
+  title: "The trapezium rule",
+  description: "The trapezium rule",
   openGraph: {
     images: [
       {
-        url: `${process.env.WEBSITE_URL}/api/og?title=Microeconomics%20for%20managers%20chapter%202`,
+        url: `${process.env.WEBSITE_URL}/api/og?title=The%20trapezium%20rule`,
       },
     ],
   },
@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 
 export const postMetadata: PostMetadata = {
   id: 2,
-  title: "Microeconomics for managers chapter 2",
-  slug: "microeconomics-for-managers-chapter-2",
-  published: "2023-10-11",
-  tags: ["Economics"],
+  title: "The trapezium rule",
+  slug: "trapezium-rule",
+  published: "2024-01-06",
+  tags: ["Mathematics"],
 };
 
 export default function Post() {
