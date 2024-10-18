@@ -1,0 +1,96 @@
+The general form of a second degree equation is
+
+$$
+x^2 + px + q = 0 \tag{0}
+$$
+
+where $p$ and $q$ can be any real number and $x$ is the roots of the equation. In equations of this form $q$ is the product of the roots and $p$ is the sum of the roots.
+
+Equations of the form $x^2 + q = 0$ are easy to solve because $p = 0$. The roots are simply $±\sqrt{x} - q$. The graphical representation of equations of this form is a curve that is symmetric about the $x$ axis. For instance the curve of $y = x^2 - 5$ looks like:
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1679763481/website-cms/Posts/Solving%20second%20degree%20equations/x_2-5_hmztii.png)
+
+Now consider a more complicated equation like $y = x^2 - 6x - 5$. If we rewrite this equation as $y = x(x - 6) - 5$ we can see that $y = -5$ when $x(x - 6) = 0$. This could happen when $x = 0$ or when $x = 6$. The axis around which the curve is symmetric is half way between these values at the line $x = 3$. We can confirm this by plotting the curve:
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1679763481/website-cms/Posts/Solving%20second%20degree%20equations/x_2-6x-5_gqdelq.png)
+
+If we shifted the curve to the left by 3 units the axis of symmetry would be the $x$ axis. It is easy to find the roots of the equation of that line. We can do the shift algebraically by replacing $x$ with $x + 3$ in the equation for $y$.
+
+In the general case, we are introducing a new equation whose roots are equal to the roots of the general second degree equation plus half the coeeficient of the $x$ term:
+
+$$
+y = x + \frac{p}{2}
+$$
+
+Therefore
+
+$$
+x = y - \frac{p}{2} \tag{1}
+$$
+
+Substituting this value of $x$ into the general equation gives:
+
+$$
+\begin{aligned}
+(y - \frac{p}{2})^2 + p(y - \frac{p}{2}) + q &= 0 \\
+
+y^2 - \frac{py}{2} - \frac{py}{2} + \frac{p^2}{4} + py - \frac{p^2}{2} + q &= 0 \\
+
+y^2 - py + \frac{p^2}{4} +py - \frac{p^2}{2} + q &= 0 \\
+
+y^2 - \frac{p^2}{4} + q &= 0
+\end{aligned}
+$$
+
+Therefore
+
+$$
+y^2 = \frac{p^2}{4} - q
+$$
+
+So our values of y are:
+
+$$
+y = ±\sqrt{\frac{p^2}{4} - q}
+$$
+
+Substituting this into equation $(1)$ gives:
+
+$$
+x = -\frac{p}{2} ± \sqrt{\frac{p^2}{4} - q}
+$$
+
+If we have an equation of the form
+
+$$
+ax^2 + bx + c = 0
+$$
+
+We can divide by $a$ to get
+
+$$
+x^2 + (\frac{b}{a})x + \frac{c}{a} = 0
+$$
+
+This is the same form as equation $(0)$ above where $p = \frac{b}{a}$ and $q = \frac{c}{a}$
+
+Substituting these values into the equation $(1)$ gives
+
+$$
+\begin{aligned}
+x &= -\frac{\frac{b}{a}}{2} ± \sqrt{\frac{(\frac{b}{a})^2}{4} - \frac{c}{a}} \\
+
+&= -\frac{b}{2a} ± \sqrt{\frac{b^2}{4a^2} - \frac{c}{a}} \\
+
+&= -\frac{b}{2a} ± \sqrt{\frac{b^2 - 4ac}{4a^2}} \\
+
+&= -\frac{b ± \sqrt{b^2 - 4ac}}{2a} \tag{2}
+\end{aligned}
+$$
+
+This is the quadratic formula.
+
+## Sources
+
+- Mathematics for the Nonmathematician (pp 112-117) - Morris Kline
+- [The Symmetry That Makes Solving Math Equations Easy](https://www.quantamagazine.org/the-symmetry-that-makes-solving-math-equations-easy-20230324/) - Patrick Honner

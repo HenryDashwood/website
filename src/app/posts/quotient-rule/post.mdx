@@ -1,0 +1,63 @@
+The quotient rule is an important concept in calculus used to compute the derivative of the quotient (division) of two functions. If you have two functions, $f(x)$ and $g(x)$, the quotient rule helps you find the derivative of their quotient
+
+$$
+h(x) = \frac{f(x)}{g(x}
+$$
+
+with respect to $x$. Mathematically, the quotient rule states that:
+
+$$
+h'(x) = \frac{f'(x)g(x) - f(x)g'(x)}{f(x)^2}
+$$
+
+where $h'(x)$ is the derivative of $h(x)$ with respect to $x$, $f'(x)$ is the derivative of $f(x)$ with respect to $x$, and $g'(x)$ is the derivative of $g(x)$ with respect to $x$.
+
+## Examples
+
+**Example: Find the derivative of the quotient function $h(x) = \frac{x^2 + 1}{3x - 4}$ with respect to $x$.**
+
+1. Define the functions $f(x)$ and $g(x)$:
+
+$$
+\begin{aligned}
+f(x) &= x^2 + 1 \\
+g(x) &= 3x - 4
+\end{aligned}
+$$
+
+2. Compute the derivatives:
+
+$$
+\begin{aligned}
+f'(x) &= 2x \\
+g'(x) &= 3
+\end{aligned}
+$$
+
+3. Apply the quotient rule:
+
+$$
+\begin{aligned}
+h'(x) &= \frac{f'(x)g(x) - f(x)g'(x)}{f(x)^2} \\
+&= \frac{2x(3x - 4) - 3(x^2 + 1)}{(3x - 4)^2} \\
+&= \frac{3x^2 - 8x - 3}{9x^2 - 24x + 16}
+\end{aligned}
+$$
+
+In Sympy this looks like:
+
+```python
+import sympy
+
+x = sympy.symbols("x")
+
+u_x = x**2 + 1
+v_x = 3 * x - 4
+
+u_prime = sympy.diff(u_x, x)
+v_prime = sympy.diff(v_x, x)
+
+w_prime = (u_prime * v_x - u_x * v_prime) / v_x**2
+
+sympy.simplify(w_prime)
+```

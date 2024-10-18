@@ -1,0 +1,71 @@
+import Image from "next/image";
+import Link from "next/link";
+
+import Content from "@/components/Content";
+import LinkBox from "@/components/LinkBox";
+import LinkBoxContainer from "@/components/LinkBoxContainer";
+
+<div className="flex justify-center mb-4">
+  <Image
+    src="https://res.cloudinary.com/henrydashwood/image/upload/v1697504700/profile_ac0f0fab87.jpg"
+    alt="Picture of Henry Dashwood"
+    width={300}
+    height={300}
+  />
+</div>
+
+Hello. My name is Henry Dashwood. This is my website. I am originally from Northamptonshire.
+
+For the last few years I've worked as a machine learning engineer and data scientist.
+
+I am currently working on [Tract](https://buildwithtract.com).
+
+<div className="flex justify-center p-4 rounded-lg">
+  <Link href="https://github.com/HenryDashwood" target="_blank">
+    <Image
+      priority
+      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/github_qrrmcq.svg"
+      width={50}
+      height={50}
+      alt="Github logo"
+      className="p-1 rounded-lg"
+    />
+  </Link>
+  <Link
+    href="https://www.linkedin.com/in/henry-dashwood-42497969"
+    target="_blank"
+  >
+    <Image
+      priority
+      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/linkedin_ipkort.svg"
+      width={50}
+      height={50}
+      alt="LinkedIn logo"
+      className="p-1 rounded-lg"
+    />
+  </Link>
+  <Link href="https://twitter.com/hcndashwood" target="_blank">
+    <Image
+      priority
+      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/twitter_tt3pql.svg"
+      width={50}
+      height={50}
+      alt="Twitter logo"
+      className="p-1 rounded-lg"
+    />
+  </Link>
+  <Link href="/feed.xml" target="_blank">
+    <Image
+      priority
+      src="https://res.cloudinary.com/henrydashwood/image/upload/v1717438680/rss_81837ee370.svg"
+      width={50}
+      height={50}
+      alt="RSS feed"
+      className="p-1 rounded-lg"
+    />
+  </Link>
+</div>
+
+<div>
+  <LinkBoxContainer />
+</div>

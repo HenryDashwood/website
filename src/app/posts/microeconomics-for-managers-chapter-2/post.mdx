@@ -1,0 +1,661 @@
+## 2.1
+
+## (a)
+
+**Is row 1, column 2 a Nash equilibrium? (In all the strategic form games in these problems, the payoff of the person selecting the row is given first.)**
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 2} \\ \hline
+    \text{row 1} & 0,0 & 6,6 \\ \hline
+    \text{row 2} & 2,2 & 7,0
+\end{array}
+$$
+
+No.
+
+In game theory, a Nash equilibrium for a two-player game in normal form is a pair of strategies $(A,B)$ such that no player has incentive to unilaterally change her strategy. Formally, a strategy pair $(A, B)$ is a Nash equilibrium if:
+
+$U_1(A, B) \geq U_1(A', B) \quad \text{for all } A' \text{ in the strategy set of player 1}$
+$U_2(A, B) \geq U_2(A, B') \quad \text{for all } B' \text{ in the strategy set of player 2}$
+
+Where $U_1$ and $U_2$ are the utility functions for player 1 and player 2, respectively. $A'$ and $B'$ refer to alternative strategies they could pursue.
+
+For the row picking player, the best response to column 2 is row 2, not row 1.
+
+## (b)
+
+**Find all the Nash equilibria in the following game**
+
+$$
+\begin{array}{c|c|c|c}
+    & \text{column 1} & \text{column 2} & \text{column 3} \\ \hline
+    \text{row 1} & 4,1 & 3,2 & 5,1 \\
+    \hline
+    \text{row 2} & 5,10 & 1,7 & 6,6 \\
+    \hline
+    \text{row 3} & 4,1 & 2,3 & 10,5
+\end{array}
+$$
+
+In looking for Nash equilibria, we consider all possible strategies for both players, not just the ones that yield the highest payoffs in isolation. This is because a Nash equilibrium is defined as a situation where neither player has an incentive to unilaterally deviate from their current strategy, given the other player's strategy.
+
+1. **Row 1, Column 2 as a Nash Equilibrium**:
+   - If Row chooses row 1, the best response for Column is column 2 (payoff 2), and if Column chooses column 2, the best response for Row is row 1 (payoff 3). Neither has an incentive to deviate, so this is a Nash equilibrium.
+2. **Row 2, Column 1 as a Nash Equilibrium**:
+   - If Row chooses row 2, the best response for Column is column 1 (payoff 10), and if Column chooses column 1, the best response for Row is row 2 (payoff 5). Again, neither has an incentive to deviate, so this is a Nash equilibrium.
+3. **Row 3, Column 3 as a Nash Equilibrium**:
+   - If Row chooses row 3, the best response for Column is column 3 (payoff 5), and if Column chooses column 3, the best response for Row is row 3 (payoff 10). Neither has an incentive to deviate, so this is a Nash equilibrium.
+
+## 2.2
+
+**Find all the Nash equilibria in the following game**
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 2} & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 1,9 & 2,9 & 2,8 & 7,3 \\
+    \hline
+    \text{row 2} & 3,3 & 4,4 & 1,1 & 6,3 \\
+    \hline
+    \text{row 3} & 0,10 & 1,7 & 2,9 & 2,1 \\
+    \hline
+    \text{row 4} & 2,2 & 0,0 & 3,3 & 1,0
+\end{array}
+$$
+
+Row 2 Column 2 and Row 4 Column 4. Following the same process as above...
+
+1. If Row chooses row 1, Column will choose either column 1 or 2, either way Row will then choose row 2. Column will then chose column 2. So row 2, column 2 is a Nash equilibrium.
+2. If Row chooses row 2, Column will choose column 2, row will then choose row 2. So we come to the same equilibrium as before.
+3. If Row chooses row 3, Column will choose column 1, Row will then choose row 2, Column will then choose column 2. So we are again at the same equilibrium as before.
+4. If Row chooses row 4, Column will choose column 3, Row will then stick with row 3. So this is also a Nash equilibrium.
+
+## 2.3
+
+**Apply iterated dominance to the following game**
+
+$$
+\begin{array}{c|c|c|c}
+    & \text{column 1} & \text{column 2} & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 6,1 & 2,1 & 5,2 & 2,3 \\
+    \hline
+    \text{row 2} & 8,0 & 10,1 & 4,5 & 1,2 \\
+    \hline
+    \text{row 3} & 4,4 & 10,0 & 3,0 & 1,1
+\end{array}
+$$
+
+Iterated dominance is a process used to simplify the strategic form of a game by iteratively eliminating dominated strategies. A strategy $A$ is said to be dominated if there is another strategy $A'$ that yields a higher payoff for all possible strategies chosen by the opponent.
+
+If you find a strategy that is strictly dominated, you can remove it from the table. If this then results in another strategy becoming strictly denominated by another you can elimate that as well and so on.
+
+Column 2 is dominated by column 4 because $1 < 3$, $1 < 2$, $0 < 1$ so can remove it:
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 6,1 & 5,2 & 2,3 \\
+    \hline
+    \text{row 2} & 8,0 & 4,5 & 1,2 \\
+    \hline
+    \text{row 3} & 4,4 & 3,0 & 1,1
+\end{array}
+$$
+
+Now row 3 is dominated by row 1 so we can remove it
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 6,1 & 5,2 & 2,3 \\
+    \hline
+    \text{row 2} & 8,0 & 4,5 & 1,2
+\end{array}
+$$
+
+Now column 1 is dominated by column 3 so we remove it
+
+$$
+\begin{array}{c|c}
+    & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 5,2 & 2,3 \\
+    \hline
+    \text{row 2} & 4,5 & 1,2
+\end{array}
+$$
+
+Now row 2 is dominated by row 2 so we remove it
+
+$$
+\begin{array}{c|c}
+    & \text{column 3} & \text{column 4} \\ \hline
+    \text{row 1} & 5,2 & 2,3
+\end{array}
+$$
+
+Finally column 3 is dominated by column 4 and we are left with our equilibrium payoffs
+
+$$
+\begin{array}{c|c}
+    & \text{column 4} \\ \hline
+    \text{row 1} & 2,3
+\end{array}
+$$
+
+When a game is dominance solvable using (at each step) strict (iterated) dominance, what remains is the unique Nash equilibrium of the game. More generally, any strategy eliminated by iterated strict dominance cannot be part of any Nash equilibrium.
+
+## 2.4
+
+**Apply iterated dominance to the following game**
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 2} & \text{column 3} & \text{column 4} \\
+    \hline
+    \text{row 1} & 1,9 & 2,9 & 2,8 & 7,3 \\
+    \hline
+    \text{row 2} & 3,3 & 4,4 & 1,1 & 6,3 \\
+    \hline
+    \text{row 3} & 0,10 & 1,7 & 2,9 & 2,1 \\
+    \hline
+    \text{row 4} & 2,2 & 0,0 & 3,3 & 1,0
+\end{array}
+$$
+
+In this game, there is no immediate strict dominance of any row or column.
+
+Column 4 is weaky dominated by columns 1 and 2 and row 3 is weakly dominated by row 1. So we could remove column 4 and row 3
+
+$$
+\begin{array}{c|c|c}
+    & \text{column 1} & \text{column 2} & \text{column 3} \\
+    \hline
+    \text{row 1} & 1,9 & 2,9 & 2,8 \\
+    \hline
+    \text{row 2} & 3,3 & 4,4 & 1,1 \\
+    \hline
+    \text{row 4} & 2,2 & 0,0 & 3,3
+\end{array}
+$$
+
+We probably shouldn't proceed any futher here. In game theory, a strategy is said to "weakly dominate" another if it is at least as good in all scenarios and better in at least one. Iterated dominance generally refers to the iterative elimination of strictly dominated strategies, not weakly dominated ones. While some forms of iterated dominance can include weak dominance, it's often avoided for a couple of reasons:
+
+1. **Ambiguity**: Weakly dominated strategies can sometimes be part of a Nash equilibrium. Eliminating them might remove some Nash equilibria from consideration, thus making the analysis less robust.
+2. **Complexity**: Including weak dominance can complicate the analysis and make it more difficult to find a clear, unequivocal solution.
+
+In the real world the decision on whether or not to proceed would probably be decided by the emperical evidence available to you.
+
+## 2.5
+
+**Imagine you are taking part in an auction, where the object being auctioned is a vacation trip. There are 15 other prospective buyers in addition to you. You have determined that the trip is worth \$2000 to you: You would rather have the trip and pay some amount less than \$2000 than to miss the trip (and pay nothing), but you would rather miss the trip (and pay nothing) than take the trip if it costs more than \$2000. You are indifferent between missing the trip and paying nothing and going on the trip if it costs \$2000.**
+
+**To be very specific, your payoff is**
+
+- **0 if you do not win the auction (and pay nothing)**
+- **$2000 - P$ if you win the trip and pay $P$.**
+
+**You have very little idea how much the trip is worth to the other 15 bidders or how they bid.**
+
+## (a)
+
+**Suppose this is a first-price auction. Why does the strategy of bidding \$1950 weakly dominate the strategy of bidding \$2000 for you? Can you compare (using dominance) bidding \$1950 or bidding \$1960? Can you compare (using dominance) bidding \$2000 and bidding an amount more than $2000?**
+
+In a first-price auction, the highest bidder wins the item and pays the amount they bid.
+
+Bidding \$1950 vs. \$2000:
+
+- If you win at \$1950, your payoff is $2000 - 1950 = 50$
+- If you win at \$2000, your payoff is $2000 - 2000 = 0$
+
+Clearly, the payoff from winning at \$1950 is better than or equal to winning at \$2000 in every scenario, and it's strictly better in at least one scenario (when you win).
+
+- If you lose at both \$1950 and \$2000, your payoff is 0 in either case.
+
+Again, the payoff from bidding \$1950 is at least as good as bidding \$2000.
+
+So, we can conclude that the strategy of bidding \$1950 weakly dominates the strategy of bidding \$2000.
+
+Bidding \$1950 vs. \$1960:
+
+- If you win at \$1950, your payoff is $2000 - 1950 = 50$
+- If you win at \$1960, your payoff is $2000 - 1960 = 40$
+
+Neither of these strictly dominates the other because the outcome depends on the bids of the other players. If the second-highest bid is between \$1950 and \$1960, then bidding \$1960 would win you the auction while \$1950 would not. However, you'd prefer to win at \$1950 if possible due to the higher payoff. In this case, we can't say that one strategy dominates the other strictly or weakly; they are simply different strategies with different risks and rewards.
+
+Bidding \$2000 vs. Bidding more than \$2000:
+
+- If you win at \$2000, your payoff is $2000 - 2000 = 0$.
+- If you win at more than \$2000 (say, \$2050), your payoff would be negative (e.g. $2000 - 2050 = -50$).
+
+Here, bidding \$2000 strictly dominates bidding more than \$2000 because in all scenarios, your payoff from bidding \$2000 is at least as good as bidding more than \$2000, and in some scenarios (when you win), it's strictly better.
+
+## (b)
+
+**Suppose this is a second-price (Vickery) auction. Why does the strategy of bidding $2000 weakly dominate every other strategy for you?**
+
+In a second-price auction, the highest bidder wins the item but pays the amount of the second-highest bid. Bidders have an incentive to bid their true valuation because they know they will only pay the second-highest price if they win, which will always be less than or equal to their own bid (and therefore less than or equal to their valuation).
+
+Let's consider why bidding your true valuation of $2000 weakly dominates every other strategy for you:
+
+1. If you bid less than \$2000 (say, \$1950) and win:
+   - The second-highest bid must be less than or equal to \$1950. You would have won even if you bid \$2000, but by bidding less than your true valuation, you risk losing the auction to someone who might bid between \$1950 and \$2000, a range where you'd still consider the item worth buying.
+2. If you bid $2000 and win:
+   - You pay the second-highest price, which is less than or equal to $2000. This is your true valuation, so you are indifferent or happy with this outcome.
+3. If you bid more than \$2000 (say, \$2050) and win:
+   - You risk overpaying for the item. If the second-highest bid is between \$2000 and \$2050, you end up paying more than your valuation, which is undesirable.
+4. If you lose the auction:
+   - Your payoff is zero, regardless of what you bid, as long as the bid is less than or equal to $2000.
+
+Therefore, by bidding your true valuation (\$2000), you ensure that you win the auction whenever it's beneficial for you to do so (i.e., when the second-highest bid is less than \$2000). You also avoid the risk of overpaying or underbidding. Hence, bidding $2000 weakly dominates all other strategies in a second-price auction for you.
+
+## 2.6
+
+**Here are two extensive-form games of complete and perfect information: the threat game and the trust game. Solve each by backward induction. Then, do you think that your peers, playing the games in, say, units of $1 equals one unit of payoff, would follow the prediction of the Nash equilibrium analysis?**
+
+### The threat game
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1697377540/threat_game_f8f5537e61.svg)
+
+If A is challenged, it will acquiesce. So B chooses between challenging and getting 1, and not challenging and getting 0. B will challenge A, and A will acquiesce.
+
+### The trust game
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1697377540/trust_game_4ab59ec0af.svg)
+
+If B trusts A, A will act abusively (2 > 1). So B must choose between trust, getting -1 for itself, and no trust, which nets it 0. It will not trust A, and A will have no opportunity to move.
+
+## 2.7
+
+**Imagine two firms, labeled $A$ and $B$, producing products that are substitutes but not perfect substitutes. The inverse demand functions for their two goods are $p_A = a - x_A - bx_B$ and $p_B = a - x_B - bx_A$ for a positive constant $a$ and for $0 < b < 1$, with the same constants $a$ and $b$ appearing in both inverse demand functions. Each firm has a constant marginal cost of production $c$.**
+
+## (a)
+
+**Suppose the two firms must simultaneously and independently choose quantities to produce, each without knowing what the other has chosen. What are (or is) the Nash equilibria of this game?**
+
+In plain English, the inverse demand function $p_A = a - x_A - bx_B$ says that the price $p$ firm $A$ can sell it's good is determined by:
+
+- The postive constant $a$. This represents the intercept of the inverse demand curve. It could be interpreted as the maximum price consumers are willing to pay when no units of either good are produced.
+- The quantity of the good firm $A$ produces is given by the term $x_A$. This value is negative as the more of a good is produced, the lower will be its price.
+- The quantity of the good firm $B$ produces is given by the term $x_B$.This value is negative for the same reason as $x_A$. It is mutliplied by the term $b$ which effectively weights the effect of $x_B$ by how similar the two goods are to each other. i.e. if the two goods are actually quite dissimilar, the effect of firm $B$ making more will be quite small.
+
+We want to know to know the equilibrium values for $x_A$ and $x_B$.
+
+Let's start by writing down a pair of equations to describe each firm's profit, the profit functions. Intially we could say that each firm's profit will be the price they sell their goods minus the cost of manufacturing them, all multiplied by the quantity that is manufactured:
+
+$$
+\pi_A = (p_A - c)x_A \\
+\pi_B = (p_B - c)x_B
+$$
+
+Now as described in the question above, the prices of $A$ and $B$'s goods are given by their inverse demand functions. So we can subsitute them into the profit functions:
+
+$$
+\begin{aligned}
+\pi_A &= (a - x_A - bx_B - c)x_A \\
+&= a \cdot x_A - {x_A}^2 - bx_B \cdot x_A - c \cdot x_A \\
+&= (a - bx_B - c)x_A - {x_A}^2 \\
+\\
+\pi_B &= (a - x_B - bx_A - c)x_B \\
+&= a \cdot x_B - {x_B}^2 - bx_A \cdot x_B - c \cdot x_B \\
+&= (a - bx_A - c)x_B - {x_B}^2
+\end{aligned}
+$$
+
+In order to maximise their profits, each firm will produce a quantity such that it would make make less profit if it made any more or any less. If we imagine plotting the profit functions for various quantities, the peaks of the curves will be where their derivatives are 0.
+
+So we can find out what those quantities $x_A$ and $x_B$ will be by calculating the derivatives, setting them equal to 0, and solving for for their respective own quantity terms. These are known as reaction functions (and also as first-order conditions for profit maximisation) as they describe the the quantity a firm will produce to maximise its profit in response to the quantity produced by the other firm.
+
+$$
+\begin{aligned}
+{\pi_A}' &= a - bx_B - c - 2x_A \\
+0 &= a - bx_B - c - 2x_A \\
+x_A &= \frac{a - bx_B - c}{2} \\
+\\
+{\pi_B}' &= a - bx_A - c - 2x_B \\
+0 &= a - bx_A - c - 2x_B \\
+x_B &= \frac{a - bx_A - c}{2}
+\end{aligned}
+$$
+
+Finally to find the Nash equilibrium it we solve the reaction functions simultaneously. We'll substitute the reaction function for x_A into the reaction function for $x_B$ and solve for $x_B$.
+
+$$
+\begin{aligned}
+x_B &= \frac{(a - c)}{2} - \frac{b(\frac{a - bx_B - c}{2})}{2} \\
+&= (\frac{a}{2} - \frac{c}{2}) + (-\frac{ab}{4} + \frac{bc}{4} + \frac{b^2x_B}{4}) \\
+&= \frac{a - c}{2} - \frac{b(a - c)}{4} + \frac{b^2x_B}{4} \\
+x_B - \frac{b^2x_B}{4} &= \frac{a - c}{2} - \frac{b(a - c)}{4} \\
+x_B(1 - \frac{b^2}{4}) &= \frac{a - c}{2} - \frac{b(a - c)}{4} \\
+x_B &= \frac{\frac{a - c}{2} - \frac{b(a - c)}{4}}{1 - \frac{b^2}{4}} \\
+&= \frac{\frac{2(a - c) - b(a - c)}{4}}{1 - \frac{b^2}{4}} \\
+&= \frac{\frac{(2 - b)(a - c)}{4}}{1 - \frac{b^2}{4}} \\
+&= \frac{\frac{(2 - b)(a - c)}{4}}{\frac{4 - b^2}{4}} \\
+&= \frac{(2 - b)(a - c)}{4 - b^2} \\
+&= \frac{(2 - b)(a - c)}{(2 + b)(2 - b)} \\
+&= \frac{a - c}{b + 2}
+\end{aligned}
+$$
+
+We then can then subsitute our result for $x_B$ into the reaction function for $x_A$.
+
+$$
+\begin{aligned}
+x_A &= \frac{a - c}{2} - \frac{b(a - c)}{2(b + 2)} \\
+&= \frac{(a - c)(b + 2) - b(a - c)}{2(b + 2)} \\
+&= \frac{ab + 2a - bc - 2c - ab + bc}{2(b + 2)} \\
+&= \frac{2a - 2c}{2(b + 2)} \\
+&= \frac{2(a - c)}{2(b + 2)} \\
+&= \frac{a - c}{b + 2}
+\end{aligned}
+$$
+
+This implies that in the Nash equilibrium, both firms will produce the same quantity of output, which is given by the expression $\frac{a - c}{b + 2}$. This result is consistent with the symmetric nature of the Cournot competition model when the firms have identical cost structures and face the same demand conditions.
+
+We can plot a visualisation of this result like so. Note that in this plot we are assuming that $a = 10$, $b = 0.5$, and $c = 2$.
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1697377829/image_20230924210650392_4726534b03.png)
+
+What is this showing us?
+
+As the quantity produced by firm $B$ decreases, the optimal quantity for firm $A$ to make increases. If firm $B$ makes nothing at all the optimal quantity for firm A to make is:
+
+$$
+\begin{aligned}
+x_A &= \frac{a - bx_B - c}{2} \\
+&= \frac{a - b \cdot 0 - c}{2} \\
+&= \frac{a - c}{2}
+\end{aligned}
+$$
+
+Substituting our example values gives us $\frac{10 - 2}{2} = 4$ and indeed we can see that $x_A$ is 4 when $x_B$ is 0.
+
+As the amount produced by firm $B$ increases, the optimal quantity form firm $A$ to produce decreases. At some point the optimal quantity for firm $A$ to make will be 0. Setting $x_A$ to 0 and rearranging to solve for $x_B$ shows us how much firm $B$ would have to make for this to be the case.
+
+$$
+\begin{aligned}
+x_A &= \frac{a - bx_B - c}{2} \\
+0 &= \frac{a - bx_B - c}{2} \\
+0 &= a - bx_B - c \\
+bx_B &= a - c \\
+x_B &= \frac{a - c}{b}
+\end{aligned}
+$$
+
+Substituting in our example values gives us $\frac{10 - 2}{0.5} = 16$ and indeed we can see that when $x_B$ is 16 $x_A$ is 0.
+
+Of course, the same principles hold if with swap $A$ and $B$ around.
+
+## (b)
+
+**Suppose that the two firms must simultaneously and independently choose prices to charge, each without knowing what price the other has chosen. What are (or is) the Nash equilibria of this game?**
+
+First we find invert the inverse demand functions to get the demand functions.
+
+$$
+p_A = a - x_A - bx_B \\
+p_B = a - x_B - bx_A
+$$
+
+We start by isolating the $x$ terms in each equation
+
+$$
+x_A = a - p_A - bx_B \\
+x_B = a - p_B - bx_A
+$$
+
+We can then substitute the expression for $x_B$ into the expression for $x_A$
+
+$$
+\begin{aligned}
+x_A &= a - p_A - b(a - p_B - bx_A) \\
+&= a - p_A - ab + bp_B + b^2x_A \\
+x_A - b^2x_A &= a - p_A - ab - bp_B \\
+x_A(1 - b^2) &= a - p_A - ab + bp_B \\
+x_A &= \frac{a - p_A - ab + bp_B}{1 - b^2} \\
+x_A &= \frac{a(1 - b) - p_A + bp_B}{1 - b^2}
+\end{aligned}
+$$
+
+We can also say by symmetry that
+
+$$
+x_B = \frac{a(1 - b) - p_B + bp_A}{1 - b^2}
+$$
+
+We should also re-note the profit equations for each firm
+
+$$
+\pi_A = (P_A - c)x_A \\
+\pi_B = (P_B - c)x_B
+$$
+
+Each firm will choose the price that maximises its profits given the price chosen by the other firm. We can substitute the demand functions that we have just derived into the profit functions
+
+$$
+\begin{aligned}
+\pi_A &= (P_A - c)(\frac{a(1 - b) - p_A + bp_B}{1 - b^2}) \\
+&= \frac{a(1 - b)(P_A - c) - p_A(P_A - c) + bp_B(P_A - c)}{1 - b^2} \\
+&= \frac{a(p_A - c - bP_A + bc) - {p_A}^2 + cP_A + bp_BP_A - cbp_B}{1 - b^2} \\
+&= \frac{ap_A - ac - abP_A + abc - {p_A}^2 + cP_A + bp_BP_A - cbp_B}{1 - b^2} \\
+&= \frac{c(-a + ab - bp_B) + p_A(a - ab + c + bp_B) - {p_A}^2}{1 - b^2} \\
+&= \frac{c(a(b - 1) - bp_B) + p_A(a(1 - b) + bp_B + c) - {p_A}^2}{1 - b^2} \\
+\end{aligned}
+$$
+
+As in the last question we can find these "first order conditions for profit maximisation" by differentiating the profit functions with respect to the prices $P_A$ and $P_B$, and setting the derivatives equal to zero. First the derivative. To solve this we will need to make use of the quotient rule:
+
+$$
+\frac{d}{dx}(\frac{f(x)}{g(x)}) = \frac{f'(x)g(x) - f(x)g'(x)}{g(x)^2}
+$$
+
+A this point I'm going to admit defeat regarding doing it by hand. Here's a way you can get the derivative using the Sympy library in Python
+
+```python
+import sympy
+
+pA, pB, a, b, c = sympy.symbols('pA pB a b c')
+expression = (c*(a*(b - 1) - b*pB) + pA*(a*(1 - b) + b*pB + c) - pA**2)/(1 - b**2)
+derivative = expression.diff(pA)
+sympy.simplify(derivative)
+```
+
+What you'll get if you run this is the following expression:
+
+$$
+\frac{2p_A + a(b-1) - bp_B - c}{b^2 - 1}
+$$
+
+And now, setting the derivate equal to zero
+
+$$
+\begin{aligned}
+\frac{2p_A + a(b-1) - bp_B - c}{b^2 - 1} &= 0 \\
+2p_A + a(b-1) - bp_B - c &= 0 \\
+2p_A &= -a(b - 1) + c + bp_B \\
+2p_A &= a - ab + bp_B + c \\
+2p_A &= a(1 - b) + bp_B + c \\
+p_A &= \frac{a(1 - b) + bp_B + c}{2} \\
+\end{aligned}
+$$
+
+Because the firms respective functions are identical we can declare by symmetry that
+
+$$
+p_A = \frac{a(1 - b) + bp_B + c}{2} \\
+p_B = \frac{a(1 - b) + bp_A + c}{2}
+$$
+
+As in the last question, to find the Nash equilibrium we have to solve these equations simulataneously. This time the algebra is even more of a nightmare to keep track of by hand so lets use a tool.
+
+[Wolfram Alpha has a tool for solving systems of equations here](https://www.wolframalpha.com/input?i=systems+of+equations+calculator&assumption=%7B%22F%22%2C+%22SolveSystemOf4EquationsCalculator%22%2C+%22equation1%22%7D+-%3E%22x+%3D+%28a%281+-+b%29+%2B+b*y+%2B+c%29%2F2%22&assumption=%7B%22F%22%2C+%22SolveSystemOf4EquationsCalculator%22%2C+%22equation4%22%7D+-%3E%22%22&assumption=%22FSelect%22+-%3E+%7B%7B%22SolveSystemOf2EquationsCalculator%22%7D%7D&assumption=%7B%22F%22%2C+%22SolveSystemOf4EquationsCalculator%22%2C+%22equation2%22%7D+-%3E%22y+%3D+%28a%281+-+b%29+%2B+b*x+%2B+c%29%2F2%22&assumption=%7B%22F%22%2C+%22SolveSystemOf4EquationsCalculator%22%2C+%22equation3%22%7D+-%3E%22%22).
+
+We can also use Sympy
+
+```python
+import sympy as sp
+
+pA, pB, a, b, c = sp.symbols('pA pB a b c')
+
+eq1 = sp.Eq(pA, (a*(1 - b) + b*pB + c)/2)
+eq2 = sp.Eq(pB, (a*(1 - b) + b*pA + c)/2)
+
+solution = sp.solve((eq1, eq2), (pA, pB))
+```
+
+The solution from Sympy which can be multiplied by -1 to be the same as the solution in the textbook
+
+$$
+\begin{aligned}
+P^*_A = P^*_B &= \frac{ab - a - c}{b - 2} \\
+&= \frac{-ab + a + c}{- b + 2} \\
+&= \frac{a -ab + c}{2 - b} \\
+&= \frac{a(1 - b) - c}{2 - b} \\
+\end{aligned}
+$$
+
+We can visualise this. This plot shows pairs of prices each firm. Each line shows the best price of each firm to the corresponding price of the other firm. The place they intersect is the Nash equilibrium. Once again we assume that $a = 10$, $b = 0.5$, and $c = 2$.
+
+Subsituting in 0 for $px_B$ allows us to predict what price firm $A$ would charge if firm $B$'s price was zero.
+
+$$
+\begin{aligned}
+p_A &= \frac{a(1 - b) + bp_B + c}{2} \\
+&= \frac{a(1 - b) + b \cdot 0 + c}{2} \\
+&= \frac{a(1 - b) + c}{2} \\
+&= \frac{10(1 - 0.5) + 2}{2} \\
+&= 3.5
+\end{aligned}
+$$
+
+This is indeed where the line intersects the axis. The same is true when the firms are flipped.
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1697377887/image_20230925113617371_fba36ed188.png)
+
+## (c)
+
+**Suppose Firm $A$ can choose its production quantity first. Firm $B$ sees this choice, then chooses its production quantity. What do you predict would happen?**
+
+This model is known as a Stackelberg competition. Once again the firms are trying to maximise their profits so we'll begin again by noting those profit functions and substituting in the inverse demand functions:
+
+$$
+\begin{aligned}
+\pi_A &= (p_A - c)x_A \\
+&= (a - x_A - bx_B - c)x_A \\
+&= a \cdot x_A - {x_A}^2 - bx_B \cdot x_A - c \cdot x_A \\
+&= (a - bx_B - c)x_A - {x_A}^2 \\
+\\
+\pi_B &= (p_B - c)x_B \\
+&= (a - x_B - bx_A - c)x_B \\
+&= a \cdot x_B - {x_B}^2 - bx_A \cdot x_B - c \cdot x_B \\
+&= (a - bx_A - c)x_B - {x_B}^2
+\end{aligned}
+$$
+
+We first derived the reaction functions when looking at the Cournot competition model. We can do that again to see what firm $B$ will choose after seeing firm $A$'s production choice.
+
+$$
+\begin{aligned}
+\frac{d\pi_B}{dx_B} &= a - bx_A - c - 2x_B \\
+0 &= a - bx_A - c - 2x_B \\
+x_B &= \frac{a - bx_A - c}{2}
+\end{aligned}
+$$
+
+In a Stackelberg model though, firm $A$ anticipates this which means we need to update firm $A$'s profit function. We do this by substituting the reaction function into it.
+
+$$
+\pi_A = (a - x_A - b(\frac{a - bx_A - c}{2}) - c)x_A \\
+$$
+
+This updated profit function is what we need to differentiate, set to 0, and rearrange to get the reaction function for firm $A$. Again, too much algebra for me to do by hand. However, we can use Sympy.
+
+$$
+\begin{aligned}
+\frac{d\pi_A}{dx_A} &= - \frac{a b}{2} + a + b^{2} x_{A} + \frac{b c}{2} - c - 2 x_{A} \\
+0 &= - \frac{a b}{2} + a + b^{2} x_{A} + \frac{b c}{2} - c - 2 x_{A} \\
+x_A &= \frac{\frac{a b}{2} - a - \frac{b c}{2} + c}{b^{2} - 2} \\
+&= \frac{a b - 2 a - b c + 2 c}{2 b^{2} - 4} \\
+\end{aligned}
+$$
+
+The expression for $x_A$ in the textbook is given as $\frac{\left(2 - b\right) \left(a - c\right)}{2(2 - 2 b^{2})}$. We can check that these are equivalent with Sympy:
+
+```python
+book_answer = ((2 - b) * (a - c))/(2 * (2 - b**2))
+reaction_a.equals(book_answer)
+```
+
+This evaluates to True.
+
+We can substitute this into the reaction function for firm $B$ to find firm $B$'s equilibrium quantity.
+
+$$
+\begin{aligned}
+x_B &= \frac{a - b(\frac{a b - 2 a - b c + 2 c}{2 b^{2} - 4}) - c}{2} \\
+&= \frac{- b \left(a b - 2 a - b c + 2 c\right) + 2 \left(a - c\right) \left(b^{2} - 2\right)}{4 \left(b^{2} - 2\right)}
+
+\end{aligned}
+$$
+
+Let's visualise this again.
+
+We can plot the iso-profit curves for firm A alongside the reaction curves for the Cournot equilibrium. The iso-profit curve represents all the combinations of outputs (or other variables) that result in a specific level of profit $K$ that firm $A$ aims to achieve. Each point on an iso-profit curve corresponds to the same level of profit. The concept is similar to that of an isoquant in production theory, which represents all the combinations of inputs that result in a specific level of output.
+
+Each iso-curve in this graph is described by the formula
+
+$$
+K = x_A(a - x_A - bx_B -c)
+$$
+
+We can read it as saying that that e.g. in a scenario where there firm $B$ is producing 8 units, firm A can make a profit of 4 by producing 2 units. Another way of putting this would be to say that if we substituted 2 substitued our constant values $a = 10$, $b = 0.5$, and $c = 2$ into the reaction function for firm $A$ and also substitute $x_B = 8$ we get
+
+$$
+\begin{aligned}
+x_A(8) &= \frac{10 - 0.5 \cdot 8 - 2}{2} \\
+&= 2
+\end{aligned}
+$$
+
+We can see from the left hand plot that the reaction curve for firm $A$ passes through the peak of firm $A$'s iso-curves.
+
+The right hand plot shows the two reaction functions meeting at a point that in a Cournot model would result in a profit for A of ~10.24. In this scenario both firms have chosen their quantities simulataneously. The Nash equilibrium sees them both produce a quantity of 3.2. Under a Stackelberg model firm $A$ choses its quantity first. Firm $A$ knows that if it produces more than 3.2, firm $B$ will respond by producing less, something which benefits firm $A$.
+
+We can find out how much more profit firm $A$ is able to make under this model by substiting our parameters into the equation for the equilibrium quanty for $x_A$ that we found above. This tells us how much firm $A$ will produce under this model
+
+$$
+\begin{aligned}
+x_A &= \frac{a b - 2 a - b c + 2 c}{2 b^{2} - 4} \\
+x_A &= \frac{10 \cdot 0.5 - 2 \cdot 10 - 0.5 \cdot 2 -4}{2 \cdot 0.5^2 - 4} \\
+x_A &\approx ~3.42
+\end{aligned}
+$$
+
+Substituting this value into the reaction function of firm $B$ tells us how much it will produce
+
+$$
+\begin{aligned}
+x_B &= \frac{a - bx_A - c}{2} \\
+&= \frac{10 - 0.5 \cdot 3.42 - 2}{2} \\
+&\approx 3.15
+\end{aligned}
+$$
+
+Substituting $x_A$ and $x_B$ into the profit function for $A$ gives us
+
+$$
+\begin{aligned}
+K &= 3.42 \cdot (10 - 3.42 - 0.5 \cdot 3.15 - 2) \\
+&\approx 10.29
+\end{aligned}
+$$
+
+We can see that the iso-curve for $K = 10.29$ is the curve for which the reaction curve for firm $B$ is a tangent. Moving first has allowed firm $A$ to "move along" the curve to a more favourable pair of quantities. It has been able to increase its profit from 10.24 to 10.29.
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1697377947/image_20231001154632243_a288e0ad4a.png)
+
+## (d)
+
+**Suppose Firm $A$ can choose its price first. Firm $B$ sees this choice, then chooses its price. What do you predict would happen?**
+
+TODO

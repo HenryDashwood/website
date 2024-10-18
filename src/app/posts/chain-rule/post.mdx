@@ -1,0 +1,65 @@
+The chain rule is a fundamental concept in calculus that allows you to compute the derivative of a composite function. In other words, if you have a function that is formed by combining two or more functions, the chain rule helps you find the derivative of the resulting function with respect to its input variable(s).
+
+Mathematically, the chain rule states that for two functions, $f(x)$ and $g(x)$, the derivative of their composition
+
+$$
+h(x) = f(g(x))
+$$
+
+is
+
+$$
+h'(x) = f'(g(x)) * g'(x)
+$$
+
+where $h'(x)$ is the derivative of $h(x)$ with respect to $x$, $f'(g(x))$ is the derivative of $f$ with respect to $g(x)$, and $g'(x)$ is the derivative of $g$ with respect to $x$.
+
+## Example
+
+**Find the derivative of the composite function $h(x) = (2x^2 + 3)^5$ with respect to $x$.**
+
+1. Define functions $f(x)$ and $g(x)$
+
+$$
+\begin{aligned}
+f(x) &= x^5 \\
+g(x) &= 2x^2 + 3
+\end{aligned}
+$$
+
+2. Compute the derivatives
+
+$$
+\begin{aligned}
+f'(x) &= 5x^4 \\
+g'(x) &= 4x
+\end{aligned}
+$$
+
+3. Apply the chain rule
+
+$$
+\begin{aligned}
+h'(x) &= f'(g(x)) * g'(x) \\
+&= 5(2x^2 + 3)^4 * 4x \\
+&= 20x(2x^2 + 3)^4
+\end{aligned}
+$$
+
+It's possible to check this using the Sympy library in Python:
+
+```python
+import sympy
+
+x = sympy.symbols("x")
+
+f_x = x**5
+g_x = 2 * x**2 + 3
+
+f_prime = sympy.diff(f_x, x)
+g_prime = sympy.diff(g_x, x)
+
+h_prime = f_prime.subs(x, g_x) * g_prime
+
+sympy.simplify(h_prime)
+```
