@@ -7,7 +7,7 @@ function Date({ dateString }: { dateString: string }) {
     if (isNaN(date.getTime())) {
       throw new Error("Invalid date");
     }
-  } catch (error) {
+  } catch {
     console.error(`Error parsing date: ${dateString}`);
     return <time>{dateString}</time>; // Return the original string if parsing fails
   }
