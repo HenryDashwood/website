@@ -27,8 +27,6 @@ async function GetPostTags() {
 async function LinkBox({ tag }: { tag: string }) {
   const postsData = await GetPostTags();
 
-  console.log(postsData);
-
   const filteredPosts = postsData.filter(
     (post) => post.tags && post.tags.includes(tag)
   );
