@@ -1,0 +1,37 @@
+_Some thoughts I wrote down in ~1 hour at the [San Francisco Writing Club](https://lu.ma/SFwritingclubseries)_
+
+## Upside-down teaching / Flipped classroom
+
+Eric Mazur is a professor of physics at Harvard whose students were getting perfectly adequate grades. One day though he decided to measure how much information they were retaining from his lectures. He found they largely forgot everything by the end of the lecture and even more by the time the next one came around.
+
+So he started iterating on ways to turn his lectures into a more efficient use of his students' time. The process he ended up with looks like this:
+
+- A few days before the lecture he sends the pupils the material that he wants them to learn this week. They study this in their own time.
+- He also sends them a quiz with about 6 questions. The scores of the quiz contribute to a small proportion of the pupils' grades (~5%). This isn't because he's particularly concerned by how well the students do. He just wants to incentivise them to attempt them seriously.
+- He uses the results of these quizzes to understand where the main areas of confusion are with the material. He prepares about 6 questions around these areas.
+- In the actual lecture, he will put these questions up on the board one at a time and have the students vote for the answer they think is correct. Inevitably there will be some disagreement, but before explaining to the pupils why the correct answer is correct, he will get the pupils to explain to their neighbours why their answer is correct.
+
+These mini-debates make the lecture an active use of the pupils' time and something they wouldn't get from watching a recording on their own. Furthermore, Mazur has found that students who have only just learnt the material can communicate with each other much better than he, who has long forgotten what it feels like to be unfamiliar with the material, can.
+
+It's very silly that we make students sit passively listening to mediocre lecturers when they could watch and read the best material available on the internet, with the ability to rewind or speed up as appropriate. The in-person lecture time should be reserved for active engagement with the material with other people.
+
+## 2 sigma tutoring
+
+There's loads of evidence that tutoring is great. This surprises no one. But it's worth discussing what makes someone a really good tutor.
+
+The best maths tutor and probably the best tutor of any subject I ever had was able to generate variations of problems on the fly which hinged on the exact point of misunderstanding I had. Lessons with him were exhausting but I came out of them with a vastly clearer understanding of the material.
+
+But, obviously, tutors don't scale.
+
+## Fusing these approaches with LLMs
+
+With LLMs, we can now ask questions about a specific thing we don't understand. We can also ask it to generate problems for us to tackle which require us to engage with the material.
+
+How can we improve the performance of the LLM?
+
+- We'll want to prompt it to have the understanding of a famous domain expert but to engage with us in the clearest way possible. Perhaps we want a chain of thought where it emphasises accuracy and then rewrites its output to emphasise clarity for a beginner.
+- Long context windows allow us to load in chapters from relevant textbooks, and associated problem sets and answers. These could be directly given to the user, or used as examples for the LLM of problems we would like variations of.
+- Using the internet to surface the best tutorials on a topic.
+- Tool use with tools like Wolfram to validate proofs.
+
+Richard Feynman is famous for his view that you don't fully understand something until you can explain it clearly to someone else. We can have our user explain a topic to the LLM where the LLM simulates a student who is new to the material.

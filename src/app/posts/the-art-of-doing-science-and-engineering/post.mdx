@@ -1,0 +1,508 @@
+The Art of Doing Science and Engineering features some mathematics that I found a little difficult to follow. These are some notes I've made to help fill in the gaps.
+
+## Chapter 1
+
+Hamming makes two claims:
+
+- Scientific knowledge doubles every 17 years
+- 90% of scientists who have ever lived are now alive
+  He makes these claims in order to give an example of back-of-the-envelope calculations that you can do as part of sense checking. In this case, we want to check if these claims are compatible with each other.
+
+He begins by assuming that the number of scientists at any time $t$ is:
+
+$$
+y(t) = ae^{bt}
+$$
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1699983241/exponential_e9b0124399.png)
+
+He also assumes that the amount of knowledge produced annually has a constant $k$ proportionality to the number of scientists alive. So we can write our equation for the amount of scientific knowledge produced in year $t$ as
+
+$$
+p(t) = kae^{bt}
+$$
+
+We can then get the total amount of scientific knowledge by calculating the integral of this equation between the limits $-\infty$ and the current time $T$.
+
+- The integral of $e^{bt}$ is $\frac{1}{b}e^t$ so when we multiply by the constants $ka$, the indefinite integral of $kae^{bt}$ is $$\int_{} kae^{bt} dt = \frac{ka}{b}e^{bt} + C$$
+- At the lower limit, we can see from our plot that $e^{bt}$ approaches 0 as $t$ gets smaller and as the whole term is multiplied by $e^{bt}$, assuming that $b > 0$. This means that $$\lim_{x\to-\infty}\frac{ka}{b}e^{bt} = 0$$
+- At the upper limit $t = T$, so $$\frac{ka}{b}e^{bT}$$
+- The definite integral is the difference between the antiderivative evaluated at these points. In this case, it's a very straightforward sum $$\frac{ka}{b}e^{bT} - 0 = \frac{ka}{b}e^{bT}$$
+  The process is exactly the same when finding the sum of knowledge up to 17 years ago, except our upper limit will be $\frac{ka}{b}e^{b(T - 17)}$.
+
+So, to summarise:
+
+$$
+\begin{aligned}
+\int_{-\infty}^{T} kae^{bt} \ dt &= \frac{ka}{b}e^{bT}\\
+\int_{-\infty}^{T-17} kae^{bt} \ dt &= \frac{ka}{b}e^{b(T - 17)}
+\end{aligned}
+$$
+
+Hamming's claim is that knowledge has been doubling every 17 years so we can say:
+
+$$
+\begin{aligned}
+\frac{1}{2} &= \frac{\int_{-\infty}^{T-17} kae^{bt} \, dt}{\int_{-\infty}^{T} kae^{bt} \, dt}\\
+\\
+&= \frac{\frac{ka}{b}e^{b(T-17)}}{\frac{ka}{b}e^{bT}}\\
+\\
+&= \frac{e^{b(T-17)}}{e^{bT}}\\
+\\
+&= e^{b(T-17) - bT} \\
+\\
+&= e^{-17b} \\
+\end{aligned}
+$$
+
+Above we are using the law of exponents that dividing exponential expressions with the same base is equivalent to subtracting their exponents.
+
+Hamming estimates the length of a scientific career to be 55 years. Using his original equation for the number of scientists in a given year $y(t) = ae^{bt}$ we can divide the integral for the equation up to the current year by the integral of the equation up to 55 years ago.
+
+$$
+\begin{aligned}
+\frac{\int_{T - 55}^{T}ae^{bt}dt}{\int_{-\infty}^{T}ae^{bt}dt} &= \frac{\frac{ka}{b}e^{bT} - \frac{ka}{b}e^{b(T - 55)}}{\frac{ka}{b}e^{bT} - 0}\\
+\\
+&= \frac{e^{bT} - e^{b(T - 55)}}{e^{bT}}\\
+\\
+&= 1 - e^{b(T - 55) - bT}\\
+\\
+&= 1 - e^{-55b}
+\end{aligned}
+$$
+
+We can use our expression for the doubling of scientific knowledge $e^{-17b} = \frac{1}{2}$ to get the proportion of scientists alive today. We can use the law that $e^{kx} = (e^x)^k$.
+
+$$
+\begin{aligned}
+e^{-17b} &= \frac{1}{2}\\
+\\
+\left(e^{-17b}\right)^\frac{55}{17} &= \left(\frac{1}{2}\right)^\frac{55}{17}\\
+\\
+e^{-17b \cdot \frac{55}{17}} &= \left(\frac{1}{2}\right)^\frac{55}{17}\\
+\\
+e^{-55b} &= \left(\frac{1}{2}\right)^\frac{55}{17}\\
+\end{aligned}
+$$
+
+Substituting this back into the equation:
+
+$$
+\begin{aligned}
+\frac{\int_{T - 55}^{T}ae^{bt}dt}{\int_{-\infty}^{T}ae^{bt}dt} &= 1 - \left(\frac{1}{2}\right)^\frac{55}{17}\\
+\\
+&= 0.894...
+\end{aligned}
+$$
+
+This number is indeed very close to 90%.
+
+Let's now come at the question from a different angle. Let's let $D$ be the doubling period and $L$ be the length of a scientific career.
+
+The first equation becomes
+
+$$
+e^{-bD} = \frac{1}{2}
+$$
+
+and the second becomes
+
+$$
+\begin{aligned}
+1 - e^{-bL} &= \frac{9}{10}\\
+\\
+1 - \left(\frac{1}{2}\right)^\frac{L}{D} &= \frac{9}{10}\\
+\\
+\left(\frac{1}{2}\right)^\frac{L}{D} &= \frac{1}{10}\\
+\\
+\ln\left(\left(\frac{1}{2}\right)^\frac{L}{D}\right) &= \ln\left(\frac{1}{10}\right)\\
+\\
+\frac{L}{D} \cdot \ln\left(\frac{1}{2}\right) &= \ln\left(\frac{1}{10}\right)\\
+\\
+\frac{L}{D} &= \frac{\ln\left(\frac{1}{10}\right)}{\ln\left(\frac{1}{2}\right)}\\
+\\
+\frac{L}{D} &= \frac{\ln(1) - \ln(10)}{\ln(1) - \ln(2)}\\
+\\
+\frac{L}{D} &= \frac{-\ln(10)}{-\ln(2)}\\
+\\
+\frac{L}{D} &= \frac{\ln(10)}{\ln(2)}\\
+\\
+\frac{L}{D} &= \log_{2}(10)\\
+\\
+&= 3.3219...
+\end{aligned}
+$$
+
+Multiplying 3.3219 by our supposed doubling period of 17 years gives us 56.47 years for the average length of a scientific career, very close to Hamming's estimate of 55 years.
+
+## Chapter 2
+
+In this chapter, Hamming discusses growth models. The simplest growth model assumes the growth rate is proportional to the current size. For instance, in the case of compound interest. We can describe this model with a differential equation.
+
+$$
+\frac{dy}{dt} = ky
+$$
+
+A differential equation is an equation that relates a function to its derivatives. In the context of growth models, differential equations are used to describe how something changes over time. The equation above is a first-order differential equation where $\frac{dt}{dy}$​ represents the rate of change of $y$ with respect to time $t$, and $ky$ suggests that this rate of change is proportional to the current value of $y$. Here, $k$ is a constant of proportionality.
+
+The solution to a differential equation is a function (or a set of functions) that satisfies the equation. This means that if you take the solution and its derivatives and plug them back into the original differential equation, the equation will hold. In other words, the left-hand side of the equation will equal the right-hand side for all points in the domain of the solution.
+
+Hamming tells us the solution to the equation but skips over how to derive it. We do it like so:
+
+1. We start by rearranging the equation so that each variable is on a different side of the equation. $$\frac{1}{y} \cdot dy = k \cdot dt$$
+2. Next we integrate both sides of the equation $$\ln(y) = kt + C$$
+3. We can then exponentiate both sides of the equation to get rid of the natural logarithm. $$e^{\ln(y)} = e^{kt + C}$$
+4. This simplifies to $$y = e^{kt} \cdot e^{C}$$
+5. Since $e^C$ is just a constant we can represent it as just $A$. Thus we get the solution given by Hamming: $$y(t) = Ae^{kt}$$
+   We can think of $A$ as representing the initial condition of the system. The equation $y(t) = Ae^{kt}$ then tells us how the quantity $y$ changes over time. If $k > 0$ we have growth. If $k < 0$ we have decay.
+
+We can verify that this is a solution by:
+
+1. Differentiating the solution such that it is equal to the left-hand side of the differential equation (NB the derivate of $e^{kt}$ is $ke^{kt}$) $$\frac{dy}{dt} = kAe^{kt}$$
+2. Substituting the right-hand side of the solution into the right-hand side of the differential equation $$ky = k(Ae^{kt})$$
+   We see that both sides of the equation match.
+
+Hamming now updates this model of growth to include a limiting factor $L$.
+
+$$
+\frac{dy}{dt} = ky(L-y)
+$$
+
+Hamming "reduces" the equation to a standard form, meaning we don't have to write the constants. He says let $y = Lz$ and $x = t(kL)$. Note that [there is a typo in the book](https://math.stackexchange.com/questions/3738219/change-of-variables-in-basic-differential-equation-from-hammings-art-of-doing-s) where they've written $\frac{t}{kL^2}$So substituting those in we get:
+
+$$
+\begin{aligned}
+\frac{dy}{dt} &= kLz(L - Lz) \\
+&= kL^{2}z(1 - z)
+\end{aligned}
+$$
+
+We can get $\frac{dy}{dt}$ in terms of $\frac{dz}{dt}$ by differentiating $y = Lz$ with respect to $t$: $$\frac{dy}{dt} = L\frac{dz}{dt}$$
+Given $x = t(kL)$ we can find $\frac{dx}{dt}$:
+
+$$
+\begin{aligned}
+x &= t(kL) \\
+\frac{dx}{dt} &= kL
+\end{aligned}
+$$
+
+We can use this to express $\frac{dz}{dt}$ in terms of $\frac{dz}{dx}$. The chain rule states that if we have a function $z(x(t))$, the derivative of $z$ with respect to $t$ will be $\frac{dz}{dt} = \frac{dz}{dx} \cdot \frac{dx}{dt}$. So we can say that:
+
+$$
+\begin{aligned}
+\frac{dz}{dt} &= \frac{dz}{dx} \cdot \frac{dx}{dt} \\
+&= \frac{dz}{dx} \cdot kL
+\end{aligned}
+$$
+
+Going back to the earlier equation $\frac{dy}{dt} = L\frac{dz}{dt}$, we can now say:
+
+$$
+\begin{aligned}
+\frac{dy}{dt} &= L\frac{dz}{dt} \\
+kL^{2}z(1 - z) &= L (\frac{dz}{dx} \cdot kL) \\
+&= \frac{dz}{dx} \cdot kL^2 \\
+\frac{dz}{dx} &= z(1 - z) \\
+\end{aligned}
+$$
+
+This is the standard form derived by Hamming.
+
+Suppose we wanted to integrate this equation to find $z$ in terms of $x$. We might first rearrange it to separate the variables so it looks like this: $$\frac{1}{z(1 - z)}dz = dx$$The left-hand side is a complex fraction. To make it easier to integrate, Hamming uses partial fractions. This means:
+
+1. Expressing $\frac{1}{z(1-z)}$ as a sum of simpler fractions $\frac{A}{z}$ and $\frac{B}{1-z}$
+2. Multiplying through the common denominator $z(1-z)$
+3. Setting $z$ to various values to solve for $A$ and $B$. In this case, we will use 0 and 1
+   $$
+   \begin{aligned}
+   \frac{1}{z(1-z)} &= \frac{A}{z} + \frac{B}{1-z} \\
+   1 &= A(1 - z) + Bz \\
+   \\
+   1 &= A(1 - 0) + B \cdot 0 \\
+   A &= 1\ \ \ \text when\ z = 0 \\
+   \\
+   1 &= A(1 - 1) + B \cdot 1 \\
+   B &= 1\ \ \ \text when\ z = 1 \\
+   \\
+   \frac{1}{z(1-z)} &= \frac{1}{z} + \frac{1}{1-z} \\
+   \end{aligned}
+   $$
+   This is much simpler to integrate. We know that the derivative of $\ln(x)$ is $\frac{1}{x}$ so $\int{\frac{1}{z}} = \ln(z)$. We have to remember to apply the chain rule when integrating $\frac{1}{1 - z}$ though. We can do this with substitution.
+
+$$
+\begin{aligned}
+u &= 1 - z \\
+du &= -dz \\
+dz &= -du \\
+\int{\frac{1}{1 - z}} &= \int{\frac{1}{u} \cdot -du} \\
+&= -\int{\frac{1}{u}du} \\
+&= -\ln(u) + C \\
+&= -ln(1 - z) + C
+\end{aligned}
+$$
+
+Therefore in summary:
+
+$$
+\begin{aligned}
+\int{\frac{1}{z} + \frac{1}{1 - z} dz} &= \int{dx} \\
+\\
+\ln{(z)} - \ln{(1 - z)} &= x + C
+\end{aligned}
+$$
+
+We can use the law of logarithms that $\ln(x) - \ln(y) = \ln(\frac{x}{y})$. So:
+
+$$
+\begin{aligned}
+\ln(\frac{z}{1 - z}) &= x + C \\
+\frac{z}{1 - z} &= e^{x + C}
+\end{aligned}
+$$
+
+Since $e^{x+C} = e^x \cdot e^C$ and $e^C$ is just a constant, we can replace it with a new constant which we'll call $A$. So we now have:
+
+$$
+\begin{aligned}
+\frac{z}{1 - z} &= Ae^x \\
+\end{aligned}
+$$
+
+We can solve for $z$ like so:
+
+$$
+\begin{aligned}
+\frac{z}{1 - z} &= Ae^x \\
+z &= Ae^x(1 - z) \\
+z &= Ae^x - Ae^x \cdot z \\
+z + Ae^x \cdot z &= Ae^x \\
+z(1 + Ae^x) &= Ae^x \\
+z &= \frac{Ae^x}{1 + Ae^x}
+\end{aligned}
+$$
+
+To get the answer in the form given by Hamming we can divide the numerator and denominator by $Ae^x$
+
+$$
+\begin{aligned}
+z &= \frac{Ae^x}{1 + Ae^x} \\
+\\
+&= \frac{\frac{Ae^x}{Ae^x}}{\frac{1}{Ae^x} + \frac{Ae^x}{Ae^x}} \\
+\\
+&= \frac{1}{1 + \frac{1}{Ae^x}} \\
+\\
+&= \frac{1}{1 + (\frac{1}{A})e^{-x}}
+\end{aligned}
+$$
+
+As Hamming points out, $A$ is determined by the initial conditions. By this, he means where you set $t$ or $x$ equal to 0. As $x$ approaches $-\infty$, the denominator will get larger and $z$ will approach 0. As it gets bigger, $(\frac{1}{A})e^{-x}$ will approach 0 and $z$ will approach 1.
+
+Hamming shows us a more flexible model for growth $$\frac{dz}{dx} = z^a(1 - z)^b,\ \ (a, b > 0)$$
+We can plot growth curves for different values of $a$ and $b$ to see how they change how the model behaves:
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1702034648/small_Pasted_image_20231208111816_cee46915e5.png)
+We can find $z$ by separation of variables and integration. We can also find the steepest slope by differentiating the right-hand side and setting it equal to 0. To differentiate we use the product rule: $$\frac{d(uv)}{dz} = u \cdot \frac{dv}{dz} + v \cdot \frac{du}{dz}$$Hence:
+
+$$
+\begin{aligned}
+\frac{d}{dz}[z^a(1 - z)^b] &= a \cdot z^{a-1} \cdot (1 -z)^b + z^a \cdot b \cdot (1 - z)^{b - 1} \cdot (-1) = 0 \\
+&= a \cdot z^{a-1} \cdot (1 -z)^b - z^a \cdot b \cdot (1 - z)^{b - 1} = 0\\
+&= z^{a - 1} \cdot (1 - z)^{b - 1} \cdot (a(1 - z) - bz) = 0 \\
+&= a(1 - z) - bz = 0
+\end{aligned}
+$$
+
+Notice how we can factor out the terms $z^{a-1}$ and $(1 - z)^{b-1}$ in line 3 above. It took me a while to see this but it's obvious when you think about it that e.g. $x^{y - 1} * x = x^y$.
+
+From here it's easy to solve for $z$:
+
+$$
+\begin{aligned}
+a(1 - z) - bz &= 0 \\
+a - az - bz &= 0 \\
+a - z(a + b) &= 0 \\
+a &= z(a + b) \\
+z &= \frac{a}{a + b}
+\end{aligned}
+$$
+
+Substituting this value of $z$ back into the original differential equation $\frac{dz}{dx} = z^a(1 - z)^b$ gives us
+
+$$
+\begin{aligned}
+\frac{dz}{dx} &= \left(\frac{a}{a + b}\right)^a\left(1 - \frac{a}{a + b}\right)^b \\
+&= \left(\frac{a}{a + b}\right)^a\left(\frac{a + b}{a + b} - \frac{a}{a + b}\right)^b \\
+&= \left(\frac{a}{a + b}\right)^a\left(\frac{b}{a + b}\right)^b \\
+&= \frac{a^ab^b}{(a+b)^{a+b}} \\
+\end{aligned}
+$$
+
+This expression represents the slope of the curve at the point $z = \frac{a}{a + b}$ which is the steepest point of the curve. In the context of a growth model, this is the maximum growth rate.
+
+Hamming draws our attention to two special cases. When $a = b$, the maximum slope will be:
+
+$$
+\begin{aligned}
+\frac{a^ab^b}{(a+b)^{a+b}} &= \frac{a^aa^a}{(a+a)^{a+a}} \\
+&= \frac{a^{2a}}{(2a)^{2a}} \\
+&= \frac{a^{2a}}{2^{2a}a^{2a}} \\
+&= \frac{1}{2^{2a}} \\
+&= 2^{-2a} \\
+\end{aligned}
+$$
+
+When $a = b = \frac{1}{2}$ our differential equation will be
+
+$$
+\begin{aligned}
+\frac{dz}{dx} &= z^a(1 - z)^b \\
+&= z^\frac{1}{2}(1 - z)^\frac{1}{2} \\
+&= \sqrt{z(1 - z)} \\
+\frac{dz}{\sqrt{z(1 - z)}} &= dx \\
+\end{aligned}
+$$
+
+We can integrate this by making a trigonometric substitution $z = \sin^2(\theta)$. Differentiating this with the chain rule tells us that $\frac{dz}{d\theta} = 2\sin(\theta)\cos(\theta)$ and $dz = 2\sin(\theta)\cos(\theta)d\theta$. Substituting this back into the differential equation gives:
+
+$$
+\begin{aligned}
+\frac{2\sin(\theta)\cos(\theta)d\theta}{\sqrt{\sin^2(\theta)(1 - \sin^2(\theta))}} &= dx \\
+\frac{2\sin(\theta)\cos(\theta)d\theta}{\sqrt{\sin^2(\theta)\cos^2(\theta)}} &= dx \\
+\frac{2\sin(\theta)\cos(\theta)d\theta}{\sin(\theta)\cos(\theta)} &= dx \\
+2d\theta &= dx \\
+\int{2d\theta} &= \int{dx} \\
+2\theta &= x + C \\
+\theta &= \frac{x + C}{2} \\
+\end{aligned}
+$$
+
+Having found $\theta$, we can substitute it back into $z = \sin^2(\theta)$ to get:
+$$z = \sin^2(\frac{x}{2} + C), (-C \le \frac{x}{2} \le \frac{\pi}{2} - C)$$
+Hamming tells us that the solution curve has a finite range. We can see that because $\sin^2(\theta)$ is always within 0 and 1. The solution is valid for $\theta$ such that $\sin(\theta)$ is real and non-negative. Hence the bounds $-C \le \frac{x}{2} \le \frac{\pi}{2} - C$.
+
+## Chapter 9
+
+Hamming begins chapter 9 by reminding us that we can extend the Pythagorean theorem into higher dimensions because the square of the diagonal is the sum of the squares of the individual mutually perpendicular sides $$D^2 = \sum^n_{i=1}{x^2_i}$$ where $x_i$ are the lengths of the sides of the rectangular block in $n$ dimensions.
+
+### The Stirling Approximation
+
+Next, he derives the Stirling approximation for $n!$. This is especially useful for large factorials. It also becomes increasingly accurate as $n$ increases. He starts by taking the natural log of $n!$ to get $$\ln(n!) = \sum^n_{k=1}{\ln(k)}$$
+He then finds the integral $\int^n_1\ln(x)dx$ by using integration by parts. This is a technique that comes from the product rule of differentiation. It is given by the formula $$\int{udv} = uv - \int{vdu}$$
+Hamming sets $u = \ln{x}$ and $dv = dx$. It therefore follows that $du = \frac{1}{x}dx$ and $v = \int{dv} = \int{dx} = x$. Substituting this into the integration by parts formula we get:
+
+$$
+\begin{aligned}
+\int^n_1{\ln(x)dx} &= \ln(x)x - \int{x}\frac{1}{x}dx \\
+&= \ln(x)x - \int{1dx} \\
+&= \ln(x)x - x \\
+&= (n\ln(n) - n) - (1\ln(1) - 1) \\
+&= n\ln(n) - n + 1
+\end{aligned}
+$$
+
+Hamming also shows us how we could use the trapezium rule to approximate the integral. (See my trapezium rule notes for how we get this formula).
+
+$$
+\int^n_1{\ln{x}dx} \approx \frac{1}{2}\ln{1} + \ln{2} + \ln{3} +\ ...\ + \frac{1}{2}\ln{n}
+$$
+
+Note that he appears to be assuming that we have divided the curve into $n - 1$ segments which would result in our term for the width of the trapeziums $\Delta x$ being equal to 1. That would explain why we don't see it in the equation above
+
+Since $\ln{1} = 0$, we can simplify this to $$\int^n_1{\ln{x}dx} \approx \ln{2} + \ln{3} +\ ...\ + \frac{1}{2}\ln{n}$$
+It is a property of logarithms that the sum of logarithms is approximately equal to the logarithm of the product of terms. Thus the sum of $\ln{2} + \ln{3} +\ ...\ + \frac{1}{2}\ln{n}$ can be approximated as $\ln(n!)$.
+
+The Stirling approximation of $n!$ is $n^n e^{-n} \sqrt{2\pi n}$. Taking the log of this gets us: $$ln(n!) \approx n\ln(n) - n + \ln(\sqrt{2 \pi n})$$
+The term $\ln{\sqrt{2\pi n}}$ is often neglected in rough approximations, leading to: $$ln(n!) \approx n\ln(n) - n$$
+Hamming adds a term $\frac{1}{2}\ln{n}$ to account for the half contribution of the endpoint $n$. He there is also a term $+1$ in his final result. ChatGPT suggests that it may be an adjustment or correction factor to improve the accuracy of the approximation for specific ranges of $n$. In some numerical approximations, especially when dealing with sums and series, such correction factors are introduced to fine-tune the approximation, particularly for smaller values of $n$ where Stirling's approximation (which is more accurate for large $n$) may not be as precise. Either way
+
+$$
+\sum^n_{k=1}\ln{k} \approx n\ln{n} - n + 1 + \frac{1}{2}\ln{n}
+$$
+
+Undoing the logs by taking the exponential of each side gives:
+
+$\ln{n}$ to both terms, we get, finally:
+
+$$
+\sum^n_{k=1}\ln{k} \approx n\ln{n} - n + 1 + \frac{1}{2}\ln{n}
+$$
+
+Undoing the logs by taking the exponential of each side gives: $$n! \approx Cn^ne^{-n}\sqrt{n}$$
+$C$ is a constant (not far from $e$) independent of $n$ since we are approximating an integral by the trapezium rule and the error in the trapezium approximation increases more slowly as $n$ grows larger, and as $C$ is the limiting value.
+
+This is the first form of Stirling's formula. Hamming skips deriving the limiting, at infinity, value of $C$ which is $\sqrt{2\pi} = 2.5066...$ ($e = 2.71828...$). However, doing so would show us how we get the usual Stirling's formula for the factorial $$n! \approx n^ne^{-n}\sqrt{2 \pi n}$$
+Hamming provides the following table to give us a sense of the quality of the Stirling approximation.
+
+$$
+\begin{array}{l l l l}
+\hline
+n & \text{Stirling} & \text{True} & \text{Stirling/True} \\
+\hline
+1 & 0.92214 & 1 & 0.92214 \\
+2 & 1.91900 & 2 & 0.95950 \\
+3 & 5.83621 & 6 & 0.97270 \\
+4 & 23.50618 & 24 & 0.97942 \\
+5 & 118.01917 & 120 & 0.98349 \\
+6 & 710.07818 & 720 & 0.98622 \\
+7 & 4980.3958 & 5040 & 0.98817 \\
+8 & 39902.3955 & 40320 & 0.98964 \\
+9 & 359536.87 & 362880 & 0.99079 \\
+10 & 3598695.6 & 3628800 & 0.99170 \\
+\hline
+\end{array}
+$$
+
+He notes that as the numbers get larger, the ratio approaches 1 but the absolute differences get greater. Consider the two functions:
+
+$$
+\begin{aligned}
+f(n) &= n + \sqrt{n} \\
+g(n) &= n
+\end{aligned}
+$$
+
+The limit of the ratio $\frac{f(n)}{g(n)}$, as $n$ approaches infinity, is 1. But the difference $f(n) - g(n) = \sqrt{n}$ grows larger as $n$ increases.
+
+### Extending the factorial function to all positive real numbers
+
+Hamming introduces the _gamma function_ in the form of the integral
+
+$$
+\Gamma(n) = \int^\infty_0{x^{n-1}e^{-x}dx}
+$$
+
+which he tells us converges for all $n > 0$.
+
+For $n > 1$ we integrate by parts again. We use
+
+$$
+\begin{aligned}
+dv &= e^{-x} \\
+u &= x^{n-1}
+\end{aligned}
+$$
+
+Hamming tells us that at the two limits, the integrated part is 0. This is because as $x \to \infty$ $e^{-x}$ tends towards 0 while as $x \to 0$ $x^{n-1}$ will tend towards 0 (remember this is for $n > 1$).
+
+The integration by parts formula is:
+
+$$
+\int{udv} = uv - \int{vdu}
+$$
+
+We can also quickly work out that
+
+$$
+\begin{aligned}
+du &= (n - 1)x^{n - 2}dx \\
+v &= -e^{-x}
+\end{aligned}
+$$
+
+Hamming tells us that at the limits where the integrated part is 0 we have the reduction formula:
+
+$$
+\Gamma(n) = (n - 1)\Gamma(n - 1)
+$$
+
+with $\Gamma(1) = 1$

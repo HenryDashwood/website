@@ -1,0 +1,30 @@
+The diagram below illustrates how we can approximate the area under the curve $y = ln(x)$.
+
+![](https://res.cloudinary.com/henrydashwood/image/upload/v1704587708/trapezium_rule_1f20f466cc.png)
+
+By dividing the curve up into segments we can have created a set of trapezia.
+
+The area of each trapezium is the average of the heights of its two parallel sides multiplied by its width:
+
+$$
+\text{area} = \frac{y(x_1) + y(x_2)}{2}\cdot \Delta x
+$$
+
+The total area under the curve is going to be the sum of the areas of these trapezia:
+
+$$
+\text{area} = \frac{y(1) + y(2)}{2}\cdot \Delta x + \frac{y(2) + y(3)}{2}\cdot \Delta x + \frac{y(3) + y(4)}{2}\cdot \Delta x + \frac{y(4) + y(5)}{2}\cdot \Delta x
+$$
+
+We can factor out $\frac{\Delta x}{2}$ to get:
+
+$$
+\begin{aligned}
+\text{area} &= \frac{\Delta x}{2}(y(1) + y(2) + y(2) + y(3) + y(3) + y(4) + y(4) + y(5)) \\
+&= \frac{\Delta x}{2}(y(1) + 2y(2) + 2y(3) + 2(y(4) + y(5)))
+\end{aligned}
+$$
+
+To generalise, we always have 2 of each of the middle terms and 1 of the inner and outer terms.
+
+We could now evaluate this to get our approximation of the area under the curve between $x = 1$ and $x = 5$.

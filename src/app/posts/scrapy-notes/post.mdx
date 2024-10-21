@@ -1,0 +1,101 @@
+## Starting a project
+
+```shell
+scrapy startproject <project_name>
+```
+
+This creates a file structure like so:
+
+```shell
+├── scrapy.cfg
+└── <project_name>
+	├── __init__.py
+	├── items.py
+	├── middlewares.py
+	├── pipelines.py
+	├── settings.py
+	└── spiders
+		└── __init__.py
+```
+
+- **settings.py** is where project settings are contained, like activating pipelines, middlewares etc. You can change the delays, concurrency, and lots more things.
+- **items.py** is a model for the extracted data. You can define a custom model (like a ProductItem) that will inherit the Scrapy Item class and contain your scraped data.
+- **pipelines.py** is where the item yielded by the spider gets passed, it’s mostly used to clean the text and connect to file outputs or databases (CSV, JSON SQL, etc).
+- **middlewares.py** is useful when you want to modify how the request is made and scrapy handles the response.
+- **scrapy.cfg** is a configuration file to change some deployment settings, etc.
+
+## Spiders
+
+Scrapy provides several different spider types. Some of the most common ones:
+
+- **Spider -** Takes a list of `start_urls` and scrapes each one with a `parse` method.
+- **CrawlSpider -** Designed to crawl a full website by following any links it finds.
+- **SitemapSpider -** Designed to extract URLs from a sitemap
+
+To create a new generic spider, run:
+
+```shell
+scrapy genspider <name_of_spider> <website>
+```
+
+A new spider will now have been added to your `spiders` folder, and it should look like this:
+
+```python
+import scrapy
+
+class NAMEOFSPIDERSpider(scrapy.Spider):
+	name = 'NAMEOFSPIDER'
+	allowed_domains = ['website']
+	start_urls = ['website']
+
+def parse(self, response):
+	pass
+```
+
+This spider class contains:
+
+- **name** - an attribute that gives a name to the spider. We will use this when running our spider
+- **allowed_domains** - an attribute that tells Scrapy that it should only ever scrape pages of the `<website>` domain. This prevents the spider from going and scraping lots of websites. This is optional.
+- **start_urls** - an attribute that tells Scrapy the first URL it should scrape.
+- **parse** - this function is called after a response has been received from the target website.
+
+To start using this Spider we will have to:
+
+1. Change the `start_urls` to the URL we want to scrape
+2. Insert our parsing code into the `parse` function
+
+You run a spider with:
+
+```shell
+scrapy crawl <name_of_spider>
+```
+
+## Scrapy Shell
+
+```shell
+scrapy shell
+```
+
+If we run
+
+```shell
+fetch(<start_url>)
+```
+
+we should see a 200 response in the logs. Scrapy will save the HTML response in an object called `response`
+
+You can get a list of elements matching a CSS selector by running
+
+```shell
+response.css("<selector>")
+```
+
+To just get the first matching element run
+
+```shell
+response.css("<selector>").get()
+```
+
+This returns all the HTML in this node of the DOM tree.
+
+### CSS Selectors
