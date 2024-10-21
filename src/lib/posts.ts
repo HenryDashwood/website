@@ -1,16 +1,9 @@
 import path from "path";
 import { readdirSync, readFileSync, statSync } from "fs";
-
-export interface PostMetadata {
-  id: number;
-  title: string;
-  slug: string;
-  published: string;
-  tags: string[];
-}
+import { Metadata } from "next";
 
 interface Post {
-  postMetadata: PostMetadata;
+  metadata: Metadata;
   content: string | null;
 }
 
@@ -25,30 +18,40 @@ export async function GetPosts(withContent: boolean) {
   const posts: Post[] = [];
   for (const postDirectory of postDirectories) {
     const post = await GetPost(postDirectory, withContent);
+
+    if (!post.metadata.other || !post.metadata.other.published) {
+      throw new Error("Metadata is undefined");
+    }
+
     posts.push({
-      postMetadata: {
-        ...post.postMetadata,
-        published: post.postMetadata.published,
+      metadata: {
+        ...post.metadata,
+        published: post.metadata.other.published,
       },
       content: post.content,
     } as Post);
   }
 
-  posts.sort(
-    (a, b) =>
-      new Date(b.postMetadata.published).getTime() -
-      new Date(a.postMetadata.published).getTime()
-  );
+  posts.sort((a, b) => {
+    if (!a.metadata.other || !b.metadata.other) {
+      throw new Error("Metadata is undefined");
+    }
+
+    return (
+      new Date(String(b.metadata.other.published)).getTime() -
+      new Date(String(a.metadata.other.published)).getTime()
+    );
+  });
   return posts;
 }
 
 export async function GetPost(slug: string, withContent: boolean) {
-  const { postMetadata } = await import(`../app/posts/${slug}/page`);
+  const { metadata } = await import(`../app/posts/${slug}/page`);
 
   const post: Post = {
-    postMetadata: {
-      ...postMetadata,
-      published: postMetadata.published,
+    metadata: {
+      ...metadata,
+      published: metadata.other.published,
     },
     content: null,
   };

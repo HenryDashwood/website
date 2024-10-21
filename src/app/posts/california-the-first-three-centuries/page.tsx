@@ -1,5 +1,4 @@
 import PostPage from "@/components/PostPage";
-import { PostMetadata } from "@/lib/posts";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,16 +11,13 @@ export const metadata: Metadata = {
       },
     ],
   },
-};
-
-export const postMetadata: PostMetadata = {
-  id: 100,
-  title: "California: the first three centuries",
-  slug: "california-the-first-three-centuries",
-  published: "2024-10-09",
-  tags: ["History"],
+  other: {
+    slug: "california-the-first-three-centuries",
+    published: "2024-10-09",
+    tags: ["History"],
+  },
 };
 
 export default function Post() {
-  return <PostPage postMetadata={postMetadata} />;
+  return <PostPage metadata={metadata} />;
 }

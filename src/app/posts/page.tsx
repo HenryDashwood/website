@@ -29,14 +29,16 @@ async function PostList() {
         <h1>Blog Posts</h1>
         <ul className="list-none p-0">
           {posts.map((post) => {
+            if (!post.metadata.other) return null;
+
             return (
-              <li key={post.postMetadata.id} className="mb-4">
-                <Link href={`/posts/` + post.postMetadata.slug}>
-                  {post.postMetadata.title}
+              <li key={String(post.metadata.other.slug)} className="mb-4">
+                <Link href={`/posts/` + post.metadata.other.slug}>
+                  {String(post.metadata.title)}
                 </Link>
                 <br />
                 <small>
-                  <Date dateString={post.postMetadata.published} />
+                  <Date dateString={String(post.metadata.other.published)} />
                 </small>
               </li>
             );

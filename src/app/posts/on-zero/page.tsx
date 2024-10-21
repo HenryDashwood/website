@@ -1,5 +1,4 @@
 import PostPage from "@/components/PostPage";
-import { PostMetadata } from "@/lib/posts";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,16 +11,13 @@ export const metadata: Metadata = {
       },
     ],
   },
-};
-
-export const postMetadata: PostMetadata = {
-  id: 0,
-  title: "On Zero",
-  slug: "on-zero",
-  published: "2020-09-11",
-  tags: ["Mathematics"],
+  other: {
+    slug: "on-zero",
+    published: "2020-09-11",
+    tags: ["Mathematics"],
+  },
 };
 
 export default function Post() {
-  return <PostPage postMetadata={postMetadata} />;
+  return <PostPage metadata={metadata} />;
 }

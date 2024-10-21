@@ -1,8 +1,7 @@
 import { readdirSync, statSync } from "fs";
 import path from "path";
 import { GetPost } from "@/lib/posts";
-import { PostMetadata } from "@/lib/posts";
-
+import { Metadata } from "next";
 async function GetPostTags() {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(
@@ -11,14 +10,17 @@ async function GetPostTags() {
       !item.startsWith("[")
   );
 
-  const postPreviews: PostMetadata[] = [];
+  const postPreviews: Metadata[] = [];
   for (const postDirectory of postDirectories) {
     const post = await GetPost(postDirectory, false);
 
+    if (!post.metadata.other) {
+      throw new Error("Metadata is undefined");
+    }
+
     postPreviews.push({
-      ...post.postMetadata,
-      published: post.postMetadata.published,
-    } as PostMetadata);
+      ...post.metadata,
+    });
   }
 
   return postPreviews;
@@ -28,7 +30,11 @@ async function LinkBox({ tag }: { tag: string }) {
   const postsData = await GetPostTags();
 
   const filteredPosts = postsData.filter(
-    (post) => post.tags && post.tags.includes(tag)
+    (post) =>
+      post.other &&
+      post.other.tags &&
+      Array.isArray(post.other.tags) &&
+      post.other.tags.includes(tag)
   );
 
   return (
@@ -36,11 +42,17 @@ async function LinkBox({ tag }: { tag: string }) {
       <h2>{tag}</h2>
       <ul className="pl-4">
         {filteredPosts.length > 0 ? (
-          filteredPosts.map((post: PostMetadata) => (
-            <li key={post.id} className="ml-2 mb-2">
-              <a href={`/posts/${post.slug}`}>{post.title}</a>
-            </li>
-          ))
+          filteredPosts.map((post: Metadata) => {
+            if (!post.title || !post.other || !post.other.slug) {
+              throw new Error("Metadata is undefined");
+            }
+
+            return (
+              <li key={String(post.other.slug)} className="ml-2 mb-2">
+                <a href={`/posts/${post.other.slug}`}>{String(post.title)}</a>
+              </li>
+            );
+          })
         ) : (
           <p>No posts available for this tag.</p>
         )}

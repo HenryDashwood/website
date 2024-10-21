@@ -1,5 +1,4 @@
 import PostPage from "@/components/PostPage";
-import { PostMetadata } from "@/lib/posts";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,16 +11,13 @@ export const metadata: Metadata = {
       },
     ],
   },
-};
-
-export const postMetadata: PostMetadata = {
-  id: 7,
-  title: "Solving second degree equations (deriving the quadratic formula)",
-  slug: "solving-second-degree-equations-deriving-the-quadratic-formula",
-  published: "2023-02-20",
-  tags: ["Mathematics"],
+  other: {
+    slug: "solving-second-degree-equations-deriving-the-quadratic-formula",
+    published: "2023-02-20",
+    tags: ["Mathematics"],
+  },
 };
 
 export default function Post() {
-  return <PostPage postMetadata={postMetadata} />;
+  return <PostPage metadata={metadata} />;
 }
