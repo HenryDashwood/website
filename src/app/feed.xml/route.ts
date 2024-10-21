@@ -15,11 +15,13 @@ export async function GET() {
   const posts = await GetPosts(true);
 
   posts.forEach((post) => {
+    if (!post.metadata.other) return;
+
     feed.item({
-      title: post.metadata.title,
+      title: String(post.metadata.title),
       description: post.content || "",
-      url: `${process.env.WEBSITE_URL}/posts/${post.metadata.slug}`,
-      date: post.metadata.published,
+      url: `${process.env.WEBSITE_URL}/posts/${post.metadata.other.slug}`,
+      date: String(post.metadata.other.published),
     });
   });
 

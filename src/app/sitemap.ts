@@ -8,10 +8,14 @@ export default async function sitemap() {
       url: process.env.WEBSITE_URL,
       lastModified: new Date(),
     },
-    ...posts.map((post) => ({
-      url: `${process.env.WEBSITE_URL}/posts/${post.metadata.slug}`,
-      lastModified: post.metadata.published,
-    })),
+    ...posts.map((post) => {
+      if (!post.metadata.other) return null;
+
+      return {
+        url: `${process.env.WEBSITE_URL}/posts/${post.metadata.other.slug}`,
+        lastModified: post.metadata.other.published,
+      };
+    }),
   ];
   return links;
 }
