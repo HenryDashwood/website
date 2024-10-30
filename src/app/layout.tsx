@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { Analytics } from "@vercel/analytics/react";
 
 // import Script from "next/script";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
