@@ -84,3 +84,39 @@ th {
     text-wrap: balance;
   }
 }
+
+/* Style for the <details> element */
+details {
+  border: 1px solid #faad19; /* Matches your existing border color */
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fff8e1; /* Light background to stand out */
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Style for the <summary> element inside <details> */
+details summary {
+  font-weight: bold;
+  list-style: none;
+  position: relative;
+}
+
+/* Indicator for the <summary> (e.g., arrow) */
+details summary::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate the indicator when <details> is open */
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+/* Style when <details> is expanded */
+details[open] {
+  background-color: #fff3cd; /* Slightly different background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

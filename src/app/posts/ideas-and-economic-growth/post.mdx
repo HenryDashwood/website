@@ -1,0 +1,372 @@
+Some notes on the role of ideas in economic growth and the paper
+[Are Ideas Getting Harder to Find?](https://web.stanford.edu/~chadj/IdeaPF.pdf)
+
+[Progress studies conference slides](https://web.stanford.edu/~chadj/ChadonGrowth_ProgressStudies2024.pdf)
+
+## Useful terms
+
+**resource constraint** - the limitations imposed on the production and consumption of goods and services due to the finite availability of resources such as labor, capital, and raw materials.
+
+**endogenous growth model** - a type of economic model where the long-term rate of economic growth is primarily determined by internal factors within the economy such as human capital accumulation, innovation, and knowledge spillovers rather than external influences.
+
+**balanced growth path** - where we assume all key economic variables e.g. output $Y_t$, capital $K_t$, consumption $C_t$, and technology level $A_t$ grow at constant, proportional rates over time, and crucial ratios between these variables remain constant.
+
+## Ideas are important for economic growth
+
+Why are ideas important for economic growth? There are some bullet points on slide 3 of the [slides](https://web.stanford.edu/~chadj/ChadonGrowth_ProgressStudies2024.pdf). I like the explanation that Jose gives in part 0.1 of his piece [here](https://nintil.com/on-the-constancy-of-the-rate-of-gdp-growth).
+
+- GDP is a function of labour, capital, and productivity.
+- We can't increase labour much because most adults already work as much as they want to.
+- We can't increase capital indefinitely either. Some economic goods can only be used once. For instance a barrel of oil. Some economic goods can be used repeatedly but only by ~one person at a time. For instance a car. Goods also eventually hit diminishing marginal returns.
+- To get sustained economic growth we need to keep increasing productivity by finding better ways of turning inputs into outputs. Fortunately the "goods" we use to do that can be used infinitely by infinitely many people: ideas. So ideas are very valuable.
+
+The number of new ideas we find is bounded by the number of people looking for ideas.
+
+It's quite easy to describe a model based off this assumption that explains the minimal growth before the industrial revolution as well as the hockey stick and sustained growth we've seen since then: The population rises on the back of an idea and then falls back to subsistence levels of wealth. However there are now more people which shortens the time it takes for a new idea to emerge. Eventually ideas are arriving fast enough that incomes rise before the population as time to expand and fall back to subsistence.
+
+Components of growth in the past included things like rising education levels, rising workforce participation, and declining misallocation. As those go away ideas as a function of population growth are all that remain.
+
+This has potentially troubling implications for the future if the population plateaus and falls unless something like AI comes to the rescue.
+
+Before then though, it is worth asking if ideas are themselves getting harder to find.
+
+## Are ideas getting harder to find?
+
+Note: equation numbers are copied from the paper to make it easier to cross-reference.
+
+### The macro view
+
+Let's begin by defining some variables:
+
+- $A_{t}$ is the quality level or technological productivity at time $t$. It reflects accumulated knowledge, innovations, or improvements that enhance production value.
+- $\dot{A_t}$ is $\frac{dA_t}{dt}$. The dot denotes the time derivative. So this term represents the the rate at which productivity is changing over time.
+- $\frac{\dot{A_t}}{A_t}$ is total factor productivity growth in the economy - the proportional rate of change of productivity over time.
+- $S_t$ is some measure of research input. For instance, number of scientists
+- $\alpha$ is research productivity
+
+<br />
+
+<details>
+<summary>**Click for more on $\alpha$**</summary>
+
+You can define the productivity of the idea production function as the ratio of the output of ideas to the inputs used to make them:
+
+$$
+\text{Research productivity} = \frac{\frac{\dot{A_t}}{A_t}}{S_t} = \frac{\text{number of new ideas}}{\text{number of researchers}} = \alpha \tag{2}
+$$
+
+</details>
+
+The equation at the heart of many growth models is an **idea production function** of the form:
+
+$$
+\frac{\dot{A_t}}{A_t} = \alpha S_t \tag{1}
+$$
+
+This says that the growth rate of the economy, through the production of new ideas, is proportional to the number of researchers.
+When we model the economy this way we are assuming that research productivity is constant over time - an equivalent number of researchers is all that is required to maintain an exponential rate of growth.
+The authors present evidence that within narrow categories such as a firm or product line research productivity is not constant but in fact declines over time.
+They then raise the question of whether research productivity is sustained by ideas in one product line leading to ideas in another.
+They observe that in aggregate the exponential rate of growth in GDP and total factor productivity in the US economy has remained roughly stable or even declined since 1870 and 1930 respectively. This despite the huge increase in research effort over that time.
+
+### Going micro
+
+Suppose the economy at a particular time $t$ produces $N_t$ different products and each product $i$ is associated with some quality level $A_{it}$.
+
+Innovation can lead the quality of each product to rise over time according to an **idea production function**.
+
+$$
+\frac{\dot{A_{it}}}{A_{it}} = \alpha S_{it} \tag{4}
+$$
+
+where $S_{it}$ is the number of scientists improving the quality of some product $i$ at time $t$.
+
+In the case where the number of scientists and number of products are growing, the number of scientists per product could be flat $S_{it} = \frac{S_t}{N_t}$. So for each product the rate at which new ideas are produced remains constant over time. But when we look at the whole economy in aggregate it might look like we need more and more scientists to keep up the same overall growth rate, making it seem like research is becoming less productive.
+
+So the authors argue that it's important to study the idea production function at the micro level and look at research productivity for individual products:
+
+$$
+\text{Research productivity} = \frac{\frac{\dot{A_{it}}}{A_{it}}}{S_{it}} \tag{5}
+$$
+
+When measuring "research effort" it's common to measure expenditure on R&D, as opposed to the number of researchers. The former:
+
+- Weights research inputs according to their relative prices. e.g. hiring more people of lower quality.
+- If the only input to ideas was researchers, one could deflate R&D expenditures by an average wage to find the quality-adjusted quantity of researchers.
+- In practice, R&D expenditures also include spending on capital goods and materials. But one can deflate by the nominal wage to get an “effective number of researchers” that this research spending could have hypothetically purchased.
+
+This is known as a **lab equipment model** because implicitly both capital and labor are used as inputs to produce ideas.
+
+In lab equipment models, endogenous growth occurs when the idea production function takes the form
+
+$$
+\dot{A}_t = \alpha{R}_t \tag{6}
+$$
+
+where $R_t$ is measured in units of a final output good.
+
+Consider a single good economy. Suppose the final output good is produced with a standard Cobb-Douglas production function
+
+$$
+Y_t = K_t^\theta(A_tL)^{1-\theta} \tag{7}
+$$
+
+where:
+
+- $Y$ is final output.
+- $K$ is the amount of capital used as an input.
+- $L$ is the amount of labour used as an input. We assume its fixed for simplicity.
+- $\theta$ is the output elasticity of capital.
+
+<br />
+
+<details>
+<summary>Click for more on $\theta$</summary>
+
+$\theta$ represents the output elasticity of capital or, equivalently, capital’s share in production. This means:
+
+- $\theta$ indicates how much a proportional change in capital $K_t$ affects the output $Y_t$.
+- A 1% increase in capital input will lead to a $\theta$% increase in output, holding other factors constant.
+- $1-\theta$ represents the output elasticity of the effective labor input $A_tL$, reflecting labor’s share in production.
+
+In this production function the exponents $\theta$ and $1 - \theta$ sum up to 1, implying constant returns to scale. So if you double both capital and effective labor inputs, output will also double.
+
+</details>
+
+The resource constraint for this economy is
+
+$$
+Y_t = C_t + I_t + R_t \tag{8}
+$$
+
+where:
+
+- $Y_t$ is final output
+- $C_t$ is consumption
+- $I_t$ is investment in physical capital
+- $R_t$ is research
+
+So final output is used for a combination of consumption, investment, and research.
+
+Combining these three equations gives us the endogenous growth result. Dividing both sides of the production function above by $Y^\theta$ and rearranging gives:
+
+$$
+Y_t = \left(\frac{K_t}{Y_t}\right)^\frac{\theta}{1-\theta}A_tL \tag{9}
+$$
+
+<br />
+
+<details>
+<summary>The maths is quite fiddly so click here if you'd like to see it step by step</summary>
+
+Start with the original production function:
+
+$$
+Y_t = K_t^\theta (A_t L)^{1-\theta}
+$$
+
+Divide both sides by $Y_t^\theta$:
+
+$$
+\frac{Y_t}{Y_t^\theta} = \frac{K_t^\theta (A_t L)^{1-\theta}}{Y_t^\theta}
+$$
+
+We can simplify the left side because $\frac{Y_t}{Y_t^\theta} = Y_t^{1 - \theta}$:
+
+$$
+Y_t^{1 - \theta} = \frac{K_t^\theta (A_t L)^{1-\theta}}{Y_t^\theta}
+$$
+
+On the right side $\frac{K_t^\theta}{Y_t^\theta} = \left( \frac{K_t}{Y_t} \right)^\theta$ therefore:
+
+$$
+Y_t^{1-\theta} = \left(\frac{K_t}{Y_t}\right)^\theta (A_tL)^{1-\theta}
+$$
+
+Divide both sides by $(A_tL)^{1-\theta}$ to isolate the terms involving $Y_t$:
+
+$$
+\frac{Y_t^{1-\theta}}{(A_t L)^{1-\theta}} = \left(\frac{K_t}{Y_t}\right)^\theta
+$$
+
+Simplify the left side using the fact that $\frac{Y_t^{1-\theta}}{(A_t L)^{1-\theta}} = \left(\frac{Y_t}{A_tL}\right)^{1-\theta}$:
+
+$$
+\left(\frac{Y_t}{A_t L}\right)^{1-\theta} = \left(\frac{K_t}{Y_t}\right)^\theta
+$$
+
+Raise both sides to the power $\frac{1}{1-\theta}$ to eliminate the exponent on the left side:
+
+$$
+\frac{Y_t}{A_t L} = \left(\frac{K_t}{Y_t}\right)^{\frac{\theta}{1-\theta}}
+$$
+
+Multiply both sides by $A_tL$ to solve for $Y_t$:
+
+$$
+Y_t = \left(\frac{K_t}{Y_t}\right)^{\frac{\theta}{1-\theta}}A_tL
+$$
+
+</details>
+
+Letting $s_t = \frac{R_t}{Y_t}$ denote the share of the final good spent on research, the idea production function can be expressed as
+
+$$
+\begin{align}
+\dot{A}_t &= \alpha{R}_t \\
+&= \alpha s_tY_t \\
+&= \alpha s_t \left(\frac{K_t}{Y_t}\right)^\frac{\theta}{1-\theta}A_tL \tag{10}
+\end{align}
+$$
+
+This can easily be rearranged to
+
+$$
+\frac{\dot{A}_t}{A_t} = \alpha\left(\frac{K_t}{Y_t}\right)^\frac{\theta}{1-\theta}s_tL \tag{11}
+$$
+
+What are the implications of the last equation?
+
+1. We can think of $\alpha\left(\frac{K_t}{Y_t}\right)^\frac{\theta}{1-\theta}$ as capturing research productivity and $s_tL$ as capturing scientists.
+2. $L$ is a constant and along a balanced growth path the ratio of $K_t$ and $Y_t$ will also be constant. This means $s_t$, the share of final goods spent on research, is what mediates the rate of economic growth. So we have an endogenous source of growth. With a static population, a consistent allocation of resources to research will lead to a consistent rate of technological progress.
+3. It also follows that a permanent increase in the R&D share $s$ will permanently raise the growth rate of the economy.
+
+How should we define research productivity in the idea production function? We can deflate R&D expenditure $R_t$ by wage to get a measure of "effective scientists". Letting $w_t = \bar{\theta}\frac{Y_t}{L_t}$ be the wage for labour in the economy, the idea production function can be written as
+
+$$
+\frac{\dot{A_t}}{A_t} = \frac{\alpha w_t}{A_t} \times \frac{R_t}{w_t} \tag{12}
+$$
+
+<br />
+
+<details>
+<summary>Click to see how the above equation was derived</summary>
+
+We start with the idea production function in equation (10)
+
+$$\dot{A}_t = \alpha{R}_t$$
+
+Divide both sides by $A_t$
+
+$$\frac{\dot{A}_t}{A_t} = \frac{\alpha R_t}{A_t}$$
+
+This expresses the proportional growth rate of technology in terms of R&D expenditures relative to the current technology level.
+
+To introduce the wage rate into the equation, we can multiply and divide the right-hand side by $w_t$:
+
+$$\frac{\dot{A}_t}{A_t} = \frac{\alpha w_t}{A_t} \times \frac{R_t}{w_t}$$
+
+</details>
+
+where the terms on the right hand side are:
+
+- $\frac{R_t}{w_t} = \tilde{S}_t$: The effective number of scientists or research effort that our R&D spending could purchase.
+- $\frac{\alpha w_t}{A_t}$: The **research productivity per unit wage**. This term captures how effective each unit of wage expenditure is in generating technological growth, adjusted for the current level of technology.
+
+We can do some algebra here to express research effort $\tilde{S}_t$ in terms of:
+
+1. $s_t$ the share of the the share of final good spent on research
+2. $L$ the total labour input (which we are assuming to be constant)
+3. $\bar{\theta}$ labour's share of income (which is also assumed to be constant in Cobb-Douglas production functions)
+
+$$
+\tilde{S}_t = s_t\frac{L}{\bar{\theta}}
+$$
+
+<br />
+<details>
+<summary>Click to see the algebra line by line</summary>
+
+$$
+\begin{aligned}
+\tilde{S_t} &= \frac{R_t}{w_t} \\
+&= \frac{R_t}{w_t} \times \frac{Y_t}{Y_t} \\
+&= \left(\frac{R_t}{Y_t}\right) \cdot \left(\frac{Y_t}{w_t}\right) \\
+\\
+s_t &= \frac{R_t}{Y_t} \\
+\tilde{S}_t &= s_t \left( \frac{Y_t}{w_t} \right) \\
+\\
+w_t &= \bar{\theta} \frac{Y_t}{L} \\
+\\
+\frac{w_t}{\theta} &= \frac{Y_t}{L} \\
+\\
+\frac{L}{\theta} &= \frac{Y_t}{w_t} \\
+\\
+\tilde{S}_t &= s_t\frac{L}{\bar{\theta}} \\
+\end{aligned}
+$$
+
+</details>
+
+On a **balanced growth path**, key economic ratios remain constant over time. If $S_t$, $L$, and $\bar{\theta}$ are constant, then $\tilde{S}_t$ will also be constant. This implies that the **effective number of scientists** remains constant even as the economy grows, aligning with the predictions of standard endogenous growth models.
+
+The idea production function can then be written as:
+
+$$
+\frac{\dot{A}\_t}{A_t} = \tilde{\alpha}\_t\tilde{S}\_t \tag{13}
+$$
+
+<br />
+
+<details>
+<summary>Click to see the algebra to get from equation 12 to 13</summary>
+
+$$\frac{\dot{A_t}}{A_t} = \frac{\alpha w_t}{A_t} \times \frac{R_t}{w_t}$$
+
+We define adjusted research productivity $\tilde{\alpha}$ as
+
+$$\tilde{\alpha}_t = \frac{\alpha w_t}{A_t}$$
+This captures research productivity per unit wage, adjusted for the current technology level.
+
+We also use our definition for of effective number of scientists $\frac{R_t}{w_t} = \tilde{S}_t$
+
+This gives us $$\frac{\dot{A}_t}{A_t} = \tilde{\alpha}_t\tilde{S}_t$$
+
+</details>
+
+where both $\tilde{a}_t$ and $\tilde{S}_t$ will be constant in the long run under the null hypothesis of endogenous growth. We can therefore define research productivity in the lab equipment setup in a way that parallels our earlier treatment:
+
+$$
+\text{Research productivity} = \frac{\frac{\dot{A}\_t}{A_t}}{\tilde{S}\_t} \tag{14}
+$$
+
+The only difference is that we deflate R&D expenditures by a measure of the nominal wage to get $\tilde{S}$. Deflating R&D spending by the nominal wages is important. If we did not and instead naively computed research productivity by dividing $\frac{\dot{A_t}}{At}$ by $R_t$ we would find that research productivity was falling because of the rise in $A_t$, even in the endogenous growth case. Most other idea-driven growth models in the literature predict that ideas per research dollar is declining; the theory in this paper suggests that ideas per researcher is a much more informative measure.
+
+An easy intuition for the last equation is this:
+
+1. Endogenous growth requires that a constant population, or a constant number of researchers, be able to generate constant exponential growth.
+2. Deflating R&D spending by nominal wages puts the R&D input in units of "people".
+3. So constant research productivity is equivalent to the null hypothesis of endogenous growth.
+
+<br />
+
+## Examples from the paper of ideas getting harder to find
+
+Researchers needed to produce a Moore's law doubling in semi conductors.
+
+Agricultural productivity (corn, soybeans, cotton, and wheat). Research productivity for seed yields declines at about 5 percent per year.
+
+Medical innovations - They find a similar rate of decline when studying the mortality improvements associated with cancer and heart disease.
+
+Research productivity in firm level data.
+
+## Questions
+
+Are these ideas getting harder to find just "academic" ideas? Venture capitalists fund ideas that are either worth ~nothing or a lot. Shouldn't VC returns go down if ideas are getting harder to find? It would be interesting to try and replicate the paper's predictions on a dataset of VC performance if one could be found.
+
+How predictive is the model? For instance, how do we explain extremely productive small clusters vs places with larger populations that achieved nothing?
+
+Are things being reclassified? It feels like this is the sort of thing where what counts as a new idea could be doing quite a lot of the work.
+
+> _What if the number of scientists is constant but they reshuffle the areas they focus on as new ideas arise. You would then get a decreasing number of scientists working on old products so their quality would remain constant but more scientists working on new products where new ideas are more easily found. In that model, would we expect a constant number of scientists to sustain a constant rate of growth? Then an increase in new scientists would be enough to sustain an exponential?_
+
+## Post paper discussion
+
+[Matt Clancy proposes the "burden of knowledge"](https://mattsclancy.substack.com/p/are-ideas-getting-harder-to-find) as one possible explanation.
+
+Maxwell Tabarrok argues that the paper provides evidence for a slowdown in R&D progress but not that it is caused by ideas becoming harder to find. He is also sceptical that the burden of knowledge is enough to explain everything.
+
+- [Something Is Getting Harder But It's Not Finding Ideas](https://www.maximum-progress.com/p/something-is-getting-harder-but-its)
+- [Against the Burden of Knowledge](https://www.maximum-progress.com/p/against-the-burden-of-knowledge)
+
+[Tim Worstall thinks that the story in the paper is largely determined by what the authors have and haven't chosen to measure.](https://www.forbes.com/sites/timworstall/2016/12/20/are-ideas-getting-harder-to-find-not-really-no-not-if-you-measure-by-ideas-already-found)
