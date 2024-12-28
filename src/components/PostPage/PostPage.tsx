@@ -20,7 +20,7 @@ export default async function Post({ metadata }: { metadata: Metadata }) {
   return (
     <NavContentWrapper>
       <h1>{String(metadata.title)}</h1>
-      <div className="text-[#666666]">
+      <div className="text-[#666666] font-malloryBook pb-4">
         <Date dateString={String(metadata.other.published)} />
       </div>
       <Markdown />

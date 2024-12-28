@@ -14,6 +14,11 @@ const config: Config = {
         foreground: "var(--foreground)",
         navBackground: "#faad19",
       },
+      fontFamily: {
+        martinaPlantijn: "var(--font-martina-plantijn)",
+        arizonaFlare: "var(--font-arizona-flare)",
+        malloryBook: "var(--font-mallory-book)",
+      },
     },
   },
   plugins: [typography],

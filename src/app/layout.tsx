@@ -3,19 +3,49 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "katex/dist/katex.min.css";
 import { Analytics } from "@vercel/analytics/react";
+import localFont from "next/font/local";
 
-// import Script from "next/script";
+const arizonaFlare = localFont({
+  src: "./assets/arizona-flare-regular.woff2",
+  variable: "--font-arizona-flare",
+});
 
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
+const martinaPlantijn = localFont({
+  src: [
+    {
+      path: "./assets/martina-plantijn-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./assets/martina-plantijn-italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+  ],
+  variable: "--font-martina-plantijn",
+});
+
+const malloryBook = localFont({
+  src: [
+    {
+      path: "./assets/mallory-book-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./assets/mallory-book-italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "./assets/mallory-book-bold.woff2",
+      weight: "700",
+      style: "bold",
+    },
+  ],
+  variable: "--font-mallory-book",
+});
 
 export const metadata: Metadata = {
   title: "Henry Dashwood",
@@ -40,10 +70,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-      // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${martinaPlantijn.variable} ${arizonaFlare.variable} ${malloryBook.variable}`}
+    >
+      <body>
         {children}
         <Analytics />
       </body>
