@@ -11,7 +11,11 @@ function Date({ dateString }: { dateString: string }) {
     console.error(`Error parsing date: ${dateString}`);
     return <time>{dateString}</time>; // Return the original string if parsing fails
   }
-  return <time dateTime={dateString}>{format(date, "LLLL d, yyyy")}</time>;
+  return (
+    <time dateTime={dateString} className="text-[#666666] font-malloryBook">
+      {format(date, "do LLLL yyyy")}
+    </time>
+  );
 }
 
 export default Date;
