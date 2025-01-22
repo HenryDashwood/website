@@ -11,6 +11,18 @@
 |          Create file          | touch  |         |                                  |
 |          Remove file          |   rm   |         |                                  |
 
+## Git
+
+| Action                                                                | Command                                                                                                                                                 | Notes                                                                                                                                  |
+| :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| List local branches                                                   | `git branch`                                                                                                                                            |                                                                                                                                        |
+| Prune local branches                                                  | `git fetch -p ; git branch -r \| awk '{print $1}' \| egrep -v -f /dev/fd/0 <(git branch -vv \| grep origin) \| awk '{print $1}' \| xargs git branch -d` | [Link](https://stackoverflow.com/questions/13064613/how-to-prune-local-tracking-branches-that-do-not-exist-on-remote-anymore)          |
+| Delete branch locally                                                 | `git branch -d localBranchName`                                                                                                                         |                                                                                                                                        |
+| Delete branch remotely                                                | `git push origin --delete remoteBranchName`                                                                                                             |                                                                                                                                        |
+| Reset the local branch to the most recent commit of the remote branch | `git reset --hard origin/master`                                                                                                                        | master in this case                                                                                                                    |
+| Merge `main` branch into `feature` branch                             | `git checkout feature && git merge main` or `git merge feature main`                                                                                    | Creates a new “merge commit” in the `feature` branch that ties together the histories of both branches                                 |
+| Rebase the `feature` branch onto `main`                               | `git checkout feature && git rebase main`                                                                                                               | Moves the entire `feature` branch to begin on the tip of the `main` branch, effectively incorporating all of the new commits in `main` |
+
 ## Docker
 
 |               Action                |                  Command                   |                                                                             Notes                                                                              |
