@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       {
         width: 1200,
         height: 630,
-      },
+      }
     );
   } catch {
     return new Response(`Failed to generate the image`, {
