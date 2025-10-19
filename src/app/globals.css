@@ -21,6 +21,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-martina-plantijn);
+  overflow-x: hidden;
 }
 
 h1 {
@@ -195,6 +196,31 @@ th {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Mobile overflow prevention */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure all text content wraps properly on mobile */
+p,
+div,
+span,
+a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Handle long URLs specifically */
+a[href^="http"] {
+  word-break: break-all;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Style for the <details> element */

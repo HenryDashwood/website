@@ -24,21 +24,25 @@ export default function LocalImage({
 }: LocalImageProps) {
   return (
     <div className={`flex flex-col items-center m-4 p-4 ${className}`}>
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        priority={priority}
-        className="rounded-lg shadow-lg"
-      />
+      <div className="w-full max-w-full overflow-hidden">
+        <Image
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          priority={priority}
+          className="rounded-lg shadow-lg w-full h-auto max-w-full"
+        />
+      </div>
       {caption && (
-        <div className="mt-2 text-sm text-gray-600 text-center italic">
+        <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">
           {caption}
         </div>
       )}
       {children && (
-        <div className="mt-2 text-sm text-gray-600 text-center">{children}</div>
+        <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">
+          {children}
+        </div>
       )}
     </div>
   );
