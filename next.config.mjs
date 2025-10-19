@@ -18,6 +18,9 @@ const nextConfig = {
         pathname: "/henrydashwood/**",
       },
     ],
+    // Allow local images from the public directory
+    domains: [],
+    unoptimized: false,
   },
 };
 
