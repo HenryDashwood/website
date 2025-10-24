@@ -10,9 +10,7 @@ interface Post {
 export async function GetPosts(withContent: boolean) {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(
-    (item) =>
-      statSync(path.join(postsPath, item)).isDirectory() &&
-      !item.startsWith("[")
+    (item) => statSync(path.join(postsPath, item)).isDirectory() && !item.startsWith("[")
   );
 
   const posts: Post[] = [];
@@ -38,8 +36,7 @@ export async function GetPosts(withContent: boolean) {
     }
 
     return (
-      new Date(String(b.metadata.other.published)).getTime() -
-      new Date(String(a.metadata.other.published)).getTime()
+      new Date(String(b.metadata.other.published)).getTime() - new Date(String(a.metadata.other.published)).getTime()
     );
   });
   return posts;
@@ -57,9 +54,7 @@ export async function GetPost(slug: string, withContent: boolean) {
   };
 
   if (withContent === true) {
-    const postFile = readFileSync(
-      path.join(process.cwd(), `src/app/posts/${slug}/post.mdx`)
-    );
+    const postFile = readFileSync(path.join(process.cwd(), `src/app/posts/${slug}/post.mdx`));
     post.content = postFile.toString("utf-8");
   }
 

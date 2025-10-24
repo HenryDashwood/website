@@ -14,11 +14,7 @@ interface LocalImageGridProps {
   className?: string;
 }
 
-export default function LocalImageGrid({
-  images,
-  columns = 2,
-  className = "",
-}: LocalImageGridProps) {
+export default function LocalImageGrid({ images, columns = 2, className = "" }: LocalImageGridProps) {
   const gridCols = {
     2: "grid-cols-1 sm:grid-cols-2",
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
@@ -26,14 +22,9 @@ export default function LocalImageGrid({
   };
 
   return (
-    <div
-      className={`grid ${gridCols[columns]} gap-4 justify-items-center m-4 p-4 ${className}`}
-    >
+    <div className={`grid ${gridCols[columns]} gap-4 justify-items-center m-4 p-4 ${className}`}>
       {images.map((image, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center w-full max-w-full overflow-hidden"
-        >
+        <div key={index} className="flex flex-col items-center w-full max-w-full overflow-hidden">
           <div className="w-full max-w-full overflow-hidden">
             <Image
               src={image.src}
@@ -44,14 +35,10 @@ export default function LocalImageGrid({
             />
           </div>
           {image.caption && (
-            <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">
-              {image.caption}
-            </div>
+            <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">{image.caption}</div>
           )}
           {image.children && (
-            <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">
-              {image.children}
-            </div>
+            <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">{image.children}</div>
           )}
         </div>
       ))}

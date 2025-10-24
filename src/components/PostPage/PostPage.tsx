@@ -13,9 +13,7 @@ export default async function Post({ metadata }: { metadata: Metadata }) {
     throw new Error("Metadata is undefined");
   }
 
-  const { default: Markdown } = await import(
-    `@/app/posts/${metadata.other.slug}/post.mdx`
-  );
+  const { default: Markdown } = await import(`@/app/posts/${metadata.other.slug}/post.mdx`);
 
   return (
     <NavContentWrapper>
@@ -24,7 +22,7 @@ export default async function Post({ metadata }: { metadata: Metadata }) {
         <Date dateString={String(metadata.other.published)} />
       </div>
       <Markdown />
-      <div className="text-[#666666] font-malloryBook">
+      <div className="text-[#666666] font-mallory-book">
         <p>Tags: {String(metadata.other.tags).split(",").join(", ")}</p>
       </div>
     </NavContentWrapper>

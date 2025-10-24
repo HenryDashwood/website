@@ -12,7 +12,7 @@ function Date({ dateString }: { dateString: string }) {
     return <time>{dateString}</time>; // Return the original string if parsing fails
   }
   return (
-    <time dateTime={dateString} className="text-[#666666] font-malloryBook">
+    <time dateTime={dateString} className="text-[#666666] font-mallory-book">
       {format(date, "do LLLL yyyy")}
     </time>
   );

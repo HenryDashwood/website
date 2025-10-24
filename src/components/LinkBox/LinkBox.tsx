@@ -5,9 +5,7 @@ import { Metadata } from "next";
 async function GetPostTags() {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(
-    (item) =>
-      statSync(path.join(postsPath, item)).isDirectory() &&
-      !item.startsWith("[")
+    (item) => statSync(path.join(postsPath, item)).isDirectory() && !item.startsWith("[")
   );
 
   const postPreviews: Metadata[] = [];
@@ -30,11 +28,7 @@ async function LinkBox({ tag }: { tag: string }) {
   const postsData = await GetPostTags();
 
   const filteredPosts = postsData.filter(
-    (post) =>
-      post.other &&
-      post.other.tags &&
-      Array.isArray(post.other.tags) &&
-      post.other.tags.includes(tag)
+    (post) => post.other && post.other.tags && Array.isArray(post.other.tags) && post.other.tags.includes(tag)
   );
 
   return (

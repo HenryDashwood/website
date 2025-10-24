@@ -1,8 +1,4 @@
-import remarkGfm from "remark-gfm";
 import createMDX from "@next/mdx";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import rehypeHighlight from "rehype-highlight";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -25,10 +21,10 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-  // Add markdown plugins here, as desired
+  // Add markdown plugins here, as strings for Turbopack compatibility
   options: {
-    remarkPlugins: [remarkGfm, remarkMath],
-    rehypePlugins: [rehypeKatex, rehypeHighlight],
+    remarkPlugins: ["remark-gfm", "remark-math"],
+    rehypePlugins: ["rehype-katex", "rehype-highlight"],
   },
 });
 

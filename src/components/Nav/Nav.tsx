@@ -17,7 +17,7 @@ const navLinks = [
 
 function Nav() {
   return (
-    <div className="sm:flex sm:flex-col sm:min-h-screen bg-navBackground p-4 font-malloryBook">
+    <div className="sm:flex sm:flex-col sm:min-h-screen bg-nav-background p-4 font-mallory-book">
       <div className="mb-4">
         <Link href={`/`}>
           <b>Home</b>
@@ -32,14 +32,10 @@ function Nav() {
         </div>
       ))}
       <div className="mb-4">
-        <Link href={`https://data-science-notes.henrydashwood.com`}>
-          Data Science Notes
-        </Link>
+        <Link href={`https://data-science-notes.henrydashwood.com`}>Data Science Notes</Link>
       </div>
       <div className="mb-4">
-        <Link href={`https://gen-ai-notes.henrydashwood.com`}>
-          Generative AI Notes
-        </Link>
+        <Link href={`https://gen-ai-notes.henrydashwood.com`}>Generative AI Notes</Link>
       </div>
     </div>
   );

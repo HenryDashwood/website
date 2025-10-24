@@ -33,9 +33,7 @@ async function PostList() {
 
             return (
               <li key={String(post.metadata.other.slug)} className="mb-4">
-                <Link href={`/posts/` + post.metadata.other.slug}>
-                  {String(post.metadata.title)}
-                </Link>
+                <Link href={`/posts/` + post.metadata.other.slug}>{String(post.metadata.title)}</Link>
                 <br />
                 <small>
                   <Date dateString={String(post.metadata.other.published)} />

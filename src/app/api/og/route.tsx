@@ -5,9 +5,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const hasTitle = searchParams.has("title");
-    const title = hasTitle
-      ? searchParams.get("title")?.slice(0, 100)
-      : "henrydashwood.com";
+    const title = hasTitle ? searchParams.get("title")?.slice(0, 100) : "henrydashwood.com";
 
     return new ImageResponse(
       (
