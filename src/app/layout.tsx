@@ -70,10 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${martinaPlantijn.variable} ${arizonaFlare.variable} ${malloryBook.variable}`}
-    >
+    <html lang="en" className={`${martinaPlantijn.variable} ${arizonaFlare.variable} ${malloryBook.variable}`}>
       <body>
         {children}
         <Analytics />

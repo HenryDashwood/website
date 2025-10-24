@@ -35,15 +35,9 @@ export default function LocalImage({
         />
       </div>
       {caption && (
-        <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">
-          {caption}
-        </div>
+        <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">{caption}</div>
       )}
-      {children && (
-        <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">
-          {children}
-        </div>
-      )}
+      {children && <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">{children}</div>}
     </div>
   );
 }

@@ -13,19 +13,11 @@ interface LocalImageSideBySideProps {
   className?: string;
 }
 
-export default function LocalImageSideBySide({
-  images,
-  className = "",
-}: LocalImageSideBySideProps) {
+export default function LocalImageSideBySide({ images, className = "" }: LocalImageSideBySideProps) {
   return (
-    <div
-      className={`grid grid-cols-1 sm:grid-cols-2 gap-4 justify-items-center m-4 p-4 ${className}`}
-    >
+    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 justify-items-center m-4 p-4 ${className}`}>
       {images.map((image, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center w-full max-w-full overflow-hidden"
-        >
+        <div key={index} className="flex flex-col items-center w-full max-w-full overflow-hidden">
           <div className="w-full max-w-full overflow-hidden">
             <Image
               src={image.src}
@@ -36,14 +28,10 @@ export default function LocalImageSideBySide({
             />
           </div>
           {image.caption && (
-            <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">
-              {image.caption}
-            </div>
+            <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">{image.caption}</div>
           )}
           {image.children && (
-            <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">
-              {image.children}
-            </div>
+            <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">{image.children}</div>
           )}
         </div>
       ))}

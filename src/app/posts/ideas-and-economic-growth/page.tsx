@@ -3,8 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Ideas and Economic Growth",
-  description:
-    "Some notes on the role of ideas in economic growth and the paper Are Ideas Getting Harder to Find?",
+  description: "Some notes on the role of ideas in economic growth and the paper Are Ideas Getting Harder to Find?",
   openGraph: {
     images: [
       {
