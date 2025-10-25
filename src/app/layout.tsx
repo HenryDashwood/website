@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
-import "./globals.css";
-import "katex/dist/katex.min.css";
 import { Analytics } from "@vercel/analytics/react";
+import "katex/dist/katex.min.css";
 import localFont from "next/font/local";
+import "./globals.css";
 
 const arizonaFlare = localFont({
   src: "./assets/arizona-flare-regular.woff2",

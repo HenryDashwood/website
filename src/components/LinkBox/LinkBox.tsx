@@ -1,7 +1,7 @@
-import { readdirSync, statSync } from "fs";
-import path from "path";
 import { GetPost } from "@/lib/posts";
+import { readdirSync, statSync } from "fs";
 import { Metadata } from "next";
+import path from "path";
 async function GetPostTags() {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(

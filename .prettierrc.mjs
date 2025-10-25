@@ -10,7 +10,7 @@ const config = {
   useTabs: false,
   proseWrap: "preserve",
   // Modern Prettier 3+ options
-  plugins: [],
+  plugins: ["prettier-plugin-organize-imports"],
   overrides: [
     {
       files: ["*.md", "*.mdx"],

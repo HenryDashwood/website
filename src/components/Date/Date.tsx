@@ -1,4 +1,4 @@
-import { parseISO, format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 function Date({ dateString }: { dateString: string }) {
   let date;

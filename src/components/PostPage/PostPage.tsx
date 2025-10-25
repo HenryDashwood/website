@@ -1,5 +1,5 @@
-import NavContentWrapper from "@/components/NavContentWrapper";
 import Date from "@/components/Date";
+import NavContentWrapper from "@/components/NavContentWrapper";
 import { Metadata } from "next";
 
 export default async function Post({ metadata }: { metadata: Metadata }) {

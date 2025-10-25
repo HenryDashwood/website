@@ -1,6 +1,6 @@
-import path from "path";
 import { readdirSync, readFileSync, statSync } from "fs";
 import { Metadata } from "next";
+import path from "path";
 
 interface Post {
   metadata: Metadata;

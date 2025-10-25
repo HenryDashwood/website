@@ -1,6 +1,6 @@
-import React from "react";
-import Nav from "@/components/Nav";
 import Content from "@/components/Content";
+import Nav from "@/components/Nav";
+import React from "react";
 
 const NavContentWrapper = ({ children }: { children: React.ReactNode }) => {
   return (

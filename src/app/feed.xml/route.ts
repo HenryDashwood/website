@@ -1,6 +1,6 @@
 import { GetPosts } from "@/lib/posts";
-import RSS from "rss";
 import { marked } from "marked";
+import RSS from "rss";
 import sanitizeHtml from "sanitize-html";
 
 const feedOptions = {
