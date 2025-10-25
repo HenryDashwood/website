@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import "katex/dist/katex.min.css";
 import localFont from "next/font/local";
