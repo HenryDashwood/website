@@ -1,0 +1,165 @@
+## The Puzzle
+
+If you're a software engineer, you can earn £80,000 in London but only £45,000 in Newcastle. So clearly, everyone should move to London for the higher wages, right?
+
+But wait. A one-bedroom flat costs £2,000/month in London versus £700 in Newcastle. That's £15,600 more per year just for housing. After paying rent, the London worker takes home £56,400 while the Newcastle worker takes home £36,600. London still wins, but the gap has shrunk from £35,000 to £19,800.
+
+And we haven't counted everything yet. Your commute in London might cost £1,800/year versus £600 in Newcastle. A pint costs £6.50 in the former versus £4.20 in the latter. If you go out twice a week, that's another £240/year.
+
+The gap keeps shrinking. Yet London keeps growing. The question is: why does anyone live in expensive cities if the wages don't fully compensate for the costs?
+
+And equally puzzling: if expensive cities are such a bad deal, why doesn't their population fall?
+
+## The Answer: Spatial Equilibrium
+
+The answer is that cities reach an **equilibrium** - a balance point where people are roughly indifferent about where to live. If London were genuinely a better deal than Newcastle, people would flood in. But as more people arrive:
+
+1. Housing demand increases, pushing up rents
+2. More workers means firms can pay slightly lower wages (more competition)
+3. The city becomes more crowded, reducing residents' quality of life
+
+Eventually, London becomes just attractive enough (compared to its costs) that people stop moving there. Similarly, if Newcastle became significantly better value, people would move there until it wasn't such a bargain anymore.
+
+This is called **spatial equilibrium** - the state where workers are indifferent between locations because higher costs or lower amenities offset all the gains from high wages.
+
+## A Simple Framework
+
+Let's make this more precise. Imagine workers care about three things:
+
+1. **Consumption** ($C$): All the stuff you buy except housing, e.g. food, entertainment, transport, etc.
+2. **Housing** ($H$): The size and quality of where you live
+3. **Amenities** ($\theta$): Everything else about a place, e.g. weather, culture, parks, proximity to family
+
+We can represent their satisfaction (utility) as: $$U = U(C, H, \theta)$$
+Workers face a budget constraint. If they earn a wage $W$ and housing costs $P$ per unit: $$W = C + P \cdot H$$Their money goes to either consumption or housing.
+
+### The Equilibrium Condition
+
+Here's the key insight: **in equilibrium, utility must be equal across cities**. If it weren't, people would move from the low-utility city to the high-utility city.
+
+$$U(\text{London}) = U(\text{Newcastle}) = \bar{U}$$
+
+where $\bar{U}$ is the reservation utility - the level of satisfaction people can achieve anywhere in the country.
+
+This equation tells us that:
+
+- Higher wages must be offset by higher prices or worse amenities
+- Better amenities allow cities to have lower wages or higher prices
+- Cheaper housing must come with lower wages or worse amenities
+
+## Working Through an Example
+
+Let's make this concrete with some simplified numbers.
+
+### Scenario 1: No Mobility (Before Equilibrium)
+
+Imagine initially people can't move between cities:
+
+| City      | Wage    | Annual Rent | Other Costs | Consumption | Utility |
+| --------- | ------- | ----------- | ----------- | ----------- | ------- |
+| London    | £80,000 | £24,000     | £56,000     | £56,000     | 100     |
+| Newcastle | £45,000 | £8,400      | £36,600     | £36,600     | 80      |
+
+(For simplicity, assume people spend all their non-rent money on consumption and get utility equal to consumption/560)
+
+London delivers higher utility (100 vs 80). If we allowed people to move, they'd head to London.
+
+### Scenario 2: People Can Move
+
+As workers move to London:
+
+- Housing demand increases
+- Rents are bid up
+- Utility in London falls
+
+Simultaneously in Newcastle:
+
+- Housing demand decreases
+- Rents fall slightly
+- Utility in Newcastle rises
+
+Eventually we reach equilibrium:
+
+| City      | Wage    | Annual Rent | Consumption | Utility |
+| --------- | ------- | ----------- | ----------- | ------- |
+| London    | £80,000 | £30,000     | £50,000     | **90**  |
+| Newcastle | £45,000 | £7,200      | £37,800     | **90**  |
+
+Now utilities are equal. The movement stops. London still has higher wages (£80k vs £45k), but this is entirely eaten up by higher rents (£30k vs £7.2k).
+
+### What This Tells Us
+
+This simple model reveals several insights:
+
+1. **Wage differences reflect cost differences**: High-wage cities must be expensive, otherwise everyone would move there
+2. **Housing supply matters enormously**: If London could build unlimited housing at £24k/year, rents would never rise to £30k. More people could enjoy London's high productivity without paying the housing premium.
+3. **Amenities show up in prices**: If London had better weather (improving $\theta$), it could support even higher house prices while keeping utility equal.
+
+## The Two Equations That Rule Cities
+
+We can distil this down to two fundamental equations:
+
+**Spatial Equilibrium (workers are indifferent):** $$U(W_c - P_c H_c, H_c, \theta_c) = \bar{U}$$ for every city $c$.
+
+**Housing Market Clearing (demand equals supply):** $$P_c = f(\text{population}_c, \text{supply constraints}_c)$$
+The first equation says people achieve the same utility everywhere. The second says housing prices adjust to balance demand and supply.
+
+Together, these determine:
+
+- How many people live in each city
+- What wages are paid
+- What housing costs
+
+## Why This Matters
+
+This framework helps us understand:
+
+**Why are London house prices so high?**
+
+- Either: London is very productive (high $W$), so people are willing to pay more
+- Or: London has great amenities (high $\theta$), so people accept lower real wages
+- Or: London can't build enough houses, so prices rise to ration the fixed supply
+
+**What happens if we restrict building?**
+
+- If London can't build housing, prices rise
+- Higher prices mean fewer people can live there
+- The UK gets fewer workers in its most productive city
+- National GDP is lower than it could be
+
+**This last point is crucial.** If planning restrictions prevent London from expanding, the entire country is poorer. Not just Londoners—everyone. Workers who would be more productive in London are stuck elsewhere. This is the "spatial misallocation" that economists worry about.
+
+## What's Next
+
+In this section, we've established the basic logic: cities exist in equilibrium where wages, costs, and amenities balance out.
+
+But we've left many questions unanswered:
+
+- Within a city, why are some areas more expensive than others?
+- How do firms decide where to locate? (The supply side)
+- How do we measure these effects with real data?
+- What's the actual cost to the UK economy from planning restrictions?
+
+We'll tackle these in the next sections. For now, remember the core insight: expensive cities aren't costly by accident. They're expensive because they're valuable, and their value attracts people until the high costs keep them away.
+
+## Interactive Example
+
+import SpatialEquilibriumViz from "@/components/SpatialEquilibriumViz";
+
+<SpatialEquilibriumViz />
+
+## Key Takeaways
+
+1. Workers move to cities until they're **indifferent** between locations
+2. High wages must be offset by high costs or poor amenities
+3. Housing supply constraints raise prices and limit city growth
+4. These effects have **national** consequences—restricting building in productive cities makes the whole country poorer
+
+## Further Reading
+
+- Glaeser, E. (2011). _Triumph of the City_ - Accessible introduction to urban economics
+- The two academic papers we'll build up to:
+  - Hsieh & Moretti (2019): "Housing Constraints and Spatial Misallocation"
+  - Glaeser & Gottlieb (2009): "The Wealth of Cities"
+
+_In the next post, we'll zoom into a single city and ask: why do house prices fall as you move away from the centre? This is the Alonso-Muth-Mills model, and it's one of the most elegant results in urban economics._
