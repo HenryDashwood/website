@@ -12,7 +12,7 @@ And equally puzzling: if expensive cities are such a bad deal, why doesn't their
 
 ## The Answer: Spatial Equilibrium
 
-The answer is that cities reach an **equilibrium** - a balance point where people are roughly indifferent about where to live. If London were genuinely a better deal than Newcastle, people would flood in. But as more people arrive:
+The answer is that cities reach an **equilibrium** - a point where people are roughly indifferent about where to live. If London were genuinely a better deal than Newcastle, people would flood in. But as more people arrive:
 
 1. Housing demand increases, pushing up rents
 2. More workers means firms can pay slightly lower wages (more competition)
@@ -26,18 +26,31 @@ This is called **spatial equilibrium** - the state where workers are indifferent
 
 Let's make this more precise. Imagine workers care about three things:
 
-1. **Consumption** ($C$): All the stuff you buy except housing, e.g. food, entertainment, transport, etc.
-2. **Housing** ($H$): The size and quality of where you live
-3. **Amenities** ($\theta$): Everything else about a place, e.g. weather, culture, parks, proximity to family
+1. Consumption ($C$): All the stuff you buy except housing, e.g. food, entertainment, transport, etc.
+2. Housing ($H$): The size and quality of where you live
+3. Amenities ($\theta$): Everything else about a place, e.g. weather, culture, parks, proximity to family
 
-We can represent their satisfaction (utility) as: $$U = U(C, H, \theta)$$
-Workers face a budget constraint. If they earn a wage $W$ and housing costs $P$ per unit: $$W = C + P \cdot H$$Their money goes to either consumption or housing.
+We can represent their satisfaction (utility) as:
+
+$$
+U = U(C, H, \theta)
+$$
+
+Workers face a budget constraint. If they earn a wage $W$ and housing costs $P$ per unit:
+
+$$
+W = C + P \cdot H
+$$
+
+Their money goes to either consumption or housing.
 
 ### The Equilibrium Condition
 
 Here's the key insight: **in equilibrium, utility must be equal across cities**. If it weren't, people would move from the low-utility city to the high-utility city.
 
-$$U(\text{London}) = U(\text{Newcastle}) = \bar{U}$$
+$$
+U(\text{London}) = U(\text{Newcastle}) = \bar{U}
+$$
 
 where $\bar{U}$ is the reservation utility - the level of satisfaction people can achieve anywhere in the country.
 
@@ -55,14 +68,19 @@ Let's make this concrete with some simplified numbers.
 
 Imagine initially people can't move between cities:
 
-| City      | Wage    | Annual Rent | Other Costs | Consumption | Utility |
-| --------- | ------- | ----------- | ----------- | ----------- | ------- |
-| London    | £80,000 | £24,000     | £56,000     | £56,000     | 100     |
-| Newcastle | £45,000 | £8,400      | £36,600     | £36,600     | 80      |
+| City      | Wage    | Annual Rent | Consumption | Utility |
+| --------- | ------- | ----------- | ----------- | ------- |
+| London    | £80,000 | £24,000     | £56,000     | 10.93   |
+| Newcastle | £45,000 | £8,400      | £36,600     | 10.51   |
 
-(For simplicity, assume people spend all their non-rent money on consumption and get utility equal to consumption/560)
+**How these numbers are calculated:**
 
-London delivers higher utility (100 vs 80). If we allowed people to move, they'd head to London.
+- **Consumption** = Wage - Annual Rent (what's left after paying for housing)
+- **Utility** = $\ln(\text{Consumption})$ (natural logarithm, capturing diminishing marginal utility)
+  - London: ln(56,000) = 10.93
+  - Newcastle: ln(36,600) = 10.51
+
+London delivers higher utility (10.93 vs 10.51). If we allowed people to move, they'd head to London.
 
 ### Scenario 2: People Can Move
 
@@ -82,10 +100,19 @@ Eventually we reach equilibrium:
 
 | City      | Wage    | Annual Rent | Consumption | Utility |
 | --------- | ------- | ----------- | ----------- | ------- |
-| London    | £80,000 | £30,000     | £50,000     | **90**  |
-| Newcastle | £45,000 | £7,200      | £37,800     | **90**  |
+| London    | £75,000 | £32,000     | £43,000     | 10.67   |
+| Newcastle | £51,000 | £9,000      | £42,000     | 10.65   |
 
-Now utilities are equal. The movement stops. London still has higher wages (£80k vs £45k), but this is entirely eaten up by higher rents (£30k vs £7.2k).
+**Now utilities are nearly equal** (10.67 vs 10.65)! The movement stops. Notice what happened:
+
+- London's wages fell slightly (from £80k to £75k) as more workers arrived
+- Newcastle's wages rose (from £45k to £51k) as workers left
+- London's rents rose significantly (from £24k to £32k) due to housing demand
+- Newcastle's rents rose slightly (from £8.4k to £9k) despite population falling
+- After paying rent, consumption is similar: £43k in London vs £42k in Newcastle
+- With logarithmic utility, similar consumption means similar utility: $\ln(43,000) = 10.67$ vs $\ln(42,000) = 10.65$
+
+This is the essence of spatial equilibrium: **workers are indifferent between locations** because high wages are offset by high costs. Migration stops when no one can improve their utility by moving.
 
 ### What This Tells Us
 
@@ -99,9 +126,20 @@ This simple model reveals several insights:
 
 We can distil this down to two fundamental equations:
 
-**Spatial Equilibrium (workers are indifferent):** $$U(W_c - P_c H_c, H_c, \theta_c) = \bar{U}$$ for every city $c$.
+**Spatial Equilibrium (workers are indifferent):**
 
-**Housing Market Clearing (demand equals supply):** $$P_c = f(\text{population}_c, \text{supply constraints}_c)$$
+$$
+U(W_c - P_c H_c, H_c, \theta_c) = \bar{U}
+$$
+
+for every city $c$.
+
+**Housing Market Clearing (demand equals supply):**
+
+$$
+P_c = f(\text{population}_c, \text{supply constraints}_c)
+$$
+
 The first equation says people achieve the same utility everywhere. The second says housing prices adjust to balance demand and supply.
 
 Together, these determine:
@@ -144,6 +182,22 @@ We'll tackle these in the next sections. For now, remember the core insight: exp
 
 ## Interactive Example
 
+The visualization below lets you explore how changing any single parameter affects the equilibrium. Instead of just seeing one equilibrium point, you can see **how the entire system responds** as a parameter varies.
+
+**How to use it:**
+
+1. **Select a parameter to vary** from the dropdown (e.g., "City A Wage")
+2. **Set the other parameters** using the input fields
+3. **The charts show** how population, rents, and utilities change across the full range of that parameter
+4. **The vertical dashed line** shows your current setting
+5. **Watch for where the utility lines cross** - that's the equilibrium point
+
+**Key insights to explore:**
+
+- **Vary City A Wage (40-120k)**: See how higher wages attract more workers, driving up rents until utility equalizes
+- **Vary Housing Elasticity (0.1-2.0)**: Lower elasticity (tighter planning restrictions) means rents spike faster as population grows
+- **Compare the cities**: When utilities cross, neither city is more attractive - that's spatial equilibrium
+
 import SpatialEquilibriumViz from "@/components/SpatialEquilibriumViz";
 
 <SpatialEquilibriumViz />
@@ -163,3 +217,5 @@ import SpatialEquilibriumViz from "@/components/SpatialEquilibriumViz";
   - Glaeser & Gottlieb (2009): "The Wealth of Cities"
 
 _In the next post, we'll zoom into a single city and ask: why do house prices fall as you move away from the centre? This is the Alonso-Muth-Mills model, and it's one of the most elegant results in urban economics._
+
+[^1]: Consumption / 560 (a simplified linear utility function for illustration)

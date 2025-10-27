@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "github.vscode-github-actions",
+    "renesaarsoo.sql-formatter-vsc",
+    "ckolkman.vscode-postgres",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "unwantedRecommendations": ["inferrinizzard.prettier-sql-vscode"]
+}
