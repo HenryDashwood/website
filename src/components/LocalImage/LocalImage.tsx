@@ -23,7 +23,7 @@ export default function LocalImage({
   caption,
 }: LocalImageProps) {
   return (
-    <div className={`flex flex-col items-center m-4 p-4 ${className}`}>
+    <div className={`m-4 flex flex-col items-center p-4 ${className}`}>
       <div className="w-full max-w-full overflow-hidden">
         <Image
           src={src}
@@ -31,13 +31,13 @@ export default function LocalImage({
           width={width}
           height={height}
           priority={priority}
-          className="rounded-lg shadow-lg w-full h-auto max-w-full"
+          className="h-auto w-full max-w-full rounded-lg shadow-lg"
         />
       </div>
       {caption && (
-        <div className="mt-2 text-sm text-gray-600 text-center italic break-words max-w-full">{caption}</div>
+        <div className="mt-2 max-w-full text-center text-sm wrap-break-word text-gray-600 italic">{caption}</div>
       )}
-      {children && <div className="mt-2 text-sm text-gray-600 text-center break-words max-w-full">{children}</div>}
+      {children && <div className="mt-2 max-w-full text-center text-sm wrap-break-word text-gray-600">{children}</div>}
     </div>
   );
 }

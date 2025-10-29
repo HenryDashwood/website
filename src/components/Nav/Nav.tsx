@@ -17,7 +17,7 @@ const navLinks = [
 
 function Nav() {
   return (
-    <div className="sm:flex sm:flex-col sm:min-h-screen bg-nav-background p-4 font-mallory-book">
+    <div className="bg-nav-background font-mallory-book p-4 sm:flex sm:min-h-screen sm:flex-col">
       <div className="mb-4">
         <Link href={`/`}>
           <b>Home</b>

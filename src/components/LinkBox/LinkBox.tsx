@@ -32,7 +32,7 @@ async function LinkBox({ tag }: { tag: string }) {
   );
 
   return (
-    <div className="border-2 border-[#faad19] rounded-lg p-4 m-[2.5%]">
+    <div className="border-nav-background m-[2.5%] rounded-lg border-2 p-4">
       <h2>{tag}</h2>
       <ul className="pl-4">
         {filteredPosts.length > 0 ? (
@@ -42,7 +42,7 @@ async function LinkBox({ tag }: { tag: string }) {
             }
 
             return (
-              <li key={String(post.other.slug)} className="ml-2 mb-2">
+              <li key={String(post.other.slug)} className="mb-2 ml-2">
                 <a href={`/posts/${post.other.slug}`}>{String(post.title)}</a>
               </li>
             );

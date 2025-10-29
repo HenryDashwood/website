@@ -7,4 +7,5 @@ export enum Tags {
   Economics = "Economics",
   Roundups = "Roundups",
   History = "History",
+  Housing = "Housing",
 }

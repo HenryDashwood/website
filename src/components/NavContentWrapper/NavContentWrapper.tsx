@@ -4,7 +4,7 @@ import React from "react";
 
 const NavContentWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:h-full min-h-screen">
+    <div className="flex min-h-screen flex-col sm:h-full sm:flex-row">
       <Nav />
       <Content>{children}</Content>
     </div>

@@ -1,3 +1,5 @@
+import MigrationStabilityViz from "@/components/MigrationStabilityViz";
+
 ## The Puzzle
 
 If you're a software engineer, you can earn £80,000 in London but only £45,000 in Newcastle. So clearly, everyone should move to London for the higher wages, right?
@@ -180,27 +182,78 @@ But we've left many questions unanswered:
 
 We'll tackle these in the next sections. For now, remember the core insight: expensive cities aren't costly by accident. They're expensive because they're valuable, and their value attracts people until the high costs keep them away.
 
-## Interactive Example
+## Interactive Example: Migration Stability Diagram
 
-The visualization below lets you explore how changing any single parameter affects the equilibrium. Instead of just seeing one equilibrium point, you can see **how the entire system responds** as a parameter varies.
+The visualization below implements the spatial equilibrium model mathematically. Here's how the curves and numbers you see are calculated.
 
-**How to use it:**
+### The Model Behind the Graph
 
-1. **Select a parameter to vary** from the dropdown (e.g., "City A Wage")
-2. **Set the other parameters** using the input fields
-3. **The charts show** how population, rents, and utilities change across the full range of that parameter
-4. **The vertical dashed line** shows your current setting
-5. **Watch for where the utility lines cross** - that's the equilibrium point
+We track how utility in each city changes as the population split varies. Let $s$ be the share of the total population living in City A (so $1-s$ lives in City B). The model has four key equations:
 
-**Key insights to explore:**
+**1. Wages adjust with labour supply:**
 
-- **Vary City A Wage (40-120k)**: See how higher wages attract more workers, driving up rents until utility equalizes
-- **Vary Housing Elasticity (0.1-2.0)**: Lower elasticity (tighter planning restrictions) means rents spike faster as population grows
-- **Compare the cities**: When utilities cross, neither city is more attractive - that's spatial equilibrium
+$$
+W_A(s) = W_{A0} \cdot \left(\frac{s}{s_0}\right)^{-\eta_A}, \quad W_B(s) = W_{B0} \cdot \left(\frac{1-s}{1-s_0}\right)^{-\eta_B}
+$$
 
-import SpatialEquilibriumViz from "@/components/SpatialEquilibriumViz";
+where $W_{c0}$ is the base wage, $s_0 = 0.5$ is the reference split, and $\eta_c$ captures wage sensitivity to labour supply. When more workers move to a city (higher $s$ for City A), wages fall slightly as labour becomes more abundant.
 
-<SpatialEquilibriumViz />
+**2. Rents adjust with housing demand:**
+
+$$
+P_A(s) = P_{A0} \cdot \left(\frac{s}{s_0}\right)^{1/\varepsilon_A}, \quad P_B(s) = P_{B0} \cdot \left(\frac{1-s}{1-s_0}\right)^{1/\varepsilon_B}
+$$
+
+where $P_{c0}$ is the base rent and $\varepsilon_c$ is the housing supply elasticity. Lower elasticity (stricter planning rules) means rents spike dramatically when population increases. This is why the red curve can become very steep when $\varepsilon_A$ is low.
+
+**3. Consumption is what's left after paying rent:**
+
+$$
+C_A(s) = W_A(s) - P_A(s) - \gamma_A \cdot \left(\frac{s}{s_0} - 1\right)
+$$
+
+$$
+C_B(s) = W_B(s) - P_B(s) - \gamma_B \cdot \left(\frac{1-s}{1-s_0} - 1\right)
+$$
+
+The $\gamma_c$ terms are optional crowding penalties that capture quality-of-life degradation as cities become more crowded.
+
+**4. Utility follows logarithmic preferences:**
+
+$$
+U_A(s) = \ln(C_A(s)), \quad U_B(s) = \ln(C_B(s))
+$$
+
+The natural logarithm captures diminishing marginal utility. An extra £10,000 matters more when you're earning £30,000 than when you're earning £60,000.
+
+### How This Creates the Visualization
+
+The **red line** plots $U_A(s)$ as $s$ varies from 0 to 1:
+
+- As $s$ increases, more people live in City A
+- This pushes up $P_A(s)$ (more housing demand) and pushes down $W_A(s)$ (more labour supply)
+- Both effects reduce $C_A(s)$, which reduces $U_A(s)$
+- Result: the red curve slopes downward
+
+The **blue line** plots $U_B(s)$:
+
+- As $s$ increases, fewer people live in City B (since $1-s$ decreases)
+- This pushes down $P_B(s)$ (less housing demand) and pushes up $W_B(s)$ (scarcer labour)
+- Both effects increase $C_B(s)$, which increases $U_B(s)$
+- Result: the blue curve slopes upward
+
+The **equilibrium** $s^*$ is where the curves cross: $U_A(s^*) = U_B(s^*)$. At this point, workers are indifferent between cities. The visualization finds $s^*$ by solving $U_A(s) - U_B(s) = 0$ using bisection search.
+
+The **output boxes** show the values of $W_c$, $P_c$, $C_c$, and $U_c$ evaluated at either the equilibrium $s^*$ or at any point you click.
+
+### Key Insights to Explore
+
+1. **Lower housing elasticity makes curves steeper**: Set City A's $\varepsilon_A = 0.3$ (try "Restrictive Housing in A"). Small population changes cause huge rent spikes, making the red curve very steep. This is why planning restrictions limit city growth.
+2. **Wage sensitivity matters less**: The $\eta$ parameters have subtle effects. Wages adjust slowly to population changes, so these curves are relatively flat.
+3. **Crowding penalties can shift equilibrium**: Add a crowding penalty to City A ($\gamma_A > 0$). This tilts the red curve downward, moving the equilibrium left (fewer people in A).
+4. **No equilibrium = corner solution**: If the curves don't cross, everyone prefers one city. Real cities avoid this through price adjustments, but extreme parameters can produce corner solutions.
+
+<MigrationStabilityViz />
 
 ## Key Takeaways
 
@@ -209,13 +262,4 @@ import SpatialEquilibriumViz from "@/components/SpatialEquilibriumViz";
 3. Housing supply constraints raise prices and limit city growth
 4. These effects have **national** consequences—restricting building in productive cities makes the whole country poorer
 
-## Further Reading
-
-- Glaeser, E. (2011). _Triumph of the City_ - Accessible introduction to urban economics
-- The two academic papers we'll build up to:
-  - Hsieh & Moretti (2019): "Housing Constraints and Spatial Misallocation"
-  - Glaeser & Gottlieb (2009): "The Wealth of Cities"
-
 _In the next post, we'll zoom into a single city and ask: why do house prices fall as you move away from the centre? This is the Alonso-Muth-Mills model, and it's one of the most elegant results in urban economics._
-
-[^1]: Consumption / 560 (a simplified linear utility function for illustration)
