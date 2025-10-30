@@ -779,9 +779,7 @@ export default function MigrationStabilityViz() {
           {/* Equilibrium Status and Details */}
           <div
             className={`rounded border p-4 ${
-              sStar !== null
-                ? "border-green-300 bg-green-50"
-                : "border-orange-300 bg-orange-50"
+              sStar !== null ? "border-green-300 bg-green-50" : "border-orange-300 bg-orange-50"
             }`}
           >
             <div className="mb-2 text-center text-lg font-bold">
@@ -797,7 +795,8 @@ export default function MigrationStabilityViz() {
             {sStar !== null && equilibriumData ? (
               <>
                 <div className="mb-3 text-center text-sm text-gray-700">
-                  {(sStar * 100).toFixed(1)}% live in City A, {((1 - sStar) * 100).toFixed(1)}% in City B. Utilities are equal, so no one wants to move.
+                  {(sStar * 100).toFixed(1)}% live in City A, {((1 - sStar) * 100).toFixed(1)}% in City B. Utilities
+                  are equal, so no one wants to move.
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded border border-red-200 bg-white p-3">
@@ -822,7 +821,8 @@ export default function MigrationStabilityViz() {
               </>
             ) : (
               <div className="text-center text-sm text-orange-800">
-                All workers prefer one city over the other. Check your parameters or add crowding penalties to create an interior equilibrium.
+                All workers prefer one city over the other. Check your parameters or add crowding penalties to create
+                an interior equilibrium.
               </div>
             )}
           </div>
