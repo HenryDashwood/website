@@ -318,8 +318,6 @@ export default function MigrationStabilityViz() {
 
   return (
     <div className="not-prose migration-stability-viz mt-4 rounded-lg border border-gray-200 bg-gray-50 px-8 py-8">
-      <h3 className="mb-6 text-center text-2xl font-bold">Migration Stability Diagram</h3>
-
       {/* Two-column layout on large screens */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* LEFT COLUMN: Information and Inputs */}

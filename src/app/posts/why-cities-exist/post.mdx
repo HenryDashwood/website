@@ -1,44 +1,37 @@
-import MigrationStabilityViz from "@/components/MigrationStabilityViz";
+import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
+import PowerLawViz from "@/components/blog_components/PowerLawViz";
 
 ## The Puzzle
 
-If you're a software engineer, you can earn £80,000 in London but only £45,000 in Newcastle. So clearly, everyone should move to London for the higher wages, right?
+A software engineer can earn £80,000 in London but only £45,000 in Newcastle. Simple decision, right? Move to London for the extra £35,000.
 
-But wait. A one-bedroom flat costs £2,000/month in London versus £700 in Newcastle. That's £15,600 more per year just for housing. After paying rent, the London worker takes home £56,400 while the Newcastle worker takes home £36,600. London still wins, but the gap has shrunk from £35,000 to £19,800.
+But wait. A one-bedroom flat costs £2,000/month in London versus £700 in Newcastle. That's £15,600 more per year just for housing. After paying rent, our London worker takes home £56,400 while the Newcastle worker keeps £36,600. London still wins, but the gap has shrunk to £19,800.
 
-And we haven't counted everything yet. Your commute in London might cost £1,800/year versus £600 in Newcastle. A pint costs £6.50 in the former versus £4.20 in the latter. If you go out twice a week, that's another £240/year.
+And we're not done. The London commute costs £1,800/year versus £600 in Newcastle. A pint costs £6.50 versus £4.20. Go out twice a week and that's another £240 gone. The gap keeps shrinking.
 
-The gap keeps shrinking. Yet London keeps growing. The question is: why does anyone live in expensive cities if the wages don't fully compensate for the costs?
-
-And equally puzzling: if expensive cities are such a bad deal, why doesn't their population fall?
+Yet London keeps growing. Why do people choose expensive cities if the wages don't fully compensate for the costs? And if expensive cities are such a bad deal, why doesn't everyone leave?
 
 ## The Answer: Spatial Equilibrium
 
-The answer is that cities reach an **equilibrium** - a point where people are roughly indifferent about where to live. If London were genuinely a better deal than Newcastle, people would flood in. But as more people arrive:
+Think about what happens if London genuinely offered a better deal than Newcastle. People would flood in. Housing demand would increase, pushing up rents. More workers mean firms could pay lower wages. The city would become more crowded, reducing quality of life. Eventually, London would be no more attractive than Newcastle and people would stop moving there. Similarly, if Newcastle became significantly better value, people would move to it until it wasn't a bargain anymore.
 
-1. Housing demand increases, pushing up rents
-2. More workers means firms can pay slightly lower wages (more competition)
-3. The city becomes more crowded, reducing residents' quality of life
-
-Eventually, London becomes just attractive enough (compared to its costs) that people stop moving there. Similarly, if Newcastle became significantly better value, people would move there until it wasn't such a bargain anymore.
-
-This is called **spatial equilibrium** - the state where workers are indifferent between locations because higher costs or lower amenities offset all the gains from high wages.
+This is **spatial equilibrium**: a state where workers are indifferent between locations because higher costs or lower amenities offset all the gains from high wages. #TODO check this
 
 ## A Simple Framework
 
-Let's make this more precise. Imagine workers care about three things:
+Let's formalise this. Imagine workers care about three things:
 
-1. Consumption ($C$): All the stuff you buy except housing, e.g. food, entertainment, transport, etc.
-2. Housing ($H$): The size and quality of where you live
-3. Amenities ($\theta$): Everything else about a place, e.g. weather, culture, parks, proximity to family
+- Consumption ($C$) - all the stuff you buy except housing
+- Housing ($H$) - the size and quality of where you live
+- Amenities ($\theta$) - everything else about a place, from weather to culture to proximity to family.
 
-We can represent their satisfaction (utility) as:
+We can represent their satisfaction (utility $U$) as:
 
 $$
 U = U(C, H, \theta)
 $$
 
-Workers face a budget constraint. If they earn a wage $W$ and housing costs $P$ per unit:
+Workers face a budget constraint. If they earn wage $W$ and housing $H$ costs $P$ per unit:
 
 $$
 W = C + P \cdot H
@@ -46,57 +39,28 @@ $$
 
 Their money goes to either consumption or housing.
 
-### The Equilibrium Condition
-
-Here's the key insight: **in equilibrium, utility must be equal across cities**. If it weren't, people would move from the low-utility city to the high-utility city.
+In equilibrium, utility must be equal across cities. If it weren't, people would move from the low-utility city to the high-utility city. So:
 
 $$
 U(\text{London}) = U(\text{Newcastle}) = \bar{U}
 $$
 
-where $\bar{U}$ is the reservation utility - the level of satisfaction people can achieve anywhere in the country.
+where $\bar{U}$ is the reservation utility, the level of satisfaction people can achieve anywhere in the country.
 
-This equation tells us that:
-
-- Higher wages must be offset by higher prices or worse amenities
-- Better amenities allow cities to have lower wages or higher prices
-- Cheaper housing must come with lower wages or worse amenities
+Higher wages must be offset by higher prices or worse amenities. Better amenities allow a city to maintain a given population while having lower wages or higher prices. Cheaper housing must come with lower wages or worse amenities.
 
 ## Working Through an Example
 
-Let's make this concrete with some simplified numbers.
-
-### Scenario 1: No Mobility (Before Equilibrium)
-
-Imagine initially people can't move between cities:
+Let's make this concrete. Imagine initially that people can't move between cities:
 
 | City      | Wage    | Annual Rent | Consumption | Utility |
 | --------- | ------- | ----------- | ----------- | ------- |
 | London    | £80,000 | £24,000     | £56,000     | 10.93   |
 | Newcastle | £45,000 | £8,400      | £36,600     | 10.51   |
 
-**How these numbers are calculated:**
+Consumption equals wage minus rent, what's left after paying for housing. Utility is $\ln(\text{Consumption})$, the natural logarithm that captures diminishing marginal utility. London delivers 10.93 versus Newcastle's 10.51. If we allowed people to move, they'd head to London.
 
-- **Consumption** = Wage - Annual Rent (what's left after paying for housing)
-- **Utility** = $\ln(\text{Consumption})$ (natural logarithm, capturing diminishing marginal utility)
-  - London: ln(56,000) = 10.93
-  - Newcastle: ln(36,600) = 10.51
-
-London delivers higher utility (10.93 vs 10.51). If we allowed people to move, they'd head to London.
-
-### Scenario 2: People Can Move
-
-As workers move to London:
-
-- Housing demand increases
-- Rents are bid up
-- Utility in London falls
-
-Simultaneously in Newcastle:
-
-- Housing demand decreases
-- Rents fall slightly
-- Utility in Newcastle rises
+Then we let them move. As workers relocate to London, housing demand increases and rents are bid up. Utility in London falls. Simultaneously in Newcastle, housing demand decreases and rents fall slightly. Utility in Newcastle rises.
 
 Eventually we reach equilibrium:
 
@@ -105,30 +69,19 @@ Eventually we reach equilibrium:
 | London    | £75,000 | £32,000     | £43,000     | 10.67   |
 | Newcastle | £51,000 | £9,000      | £42,000     | 10.65   |
 
-**Now utilities are nearly equal** (10.67 vs 10.65)! The movement stops. Notice what happened:
+The utilities are nearly equal (10.67 vs 10.65), so the movement stops. Look at what happened: London's wages fell from £80k to £75k as more workers arrived. Newcastle's wages rose from £45k to £51k as workers left. London's rents rose sharply from £24k to £32k due to housing demand. After paying rent, consumption is nearly identical: £43k in London versus £42k in Newcastle. With logarithmic utility, similar consumption means similar utility.
 
-- London's wages fell slightly (from £80k to £75k) as more workers arrived
-- Newcastle's wages rose (from £45k to £51k) as workers left
-- London's rents rose significantly (from £24k to £32k) due to housing demand
-- Newcastle's rents rose slightly (from £8.4k to £9k) despite population falling
-- After paying rent, consumption is similar: £43k in London vs £42k in Newcastle
-- With logarithmic utility, similar consumption means similar utility: $\ln(43,000) = 10.67$ vs $\ln(42,000) = 10.65$
+This is spatial equilibrium in action. Workers are indifferent between locations because high wages are offset by high costs. Migration stops when no one can improve their utility by moving.
 
-This is the essence of spatial equilibrium: **workers are indifferent between locations** because high wages are offset by high costs. Migration stops when no one can improve their utility by moving.
+What does this tell us?
 
-### What This Tells Us
-
-This simple model reveals several insights:
-
-1. **Wage differences reflect cost differences**: High-wage cities must be expensive, otherwise everyone would move there
-2. **Housing supply matters enormously**: If London could build unlimited housing at £24k/year, rents would never rise to £30k. More people could enjoy London's high productivity without paying the housing premium.
-3. **Amenities show up in prices**: If London had better weather (improving $\theta$), it could support even higher house prices while keeping utility equal.
+- Wage differences reflect cost differences: high-wage cities must be expensive, otherwise everyone would move there.
+- Housing supply matters enormously: if London could build unlimited housing at £24k/year, more people could enjoy its high productivity without paying the housing premium.
+- Amenities show up in prices: better weather would allow London to support even higher house prices while keeping utility equal. # TODO amenities not mentioned in this section
 
 ## The Two Equations That Rule Cities
 
-We can distil this down to two fundamental equations:
-
-**Spatial Equilibrium (workers are indifferent):**
+**Spatial Equilibrium** (workers are indifferent):
 
 $$
 U(W_c - P_c H_c, H_c, \theta_c) = \bar{U}
@@ -136,130 +89,93 @@ $$
 
 for every city $c$.
 
-**Housing Market Clearing (demand equals supply):**
+**Housing Market Clearing** (demand equals supply):
 
 $$
 P_c = f(\text{population}_c, \text{supply constraints}_c)
 $$
 
-The first equation says people achieve the same utility everywhere. The second says housing prices adjust to balance demand and supply.
+The first equation says people achieve the same utility everywhere. The second says housing prices adjust to balance demand and supply. Together, these determine how many people live in each city, what wages are paid, and what housing costs.
 
-Together, these determine:
+This framework helps us understand why London house prices are so high. London is very productive (high $W$), so people are willing to pay more. It also has great amenities (high $\theta$), so people accept lower real wages. And critically, London doesn't build enough houses, so prices rise to ration the fixed supply.
 
-- How many people live in each city
-- What wages are paid
-- What housing costs
+This last point matters. If planning restrictions prevent London from expanding, the entire country is poorer. Not just Londoners, everyone. Workers who would be more productive in London are stuck elsewhere. This is the _spatial misallocation_ that economists worry about.
 
-## Why This Matters
+## Bringing Migration Dynamics to Life
 
-This framework helps us understand:
+So far we've compared two static snapshots: before and after equilibrium. But what happens _during_ the adjustment? How do wages and rents change as people move?
 
-**Why are London house prices so high?**
+Recall our equilibrium condition: $U_A = U_B$. What if they're not equal? If London offers higher utility than Newcastle, people move to London.
 
-- Either: London is very productive (high $W$), so people are willing to pay more
-- Or: London has great amenities (high $\theta$), so people accept lower real wages
-- Or: London can't build enough houses, so prices rise to ration the fixed supply
+Let's define $s$ as the share of total population living in City A. If $s = 0.6$, then 60% live in City A and 40% live in City B. As people migrate to City A, $s$ increases. The opposite happens in City B as people leave. As $s$ changes, so do wages and rents in both cities, which changes utilities, which affects whether people keep moving.
 
-**What happens if we restrict building?**
+### How Wages Respond to Population
 
-- If London can't build housing, prices rise
-- Higher prices mean fewer people can live there
-- The UK gets fewer workers in its most productive city
-- National GDP is lower than it could be
-
-**This last point is crucial.** If planning restrictions prevent London from expanding, the entire country is poorer. Not just Londoners—everyone. Workers who would be more productive in London are stuck elsewhere. This is the "spatial misallocation" that economists worry about.
-
-## What's Next
-
-In this section, we've established the basic logic: cities exist in equilibrium where wages, costs, and amenities balance out.
-
-But we've left many questions unanswered:
-
-- Within a city, why are some areas more expensive than others?
-- How do firms decide where to locate? (The supply side)
-- How do we measure these effects with real data?
-- What's the actual cost to the UK economy from planning restrictions?
-
-We'll tackle these in the next sections. For now, remember the core insight: expensive cities aren't costly by accident. They're expensive because they're valuable, and their value attracts people until the high costs keep them away.
-
-## Interactive Example: Migration Stability Diagram
-
-The visualization below implements the spatial equilibrium model mathematically. Here's how the curves and numbers you see are calculated.
-
-### The Model Behind the Graph
-
-We track how utility in each city changes as the population split varies. Let $s$ be the share of the total population living in City A (so $1-s$ lives in City B). The model has four key equations:
-
-**1. Wages adjust with labour supply:**
+When more workers arrive in a city, what happens to wages? Basic supply and demand: more workers means each worker is slightly less scarce, so wages fall a bit. Economists capture this with a power law:
 
 $$
-W_A(s) = W_{A0} \cdot \left(\frac{s}{s_0}\right)^{-\eta_A}, \quad W_B(s) = W_{B0} \cdot \left(\frac{1-s}{1-s_0}\right)^{-\eta_B}
+W_A(s) = W_{A0} \cdot \left(\frac{s}{0.5}\right)^{-\eta}
 $$
 
-where $W_{c0}$ is the base wage, $s_0 = 0.5$ is the reference split, and $\eta_c$ captures wage sensitivity to labour supply. When more workers move to a city (higher $s$ for City A), wages fall slightly as labour becomes more abundant.
+Here, $W_{A0}$ is the base wage when $s = 0.5$ (half the population lives in each city). The term $\frac{s}{0.5}$ measures how much bigger City A is than the reference size (i.e. if $s = 0.6$, then City A is 20% bigger than the reference size). The exponent $-\eta$ controls how sensitive wages are to population. If $\eta = 0.05$ and population doubles ($s$ goes from 0.5 to 1.0), wages fall by about 5%. #TODO check this
 
-**2. Rents adjust with housing demand:**
+Why this functional form? It's simple, it matches empirical evidence reasonably well, and it ensures wages never hit zero or infinity.
 
-$$
-P_A(s) = P_{A0} \cdot \left(\frac{s}{s_0}\right)^{1/\varepsilon_A}, \quad P_B(s) = P_{B0} \cdot \left(\frac{1-s}{1-s_0}\right)^{1/\varepsilon_B}
-$$
+<PowerLawViz />
 
-where $P_{c0}$ is the base rent and $\varepsilon_c$ is the housing supply elasticity. Lower elasticity (stricter planning rules) means rents spike dramatically when population increases. This is why the red curve can become very steep when $\varepsilon_A$ is low.
-
-**3. Consumption is what's left after paying rent:**
+The same logic applies to City B, using $(1-s)$ since that's City B's population share:
 
 $$
-C_A(s) = W_A(s) - P_A(s) - \gamma_A \cdot \left(\frac{s}{s_0} - 1\right)
+W_B(s) = W_{B0} \cdot \left(\frac{1-s}{0.5}\right)^{-\eta}
 $$
 
-$$
-C_B(s) = W_B(s) - P_B(s) - \gamma_B \cdot \left(\frac{1-s}{1-s_0} - 1\right)
-$$
+### How Rents Respond to Population
 
-The $\gamma_c$ terms are optional crowding penalties that capture quality-of-life degradation as cities become more crowded.
-
-**4. Utility follows logarithmic preferences:**
+When people arrive in a city, they need somewhere to live. If housing supply is fixed, prices spike. If housing is easy to build, prices rise only slightly. We describe this with **housing supply elasticity** $\varepsilon$:
 
 $$
-U_A(s) = \ln(C_A(s)), \quad U_B(s) = \ln(C_B(s))
+P_A(s) = P_{A0} \cdot \left(\frac{s}{0.5}\right)^{\frac{1}{\varepsilon}}
 $$
 
-The natural logarithm captures diminishing marginal utility. An extra £10,000 matters more when you're earning £30,000 than when you're earning £60,000.
+Here, $P_{A0}$ is the base rent when $s = 0.5$. The exponent $\frac{1}{\varepsilon}$ controls how much rents increase when population grows. Higher $\varepsilon$ means more a elastic supply - it's easier to build - so rents rise slowly. Lower $\varepsilon$ means a less elastic supply, tight planning rules, and rents that spike sharply.
 
-### How This Creates the Visualization
+Consider three scenarios. If $\varepsilon = 1.0$ and population doubles, rents double. If $\varepsilon = 0.5$ and population doubles, rents _quadruple_ (very inelastic). If $\varepsilon = 2.0$ and population doubles, rents increase by only 41% (very elastic). #TODO check this
 
-The **red line** plots $U_A(s)$ as $s$ varies from 0 to 1:
+### From Wages and Rents to Utility
 
-- As $s$ increases, more people live in City A
-- This pushes up $P_A(s)$ (more housing demand) and pushes down $W_A(s)$ (more labour supply)
-- Both effects reduce $C_A(s)$, which reduces $U_A(s)$
-- Result: the red curve slopes downward
+Once we know wages and rents, we can calculate consumption (what's left after paying rent):
 
-The **blue line** plots $U_B(s)$:
+$$
+C_A(s) = W_A(s) - P_A(s)
+$$
 
-- As $s$ increases, fewer people live in City B (since $1-s$ decreases)
-- This pushes down $P_B(s)$ (less housing demand) and pushes up $W_B(s)$ (scarcer labour)
-- Both effects increase $C_B(s)$, which increases $U_B(s)$
-- Result: the blue curve slopes upward
+And then utility using the logarithmic form from earlier:
 
-The **equilibrium** $s^*$ is where the curves cross: $U_A(s^*) = U_B(s^*)$. At this point, workers are indifferent between cities. The visualization finds $s^*$ by solving $U_A(s) - U_B(s) = 0$ using bisection search.
+$$
+U_A(s) = \ln(C_A(s))
+$$
 
-The **output boxes** show the values of $W_c$, $P_c$, $C_c$, and $U_c$ evaluated at either the equilibrium $s^*$ or at any point you click.
+Now we have everything we need. For any population split $s$, we can calculate wages, rents, consumption, and utility in both cities.
 
-### Key Insights to Explore
+### What the Graph Shows
 
-1. **Lower housing elasticity makes curves steeper**: Set City A's $\varepsilon_A = 0.3$ (try "Restrictive Housing in A"). Small population changes cause huge rent spikes, making the red curve very steep. This is why planning restrictions limit city growth.
-2. **Wage sensitivity matters less**: The $\eta$ parameters have subtle effects. Wages adjust slowly to population changes, so these curves are relatively flat.
-3. **Crowding penalties can shift equilibrium**: Add a crowding penalty to City A ($\gamma_A > 0$). This tilts the red curve downward, moving the equilibrium left (fewer people in A).
-4. **No equilibrium = corner solution**: If the curves don't cross, everyone prefers one city. Real cities avoid this through price adjustments, but extreme parameters can produce corner solutions.
+The visualization plots $U_A(s)$ and $U_B(s)$ as $s$ varies from 0 to 1.
+
+The red line (City A) slopes downward. As $s$ increases, more people move to City A. More people means higher rents ($P_A$ increases) and slightly lower wages ($W_A$ decreases). Both effects reduce consumption ($C_A$ falls), which reduces utility ($U_A$ falls).
+
+The blue line (City B) slopes upward. As $s$ increases, _fewer_ people live in City B (since $1-s$ decreases). Fewer people means lower rents ($P_B$ decreases) and slightly higher wages ($W_B$ increases). Both effects increase consumption ($C_B$ rises), which increases utility ($U_B$ rises).
+
+Where do the lines cross? That's the equilibrium $s^*$ where $U_A(s^*) = U_B(s^*)$. At this point, workers are indifferent between cities, so migration stops.
+
+### What You Can Explore
+
+The visualisation lets you see how different parameters affect the curves.
+
+- Adjust housing elasticity ($\varepsilon$): lower values make curves steeper. Try setting City A's elasticity to 0.3 (click "Restrictive Housing") and watch how the red curve becomes much steeper. Small population changes cause huge rent spikes.
+- Change base wages: increase City A's base wage to see the entire red curve shift up. This moves the equilibrium to the right, more people in the productive city.
+- Add crowding penalties: these capture quality-of-life costs (congestion, pollution, noise) as cities get crowded. A positive penalty tilts curves downward.
+- Click anywhere on the chart to see the exact wages, rents, consumption, and utility at that population split. This helps you understand _why_ the curves have their shapes.
 
 <MigrationStabilityViz />
 
-## Key Takeaways
-
-1. Workers move to cities until they're **indifferent** between locations
-2. High wages must be offset by high costs or poor amenities
-3. Housing supply constraints raise prices and limit city growth
-4. These effects have **national** consequences—restricting building in productive cities makes the whole country poorer
-
-_In the next post, we'll zoom into a single city and ask: why do house prices fall as you move away from the centre? This is the Alonso-Muth-Mills model, and it's one of the most elegant results in urban economics._
+#TODO mention simplified assumptions used in this blog i.e no agglomeration, same units of housing for everyone.
