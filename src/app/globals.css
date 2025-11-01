@@ -226,6 +226,13 @@ a[href^="http"] {
   word-break: break-all;
 }
 
+/* Override word-break for nav links to wrap at word boundaries */
+.bg-nav-background a {
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
 /* Ensure images don't overflow */
 img {
   max-width: 100%;

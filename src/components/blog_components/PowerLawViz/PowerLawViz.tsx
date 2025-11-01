@@ -74,9 +74,9 @@ export default function PowerLawViz() {
     .join(" ");
 
   return (
-    <div className="not-prose power-law-viz my-6 rounded-lg border border-gray-200 bg-white p-6">
+    <div className="not-prose power-law-viz my-6 max-w-full overflow-x-auto rounded-lg border border-gray-200 bg-white p-6">
       <div className="mb-6">
-        <svg width={width} height={height} className="mx-auto">
+        <svg width={width} height={height} className="mx-auto h-auto max-w-full" viewBox={`0 0 ${width} ${height}`}>
           <g transform={`translate(${margin.left},${margin.top})`}>
             {/* Grid lines */}
             {Array.from({ length: 6 }, (_, i) => {
@@ -164,7 +164,7 @@ export default function PowerLawViz() {
       </div>
 
       {/* Controls */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 flex items-center justify-between text-sm font-semibold">
             <span>
