@@ -189,6 +189,15 @@ table {
   @apply mt-4 mb-4;
 }
 
+/* On mobile, allow tables to be wider than container for horizontal scrolling */
+@media (max-width: 768px) {
+  .table-scroll-wrapper table,
+  [class*="overflow-x-auto"] table {
+    min-width: max-content;
+    width: auto;
+  }
+}
+
 th,
 td {
   padding: 8px;

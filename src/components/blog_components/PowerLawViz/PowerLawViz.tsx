@@ -1,14 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { InlineMath } from "react-katex";
 
 export default function PowerLawViz() {
+  const [mounted, setMounted] = useState(false);
   const [W0, setW0] = useState("70");
   const [eta, setEta] = useState("0.05");
   const [showRent, setShowRent] = useState(false);
   const [P0, setP0] = useState("22");
   const [epsilon, setEpsilon] = useState("0.8");
+
+  useEffect(() => {
+    // This is intentional - we need to mark the component as mounted to avoid hydration mismatches
+    setMounted(true);
+  }, []);
 
   const W0_val = parseFloat(W0) || 70;
   const eta_val = parseFloat(eta) || 0.05;
@@ -104,10 +110,18 @@ export default function PowerLawViz() {
             />
 
             {/* Wage curve */}
-            <path d={wagePath} fill="none" stroke="#3b82f6" strokeWidth="3" />
+            <path d={mounted ? wagePath : ""} fill="none" stroke="#3b82f6" strokeWidth="3" suppressHydrationWarning />
 
             {/* Rent curve */}
-            {showRent && <path d={rentPath} fill="none" stroke="#a855f7" strokeWidth="3" />}
+            {showRent && (
+              <path
+                d={mounted ? rentPath : ""}
+                fill="none"
+                stroke="#a855f7"
+                strokeWidth="3"
+                suppressHydrationWarning
+              />
+            )}
 
             {/* Axes */}
             <line x1={0} x2={chartWidth} y1={chartHeight} y2={chartHeight} stroke="#374151" strokeWidth="2" />
