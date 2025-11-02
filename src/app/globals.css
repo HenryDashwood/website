@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
+@import "highlight.js/styles/github-dark.css";
 
 @theme {
   --color-nav-background: #faad19;
@@ -6,9 +8,6 @@
   --font-arizona-flare: var(--font-arizona-flare);
   --font-mallory-book: var(--font-mallory-book);
 }
-
-@import "katex/dist/katex.min.css";
-@import "highlight.js/styles/github-dark.css";
 
 :root {
   --background: #f9e9cb;
@@ -32,25 +31,27 @@ body {
 }
 
 h1 {
-  @apply text-4xl border-b-2 border-[#faad19] mb-4;
+  @apply border-nav-background mt-4 mb-4 border-b-2 text-4xl;
   font-family: var(--font-arizona-flare);
 }
 
 h2 {
-  @apply text-3xl border-b-2 border-[#faad19] mb-4;
+  @apply border-nav-background mt-4 mb-4 border-b-2 text-3xl;
   font-family: var(--font-arizona-flare);
 }
 
 h3 {
-  @apply text-2xl mb-4;
+  @apply mt-4 mb-4 text-2xl;
   font-family: var(--font-arizona-flare);
 }
 
 h4 {
+  @apply mt-4 mb-4;
   font-family: var(--font-mallory-book);
 }
 
 h5 {
+  @apply mt-4 mb-4;
   font-family: var(--font-mallory-book);
 }
 
@@ -64,16 +65,16 @@ a:hover {
 
 ul {
   list-style-type: disc;
-  padding-left: 1.5em;
+  padding-left: 2rem;
 }
 
 ol {
   list-style-type: decimal;
-  padding-left: 1.5em;
+  padding-left: 2rem;
 }
 
 p {
-  @apply mt-4 mb-4;
+  @apply mt-4;
 }
 
 blockquote {
@@ -185,6 +186,16 @@ table {
   border-spacing: 0;
   width: 100%;
   border: 1px solid var(--foreground);
+  @apply mt-4 mb-4;
+}
+
+/* On mobile, allow tables to be wider than container for horizontal scrolling */
+@media (max-width: 768px) {
+  .table-scroll-wrapper table,
+  [class*="overflow-x-auto"] table {
+    min-width: max-content;
+    width: auto;
+  }
 }
 
 th,
@@ -195,7 +206,7 @@ td {
 }
 
 th {
-  background-color: #faad19;
+  background-color: var(--nav-background);
   font-weight: bold;
 }
 
@@ -224,6 +235,13 @@ a[href^="http"] {
   word-break: break-all;
 }
 
+/* Override word-break for nav links to wrap at word boundaries */
+.bg-nav-background a {
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
 /* Ensure images don't overflow */
 img {
   max-width: 100%;
@@ -232,7 +250,7 @@ img {
 
 /* Style for the <details> element */
 details {
-  border: 1px solid #faad19; /* Matches your existing border color */
+  border: 1px solid var(--nav-background);
   border-radius: 8px;
   padding: 1rem;
   background-color: #fff8e1; /* Light background to stand out */
@@ -266,4 +284,16 @@ details[open] summary::before {
 details[open] {
   background-color: #fff3cd; /* Slightly different background */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Prose content wrapper - constrains regular content but allows breakouts */
+.prose-content > * {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Full-width visualizations that break out of content container */
+.migration-stability-viz {
+  max-width: none !important;
 }

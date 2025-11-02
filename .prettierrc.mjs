@@ -10,13 +10,13 @@ const config = {
   useTabs: false,
   proseWrap: "preserve",
   // Modern Prettier 3+ options
-  plugins: ["prettier-plugin-organize-imports"],
+  plugins: ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
   overrides: [
     {
       files: ["*.md", "*.mdx"],
       options: {
         proseWrap: "preserve",
-        printWidth: 80,
+        printWidth: 119,
       },
     },
   ],

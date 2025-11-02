@@ -17,25 +17,33 @@ const navLinks = [
 
 function Nav() {
   return (
-    <div className="sm:flex sm:flex-col sm:min-h-screen bg-nav-background p-4 font-mallory-book">
+    <div className="bg-nav-background font-mallory-book p-4 sm:flex sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:flex-col">
       <div className="mb-4">
-        <Link href={`/`}>
+        <Link href={`/`} className="break-normal whitespace-normal">
           <b>Home</b>
         </Link>
       </div>
       <div className="mb-4">
-        <Link href={`/posts`}>Blog Posts</Link>
+        <Link href={`/posts`} className="break-normal whitespace-normal">
+          Blog Posts
+        </Link>
       </div>
       {navLinks.map(({ name, path }, key) => (
         <div className="mb-4" key={key}>
-          <Link href={`/posts/${path}`}>{name}</Link>
+          <Link href={`/posts/${path}`} className="break-normal whitespace-normal">
+            {name}
+          </Link>
         </div>
       ))}
       <div className="mb-4">
-        <Link href={`https://data-science-notes.henrydashwood.com`}>Data Science Notes</Link>
+        <Link href={`https://data-science-notes.henrydashwood.com`} className="break-normal whitespace-normal">
+          Data Science Notes
+        </Link>
       </div>
       <div className="mb-4">
-        <Link href={`https://gen-ai-notes.henrydashwood.com`}>Generative AI Notes</Link>
+        <Link href={`https://gen-ai-notes.henrydashwood.com`} className="break-normal whitespace-normal">
+          Generative AI Notes
+        </Link>
       </div>
     </div>
   );
