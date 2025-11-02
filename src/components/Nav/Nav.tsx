@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 const navLinks = [
   {
@@ -16,36 +20,186 @@ const navLinks = [
 ];
 
 function Nav() {
+  const [isOpen, setIsOpen] = useState(false);
+  const mountedRef = useRef(false);
+  const pathname = usePathname();
+
+  // Track if component is mounted to avoid hydration issues
+  useEffect(() => {
+    mountedRef.current = true;
+  }, []);
+
+  // Close menu when route changes
+  useEffect(() => {
+    // Use setTimeout to make state update asynchronous and avoid cascading renders
+    const timer = setTimeout(() => {
+      setIsOpen(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Prevent body scroll when menu is open on mobile
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Handle ESC key to close menu
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen]);
+
+  const isActive = (path: string) => {
+    if (!pathname) return false;
+    if (path === "/") return pathname === "/";
+    // Check for exact match (with or without trailing slash)
+    // Remove query strings and hashes for comparison
+    const cleanPathname = pathname.split("?")[0].split("#")[0];
+    return cleanPathname === path || cleanPathname === `${path}/`;
+  };
+
   return (
-    <div className="bg-nav-background font-mallory-book p-4 sm:flex sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:flex-col">
-      <div className="mb-4">
-        <Link href={`/`} className="break-normal whitespace-normal">
-          <b>Home</b>
-        </Link>
-      </div>
-      <div className="mb-4">
-        <Link href={`/posts`} className="break-normal whitespace-normal">
-          Blog Posts
-        </Link>
-      </div>
-      {navLinks.map(({ name, path }, key) => (
-        <div className="mb-4" key={key}>
-          <Link href={`/posts/${path}`} className="break-normal whitespace-normal">
-            {name}
+    <>
+      {/* Mobile: Hamburger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-nav-background fixed top-4 left-4 z-50 flex flex-col gap-1.5 rounded-lg p-2.5 shadow-lg transition-all hover:bg-black/10 sm:hidden"
+        aria-label="Toggle menu"
+        aria-expanded={isOpen}
+      >
+        <span
+          className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "translate-y-2 rotate-45" : ""}`}
+        />
+        <span className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "opacity-0" : ""}`} />
+        <span
+          className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "-translate-y-2 -rotate-45" : ""}`}
+        />
+      </button>
+
+      {/* Mobile: Backdrop Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity sm:hidden"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Navigation Content */}
+      <nav
+        className={`bg-nav-background font-mallory-book fixed top-0 left-0 z-40 h-full w-64 p-6 shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
+      >
+        {/* Mobile: Close button inside nav */}
+        <button
+          onClick={() => setIsOpen(false)}
+          className="mb-6 h-8 w-8 rounded-lg transition-opacity hover:opacity-70 sm:hidden"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E")`,
+            backgroundSize: "20px 20px",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            appearance: "none",
+            WebkitAppearance: "none",
+          }}
+          aria-label="Close menu"
+        />
+        {/* Desktop: Logo/Header */}
+        <div className="mb-8 hidden border-b border-black/10 pb-6 sm:block">
+          <Link href="/" className="px-3 text-xl font-bold transition-opacity hover:opacity-80">
+            Home
           </Link>
         </div>
-      ))}
-      <div className="mb-4">
-        <Link href={`https://data-science-notes.henrydashwood.com`} className="break-normal whitespace-normal">
-          Data Science Notes
-        </Link>
-      </div>
-      <div className="mb-4">
-        <Link href={`https://gen-ai-notes.henrydashwood.com`} className="break-normal whitespace-normal">
-          Generative AI Notes
-        </Link>
-      </div>
-    </div>
+
+        {/* Navigation Links */}
+        <div className="flex flex-col gap-1 sm:gap-0.5">
+          <Link
+            href="/posts"
+            onClick={() => setIsOpen(false)}
+            className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+              isActive("/posts")
+                ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
+                : "hover:bg-black/5 hover:underline"
+            }`}
+          >
+            Blog Posts
+          </Link>
+
+          {navLinks.map(({ name, path }, key) => (
+            <Link
+              key={key}
+              href={`/posts/${path}`}
+              onClick={() => setIsOpen(false)}
+              className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+                isActive(`/posts/${path}`)
+                  ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
+                  : "hover:bg-black/5 hover:underline"
+              }`}
+            >
+              {name}
+            </Link>
+          ))}
+        </div>
+
+        {/* Separator */}
+        <div className="my-6 border-t border-black/10" />
+
+        {/* External Links Section */}
+        <div className="mt-auto">
+          <p className="mb-3 px-3 text-xs font-semibold tracking-wider text-black/60 uppercase">External Sites</p>
+          <div className="flex flex-col gap-0.5">
+            <Link
+              href="https://data-science-notes.henrydashwood.com"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 break-normal whitespace-normal transition-all hover:bg-black/5 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Data Science Notes
+              <svg className="h-3 w-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </Link>
+
+            <Link
+              href="https://gen-ai-notes.henrydashwood.com"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 break-normal whitespace-normal transition-all hover:bg-black/5 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Generative AI Notes
+              <svg className="h-3 w-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }
 
