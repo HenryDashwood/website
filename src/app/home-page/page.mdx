@@ -7,11 +7,13 @@ import LinkBoxContainer from "@/components/LinkBoxContainer";
 
 <div className="mb-4 flex justify-center">
   <Image
-    src="https://res.cloudinary.com/henrydashwood/image/upload/v1697504700/profile_ac0f0fab87.jpg"
+    priority
+    src="/images/henry_dashwood_headshot.jpg"
     alt="Picture of Henry Dashwood"
     width={300}
     height={300}
-    className="rounded-lg"
+    className="h-auto rounded-lg"
+    style={{ height: "auto", width: "auto" }}
   />
 </div>
 
@@ -19,54 +21,19 @@ Hello. My name is Henry Dashwood. This is my website.
 
 <div className="flex justify-center rounded-lg p-4">
   <Link href="https://github.com/HenryDashwood" target="_blank">
-    <Image
-      priority
-      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/github_qrrmcq.svg"
-      width={50}
-      height={50}
-      alt="Github logo"
-      className="rounded-lg p-1"
-    />
+    <Image priority src="/images/github.svg" width={50} height={50} alt="Github logo" className="rounded-lg p-1" />
   </Link>
   <Link href="https://www.linkedin.com/in/henry-dashwood-42497969" target="_blank">
-    <Image
-      priority
-      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/linkedin_ipkort.svg"
-      width={50}
-      height={50}
-      alt="LinkedIn logo"
-      className="rounded-lg p-1"
-    />
+    <Image priority src="/images/linkedin.svg" width={50} height={50} alt="LinkedIn logo" className="rounded-lg p-1" />
   </Link>
   <Link href="https://twitter.com/hcndashwood" target="_blank">
-    <Image
-      priority
-      src="https://res.cloudinary.com/henrydashwood/image/upload/v1676510961/website-cms/index/twitter_tt3pql.svg"
-      width={50}
-      height={50}
-      alt="Twitter logo"
-      className="rounded-lg p-1"
-    />
+    <Image priority src="/images/twitter.svg" width={50} height={50} alt="Twitter logo" className="rounded-lg p-1" />
   </Link>
   <Link href="https://bsky.app/profile/hcndashwood.bsky.social" target="_blank">
-    <Image
-      priority
-      src="https://res.cloudinary.com/henrydashwood/image/upload/v1732484374/Bluesky_Logo_a49zgf.svg"
-      width={50}
-      height={50}
-      alt="Bluesky logo"
-      className="rounded-lg p-1"
-    />
+    <Image priority src="/images/bluesky.svg" width={50} height={50} alt="Bluesky logo" className="rounded-lg p-1" />
   </Link>
   <Link href="/feed.xml" target="_blank">
-    <Image
-      priority
-      src="https://res.cloudinary.com/henrydashwood/image/upload/v1717438680/rss_81837ee370.svg"
-      width={50}
-      height={50}
-      alt="RSS feed"
-      className="rounded-lg p-1"
-    />
+    <Image priority src="/images/rss.svg" width={50} height={50} alt="RSS feed" className="rounded-lg p-1" />
   </Link>
 </div>
 

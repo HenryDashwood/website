@@ -3,23 +3,68 @@
 @import "highlight.js/styles/github-dark.css";
 
 @theme {
+  /* Brand colors */
   --color-nav-background: #faad19;
+  --color-background: #f9e9cb;
+  --color-foreground: #171717;
+
+  /* Link colors */
+  --color-link: #0070f3;
+
+  /* Code block colors */
+  --color-code-bg: #2d3748;
+  --color-code-text: #e2e8f0;
+  --color-code-border: #4a5568;
+  --color-code-inline-bg: #f7fafc;
+  --color-code-inline-text: #2d3748;
+  --color-code-inline-border: #e2e8f0;
+
+  /* Syntax highlighting colors (Dracula theme) */
+  --color-syntax-keyword: #ff79c6;
+  --color-syntax-string: #f1fa8c;
+  --color-syntax-comment: #6272a4;
+  --color-syntax-number: #bd93f9;
+  --color-syntax-function: #50fa7b;
+  --color-syntax-variable: #f8f8f2;
+  --color-syntax-builtin: #8be9fd;
+  --color-syntax-type: #8be9fd;
+  --color-syntax-attr: #50fa7b;
+  --color-syntax-tag: #ff79c6;
+  --color-syntax-name: #ff79c6;
+  --color-syntax-value: #f1fa8c;
+
+  /* UI element colors */
+  --color-details-bg: #fff8e1;
+  --color-details-open-bg: #fff3cd;
+  --color-text-muted: #666666;
+
+  /* Chart/visualization colors */
+  --color-chart-gray-light: #e5e7eb;
+  --color-chart-gray-medium: #9ca3af;
+  --color-chart-gray-dark: #6b7280;
+  --color-chart-gray-darker: #374151;
+  --color-chart-blue: #3b82f6;
+  --color-chart-purple: #a855f7;
+  --color-chart-green: #059669;
+  --color-chart-red: #ef4444;
+
+  /* Fonts */
   --font-martina-plantijn: var(--font-martina-plantijn);
   --font-arizona-flare: var(--font-arizona-flare);
   --font-mallory-book: var(--font-mallory-book);
 }
 
 :root {
-  --background: #f9e9cb;
-  --foreground: #171717;
-  --nav-background: #faad19;
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+  --nav-background: var(--color-nav-background);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #f9e9cb;
-    --foreground: #171717;
-    --nav-background: #faad19;
+    --background: var(--color-background);
+    --foreground: var(--color-foreground);
+    --nav-background: var(--color-nav-background);
   }
 }
 
@@ -56,7 +101,7 @@ h5 {
 }
 
 a {
-  color: #0070f3;
+  color: var(--color-link);
 }
 
 a:hover {
@@ -83,22 +128,22 @@ blockquote {
 
 /* Code block styling */
 pre {
-  background-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1rem 0;
-  border: 1px solid #4a5568;
+  border: 1px solid var(--color-code-border);
 }
 
 code {
-  background-color: #f7fafc;
-  color: #2d3748;
+  background-color: var(--color-code-inline-bg);
+  color: var(--color-code-inline-text);
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-code-inline-border);
 }
 
 /* Inline code within pre blocks should not have background */
@@ -112,73 +157,73 @@ pre code {
 
 /* Syntax highlighting overrides for better contrast */
 .hljs {
-  background: #2d3748 !important;
-  color: #e2e8f0 !important;
+  background: var(--color-code-bg) !important;
+  color: var(--color-code-text) !important;
 }
 
 .hljs-keyword {
-  color: #ff79c6 !important;
+  color: var(--color-syntax-keyword) !important;
 }
 
 .hljs-string {
-  color: #f1fa8c !important;
+  color: var(--color-syntax-string) !important;
 }
 
 .hljs-comment {
-  color: #6272a4 !important;
+  color: var(--color-syntax-comment) !important;
   font-style: italic;
 }
 
 .hljs-number {
-  color: #bd93f9 !important;
+  color: var(--color-syntax-number) !important;
 }
 
 .hljs-function {
-  color: #50fa7b !important;
+  color: var(--color-syntax-function) !important;
 }
 
 .hljs-variable {
-  color: #f8f8f2 !important;
+  color: var(--color-syntax-variable) !important;
 }
 
 .hljs-title {
-  color: #50fa7b !important;
+  color: var(--color-syntax-function) !important;
 }
 
 .hljs-params {
-  color: #f8f8f2 !important;
+  color: var(--color-syntax-variable) !important;
 }
 
 .hljs-built_in {
-  color: #8be9fd !important;
+  color: var(--color-syntax-builtin) !important;
 }
 
 .hljs-literal {
-  color: #bd93f9 !important;
+  color: var(--color-syntax-number) !important;
 }
 
 .hljs-type {
-  color: #8be9fd !important;
+  color: var(--color-syntax-type) !important;
 }
 
 .hljs-attr {
-  color: #50fa7b !important;
+  color: var(--color-syntax-attr) !important;
 }
 
 .hljs-tag {
-  color: #ff79c6 !important;
+  color: var(--color-syntax-tag) !important;
 }
 
 .hljs-name {
-  color: #ff79c6 !important;
+  color: var(--color-syntax-name) !important;
 }
 
 .hljs-attribute {
-  color: #50fa7b !important;
+  color: var(--color-syntax-attr) !important;
 }
 
 .hljs-value {
-  color: #f1fa8c !important;
+  color: var(--color-syntax-value) !important;
 }
 
 table {
@@ -253,7 +298,7 @@ details {
   border: 1px solid var(--nav-background);
   border-radius: 8px;
   padding: 1rem;
-  background-color: #fff8e1; /* Light background to stand out */
+  background-color: var(--color-details-bg);
   cursor: pointer;
   transition:
     background-color 0.3s ease,
@@ -282,7 +327,7 @@ details[open] summary::before {
 
 /* Style when <details> is expanded */
 details[open] {
-  background-color: #fff3cd; /* Slightly different background */
+  background-color: var(--color-details-open-bg);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 

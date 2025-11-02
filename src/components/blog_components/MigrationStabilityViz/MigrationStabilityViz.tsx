@@ -3,6 +3,13 @@
 import { useMemo, useState } from "react";
 import { InlineMath } from "react-katex";
 
+// Helper function to get CSS variable value with fallback
+function getCSSVar(varName: string, fallback: string): string {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return value || fallback;
+}
+
 interface Params {
   WA0: number; // Base wage City A
   WB0: number; // Base wage City B
@@ -118,6 +125,17 @@ function findEquilibrium(params: Params): number | null {
 type Preset = "balanced" | "restrictive" | "productivity-shock";
 
 export default function MigrationStabilityViz() {
+  // Use lazy initializer to compute colors once on mount, avoiding synchronous setState in useEffect
+  const colors = useState(() => ({
+    grayLight: getCSSVar("--color-chart-gray-light", "#e5e7eb"),
+    grayMedium: getCSSVar("--color-chart-gray-medium", "#9ca3af"),
+    grayDark: getCSSVar("--color-chart-gray-dark", "#6b7280"),
+    grayDarker: getCSSVar("--color-chart-gray-darker", "#374151"),
+    blue: getCSSVar("--color-chart-blue", "#3b82f6"),
+    red: getCSSVar("--color-chart-red", "#ef4444"),
+    green: getCSSVar("--color-chart-green", "#059669"),
+  }))[0];
+
   const [WA0, setWA0] = useState("70");
   const [PA0, setPA0] = useState("22");
   const [epsA, setEpsA] = useState("0.8");
@@ -559,8 +577,15 @@ export default function MigrationStabilityViz() {
                     if (!isFinite(y)) return null;
                     return (
                       <g key={i}>
-                        <line x1={0} x2={chartWidth} y1={y} y2={y} stroke="#e5e7eb" strokeDasharray="2,2" />
-                        <text x={-10} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="10" fill="#6b7280">
+                        <line x1={0} x2={chartWidth} y1={y} y2={y} stroke={colors.grayLight} strokeDasharray="2,2" />
+                        <text
+                          x={-10}
+                          y={y}
+                          textAnchor="end"
+                          alignmentBaseline="middle"
+                          fontSize="10"
+                          fill={colors.grayDark}
+                        >
                           {value.toFixed(2)}
                         </text>
                       </g>
@@ -574,7 +599,7 @@ export default function MigrationStabilityViz() {
                       x2={xScale(sStar)}
                       y1={0}
                       y2={chartHeight}
-                      stroke="#059669"
+                      stroke={colors.green}
                       strokeWidth="2"
                       strokeDasharray="5,5"
                     />
@@ -584,14 +609,14 @@ export default function MigrationStabilityViz() {
                   <path
                     d={createPath((d) => d.UA)}
                     fill="none"
-                    stroke="#ef4444"
+                    stroke={colors.red}
                     strokeWidth="3"
                     suppressHydrationWarning
                   />
                   <path
                     d={createPath((d) => d.UB)}
                     fill="none"
-                    stroke="#3b82f6"
+                    stroke={colors.blue}
                     strokeWidth="3"
                     suppressHydrationWarning
                   />
@@ -603,20 +628,34 @@ export default function MigrationStabilityViz() {
                     if (arrow.direction === "right") {
                       return (
                         <g key={idx}>
-                          <line x1={x - 15} x2={x + 15} y1={arrowY} y2={arrowY} stroke="#374151" strokeWidth="2" />
+                          <line
+                            x1={x - 15}
+                            x2={x + 15}
+                            y1={arrowY}
+                            y2={arrowY}
+                            stroke={colors.grayDarker}
+                            strokeWidth="2"
+                          />
                           <polygon
                             points={`${x + 15},${arrowY} ${x + 15 - arrowSize},${arrowY - arrowSize / 2} ${x + 15 - arrowSize},${arrowY + arrowSize / 2}`}
-                            fill="#374151"
+                            fill={colors.grayDarker}
                           />
                         </g>
                       );
                     } else {
                       return (
                         <g key={idx}>
-                          <line x1={x - 15} x2={x + 15} y1={arrowY} y2={arrowY} stroke="#374151" strokeWidth="2" />
+                          <line
+                            x1={x - 15}
+                            x2={x + 15}
+                            y1={arrowY}
+                            y2={arrowY}
+                            stroke={colors.grayDarker}
+                            strokeWidth="2"
+                          />
                           <polygon
                             points={`${x - 15},${arrowY} ${x - 15 + arrowSize},${arrowY - arrowSize / 2} ${x - 15 + arrowSize},${arrowY + arrowSize / 2}`}
-                            fill="#374151"
+                            fill={colors.grayDarker}
                           />
                         </g>
                       );
@@ -648,18 +687,25 @@ export default function MigrationStabilityViz() {
                         x2={xScale(selectedPoint.s)}
                         y1={0}
                         y2={chartHeight}
-                        stroke="#9ca3af"
+                        stroke={colors.grayMedium}
                         strokeWidth="1"
                         strokeDasharray="3,3"
                       />
-                      <circle cx={xScale(selectedPoint.s)} cy={yScale(selectedPoint.UA)} r={4} fill="#ef4444" />
-                      <circle cx={xScale(selectedPoint.s)} cy={yScale(selectedPoint.UB)} r={4} fill="#3b82f6" />
+                      <circle cx={xScale(selectedPoint.s)} cy={yScale(selectedPoint.UA)} r={4} fill={colors.red} />
+                      <circle cx={xScale(selectedPoint.s)} cy={yScale(selectedPoint.UB)} r={4} fill={colors.blue} />
                     </>
                   )}
 
                   {/* Axes */}
-                  <line x1={0} x2={chartWidth} y1={chartHeight} y2={chartHeight} stroke="#374151" strokeWidth="2" />
-                  <line x1={0} x2={0} y1={0} y2={chartHeight} stroke="#374151" strokeWidth="2" />
+                  <line
+                    x1={0}
+                    x2={chartWidth}
+                    y1={chartHeight}
+                    y2={chartHeight}
+                    stroke={colors.grayDarker}
+                    strokeWidth="2"
+                  />
+                  <line x1={0} x2={0} y1={0} y2={chartHeight} stroke={colors.grayDarker} strokeWidth="2" />
 
                   {/* X-axis label */}
                   <text x={chartWidth / 2} y={chartHeight + 50} textAnchor="middle" fontSize="14" fontWeight="bold">
@@ -671,8 +717,15 @@ export default function MigrationStabilityViz() {
                     const x = xScale(s);
                     return (
                       <g key={s}>
-                        <line x1={x} x2={x} y1={chartHeight} y2={chartHeight + 5} stroke="#374151" strokeWidth="2" />
-                        <text x={x} y={chartHeight + 20} textAnchor="middle" fontSize="12" fill="#374151">
+                        <line
+                          x1={x}
+                          x2={x}
+                          y1={chartHeight}
+                          y2={chartHeight + 5}
+                          stroke={colors.grayDarker}
+                          strokeWidth="2"
+                        />
+                        <text x={x} y={chartHeight + 20} textAnchor="middle" fontSize="12" fill={colors.grayDarker}>
                           {s.toFixed(2)}
                         </text>
                       </g>
@@ -693,7 +746,7 @@ export default function MigrationStabilityViz() {
 
                   {/* Legend */}
                   <g transform={`translate(${chartWidth + 10}, 20)`}>
-                    <rect x={0} y={0} width={20} height={3} fill="#ef4444" />
+                    <rect x={0} y={0} width={20} height={3} fill={colors.red} />
                     <text x={25} y={5} fontSize="12" alignmentBaseline="middle">
                       <tspan fontStyle="italic">U</tspan>
                       <tspan fontSize="9" dy="2">
@@ -704,7 +757,7 @@ export default function MigrationStabilityViz() {
                       </tspan>
                     </text>
 
-                    <rect x={0} y={20} width={20} height={3} fill="#3b82f6" />
+                    <rect x={0} y={20} width={20} height={3} fill={colors.blue} />
                     <text x={25} y={25} fontSize="12" alignmentBaseline="middle">
                       <tspan fontStyle="italic">U</tspan>
                       <tspan fontSize="9" dy="2">
@@ -717,7 +770,15 @@ export default function MigrationStabilityViz() {
 
                     {sStar !== null && (
                       <>
-                        <line x1={0} x2={20} y1={45} y2={45} stroke="#059669" strokeWidth="2" strokeDasharray="5,5" />
+                        <line
+                          x1={0}
+                          x2={20}
+                          y1={45}
+                          y2={45}
+                          stroke={colors.green}
+                          strokeWidth="2"
+                          strokeDasharray="5,5"
+                        />
                         <text x={25} y={48} fontSize="12" alignmentBaseline="middle">
                           <tspan fontStyle="italic">s</tspan>* = {sStar.toFixed(3)}
                         </text>

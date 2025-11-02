@@ -1,20 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { InlineMath } from "react-katex";
 
+// Helper function to get CSS variable value with fallback
+function getCSSVar(varName: string, fallback: string): string {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return value || fallback;
+}
+
 export default function PowerLawViz() {
-  const [mounted, setMounted] = useState(false);
+  // Client component - always mounted on client side
+  const mounted = true;
+
+  // Use lazy initializer to compute colors once on mount, avoiding synchronous setState in useEffect
+  const colors = useState(() => ({
+    grayLight: getCSSVar("--color-chart-gray-light", "#e5e7eb"),
+    grayMedium: getCSSVar("--color-chart-gray-medium", "#9ca3af"),
+    grayDark: getCSSVar("--color-chart-gray-dark", "#6b7280"),
+    grayDarker: getCSSVar("--color-chart-gray-darker", "#374151"),
+    blue: getCSSVar("--color-chart-blue", "#3b82f6"),
+    purple: getCSSVar("--color-chart-purple", "#a855f7"),
+  }))[0];
+
   const [W0, setW0] = useState("70");
   const [eta, setEta] = useState("0.05");
   const [showRent, setShowRent] = useState(false);
   const [P0, setP0] = useState("22");
   const [epsilon, setEpsilon] = useState("0.8");
-
-  useEffect(() => {
-    // This is intentional - we need to mark the component as mounted to avoid hydration mismatches
-    setMounted(true);
-  }, []);
 
   const W0_val = parseFloat(W0) || 70;
   const eta_val = parseFloat(eta) || 0.05;
@@ -90,8 +104,8 @@ export default function PowerLawViz() {
               const y = yScale(value);
               return (
                 <g key={i}>
-                  <line x1={0} x2={chartWidth} y1={y} y2={y} stroke="#e5e7eb" strokeDasharray="2,2" />
-                  <text x={-10} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="11" fill="#6b7280">
+                  <line x1={0} x2={chartWidth} y1={y} y2={y} stroke={colors.grayLight} strokeDasharray="2,2" />
+                  <text x={-10} y={y} textAnchor="end" alignmentBaseline="middle" fontSize="11" fill={colors.grayDark}>
                     £{value.toFixed(0)}k
                   </text>
                 </g>
@@ -104,28 +118,41 @@ export default function PowerLawViz() {
               x2={xScale(0.5)}
               y1={0}
               y2={chartHeight}
-              stroke="#9ca3af"
+              stroke={colors.grayMedium}
               strokeWidth="1"
               strokeDasharray="3,3"
             />
 
             {/* Wage curve */}
-            <path d={mounted ? wagePath : ""} fill="none" stroke="#3b82f6" strokeWidth="3" suppressHydrationWarning />
+            <path
+              d={mounted ? wagePath : ""}
+              fill="none"
+              stroke={colors.blue}
+              strokeWidth="3"
+              suppressHydrationWarning
+            />
 
             {/* Rent curve */}
             {showRent && (
               <path
                 d={mounted ? rentPath : ""}
                 fill="none"
-                stroke="#a855f7"
+                stroke={colors.purple}
                 strokeWidth="3"
                 suppressHydrationWarning
               />
             )}
 
             {/* Axes */}
-            <line x1={0} x2={chartWidth} y1={chartHeight} y2={chartHeight} stroke="#374151" strokeWidth="2" />
-            <line x1={0} x2={0} y1={0} y2={chartHeight} stroke="#374151" strokeWidth="2" />
+            <line
+              x1={0}
+              x2={chartWidth}
+              y1={chartHeight}
+              y2={chartHeight}
+              stroke={colors.grayDarker}
+              strokeWidth="2"
+            />
+            <line x1={0} x2={0} y1={0} y2={chartHeight} stroke={colors.grayDarker} strokeWidth="2" />
 
             {/* X-axis label */}
             <text x={chartWidth / 2} y={chartHeight + 45} textAnchor="middle" fontSize="14" fontWeight="bold">
@@ -137,8 +164,15 @@ export default function PowerLawViz() {
               const x = xScale(s);
               return (
                 <g key={s}>
-                  <line x1={x} x2={x} y1={chartHeight} y2={chartHeight + 5} stroke="#374151" strokeWidth="2" />
-                  <text x={x} y={chartHeight + 20} textAnchor="middle" fontSize="12" fill="#374151">
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={chartHeight}
+                    y2={chartHeight + 5}
+                    stroke={colors.grayDarker}
+                    strokeWidth="2"
+                  />
+                  <text x={x} y={chartHeight + 20} textAnchor="middle" fontSize="12" fill={colors.grayDarker}>
                     {s.toFixed(2)}
                   </text>
                 </g>
@@ -159,14 +193,14 @@ export default function PowerLawViz() {
 
             {/* Legend */}
             <g transform={`translate(${chartWidth - 70}, 10)`}>
-              <rect x={0} y={0} width={20} height={3} fill="#3b82f6" />
+              <rect x={0} y={0} width={20} height={3} fill={colors.blue} />
               <text x={25} y={5} fontSize="12" alignmentBaseline="middle">
                 Wage
               </text>
 
               {showRent && (
                 <>
-                  <rect x={0} y={20} width={20} height={3} fill="#a855f7" />
+                  <rect x={0} y={20} width={20} height={3} fill={colors.purple} />
                   <text x={25} y={25} fontSize="12" alignmentBaseline="middle">
                     Rent
                   </text>
