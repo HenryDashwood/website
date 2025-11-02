@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Why Cities Exist: The Fundamental Trade-off",
-  description: "My worldview",
+  description: "The first post in a series on urban economics",
   openGraph: {
     images: [
       {
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   other: {
     slug: "why-cities-exist",
-    published: "2025-10-26",
+    published: "2025-11-02",
     tags: ["Economics", "Housing"],
   },
 };
