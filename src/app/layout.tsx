@@ -70,7 +70,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${martinaPlantijn.variable} ${arizonaFlare.variable} ${malloryBook.variable}`}>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Analytics />
       </body>
