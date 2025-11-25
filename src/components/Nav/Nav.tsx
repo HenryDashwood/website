@@ -84,7 +84,7 @@ function Nav() {
         <span
           className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "translate-y-2 rotate-45" : ""}`}
         />
-        <span className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "opacity-0" : ""}`} />
+        <span className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "scale-x-0 opacity-0" : ""}`} />
         <span
           className={`h-0.5 w-6 bg-current transition-all duration-300 ${isOpen ? "-translate-y-2 -rotate-45" : ""}`}
         />
