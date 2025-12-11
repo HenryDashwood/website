@@ -1,0 +1,455 @@
+## Introduction
+
+In the [last blog](/posts/why-cities-exist), we explained why London is more expensive than Newcastle. Workers move between cities until they're indifferent about where to live, creating spatial equilibrium.
+
+Here's a slightly different question: Why is Putney more expensive than Teddington?
+
+Both are in South West London. Both are affluent, safe, and famous for their "village" feel, riverside pubs, and green spaces. They are arguably equally "nice" places to live. So why does a one-bedroom flat cost £1,725/month in Putney but only £1,525/month in Teddington?
+
+The answer, at least in part, is commuting.
+
+A flat in Putney is in Zone 2, with a 15-minute fast train to Waterloo. Teddington is in Zone 6. While beautiful, it’s at the end of a long loop; getting to Waterloo takes about 40–45 minutes. Living in Putney saves you an hour of commuting every single day.
+
+That hour is valuable. And the housing market prices it in.
+
+<LocalImage
+  src="/images/alonso-muth-mills-model/london-rent-borough.svg"
+  alt="Median monthly rent by borough in London (Q3 2025)"
+  size="full"
+  width={800}
+  height={600}
+  caption="Median monthly rent by borough in London (Q3 2025)"
+/>
+
+## Bid-Rent Theory
+
+Before we dive into the equations, it helps to visualise _how_ the market sets these prices. Economists refer to this mechanism as the **Bid-Rent Curve**.
+
+Imagine a silent auction is happening for every plot of land in London. Everyone - banks, retailers, families, farmers, etc. - submits bids for a specific plot based on how much profit or utility they can derive from that location.
+
+1. **Commercial Firms:** Businesses like hedge funds or tech firms gain the most from being in the centre (due to agglomeration benefits and access to clients). Their "transport costs" (the cost of _not_ being central) are astronomical, so they bid extremely high for the very centre.
+2. **Residents:** Workers want to be central to save commuting time. They bid less than the banks, but more than farmers. Crucially, their bid drops as they move further out because their commuting costs rise.
+3. **Agriculture:** Farmers place a relatively low, flat bid for land. They don't need to commute to the Shard, so they are happy to take the land at the urban fringe.
+
+The diagram below illustrates this competition. The market price is the highest price offered at any given distance. It is the "upper envelope" of the various curves.
+
+- The inner zone goes to the highest commercial bidders: offices, retail, etc.
+- The middle zone goes to the next highest bidders, people looking for housing within a commutable distance of the commercial zone.
+- The outer zone goes to agriculture.
+
+<LocalImage
+  src="/images/alonso-muth-mills-model/bid-rent-curve.svg"
+  alt="The bid-rent curve"
+  width={800}
+  height={600}
+  caption="The bid-rent curve"
+/>
+
+The roots of bid rent theory go back to the early 19th century, when Johann von Thünen observed that heavy or perishable products like milk or vegetables were produced nearer to market towns, while lighter, durable goods like grain were grown further away.
+
+In the 1960s, William Alonso adapted von Thünen's "isolated state" model to describe households and firms competing for space in an urban setting. When choosing where to locate, there is a trade-off between living close to the centre, where land rents are higher, versus further out, where commuting costs (in both time and money) are higher.
+
+In equilibrium, workers must be indifferent between these options. If Kensington were genuinely better value for money after accounting for commuting costs, everyone would try to live there. Rents would rise until the advantage was no longer apparent.
+
+## A Simple Version: Fixed Housing
+
+Let's start with the simplest possible model. Assume:
+
+1. Everyone works in the city centre (in an infinitely tall skyscraper using no land)
+2. Everyone consumes exactly one unit of housing. There is no choice over the size of where you live.
+3. Commuting takes time, and time is valuable
+
+### Setup
+
+You live at a distance $d$ from the centre. Your commute takes $T(d)$ time. To keep things simple, assume commuting time increases linearly with distance:
+
+$$
+T(d) = \tau \cdot d
+$$
+
+where $\tau$ is the time cost per mile. For example, if $\tau = 5$ minutes per mile, living 10 miles out means a 50-minute commute.
+
+You have 1 time unit available. After commuting, you have $1 - T(d)$ left to work. Your wage is $W$ per time unit, so your earnings are:
+
+$$
+\begin{aligned}
+\text{Earnings} &= W \cdot (1 - T(d)) \\
+&= W \cdot (1 - \tau d)
+\end{aligned}
+$$
+
+You spend your earnings on housing $P_H(d)$ and consumption $C$. So your budget constraint is:
+
+$$
+W(1 - \tau d) = P_H(d) + C
+$$
+
+### The Equilibrium Condition
+
+**_In spatial equilibrium, utility must be equal at all distances from the centre._**
+
+If living closer to the centre gave you higher utility (after accounting for housing costs), everyone would try to move there. Rents would rise until people were indifferent again.
+
+You get utility from consumption. Or, mathematically, $U(C)$. For people to be indifferent at all locations:
+
+$$
+U(C(d)) = \bar{U}
+$$
+
+for all distances $d$.
+
+This means consumption must be the same everywhere:
+
+$$
+C(d) = \bar{C}
+$$
+
+Plugging into the budget constraint:
+
+$$
+W(1 - \tau d) = P_H(d) + \bar{C}
+$$
+
+And rearranging for the price at distance $d$:
+
+$$
+P_H(d) = W(1 - \tau d) - \bar{C}
+$$
+
+Now, let's look at the city centre where $d = 0$:
+
+$$
+P_H(0) = W - \bar{C}
+$$
+
+Since $P_H(0) = W - \bar{C}$ we can substitute $P_H(0)$ back into our equation for $P_H(d)$ which gives us our final rent gradient:
+
+$$
+P_H(d) = P_H(0) - W \tau d
+$$
+
+This shows us that the price of housing falls linearly with distance from the centre. The slope is $-W\tau$. The further you live from the centre, the more time you spend commuting, so housing must be cheaper to compensate.
+
+## A Worked Example
+
+Let's make this concrete with real numbers from the South West Main Line, the railway connecting Waterloo to Surrey and Hampshire.
+
+### Parameters
+
+To get the numbers right, we need to account for the fact that the marginal commuter - the person setting the prices - likely uses faster transport links (overground trains or the Elizabeth line) rather than just the bus.
+
+- **Wage**: £80,000/year ≈ £40/hour (post-tax/perceived value of time).
+- **Commute speed**: 20 mph average (fast train + walking at either end).
+- **Work days**: 20 days/month.
+
+### The Cost of Distance
+
+Living one mile further out adds 2 miles to your daily round trip.
+
+- **Time added**: 2 miles / 20 mph = 0.1 hours (6 minutes) per day.
+- **Monthly time**: 0.1 hours $\times$ 20 days = 2 hours per month.
+- **Monthly cost**: 2 hours $\times$ £40/hour = **£80 per mile**.
+  So, for every mile you move away from the centre, your rent should drop by £80/month to compensate you for the lost time.
+
+### Predictions
+
+Let's plug these numbers into the rent equation we derived in the previous section:
+
+We'll assume that the rent in the city centre at Waterloo, $P_H(0)$, is £2,500. We calculated our monthly commuting cost, $W \tau$, to be £80 per mile. So for Clapham Junction (3.6 miles out):
+
+$$
+\begin{aligned}
+P_H(3.6) &= £2500 - (£80 \times 3.6) \\
+&= £2212
+\end{aligned}
+$$
+
+We can apply this formula to places further along this train line. And we can compare the predictions to real-world data.[^1] Have a look at the table and chart below, and you'll see that the predictions are not that far off. Rents fall as you move away from the centre.
+
+<LocalImage
+  src="/images/alonso-muth-mills-model/london-rent-station.svg"
+  alt="Two-bedroom rent (£) along the South West Main Line"
+  size="full"
+  width={800}
+  height={600}
+  caption="Two-bedroom rent along the South West Main Line"
+/>
+
+| Station          | Distance   | Predicted Rent | Actual Rent |
+| ---------------- | ---------- | -------------- | ----------- |
+| Waterloo         | 0 miles    | £2,500         | £2,492      |
+| Clapham Junction | 3.6 miles  | £2,212         | £2,400      |
+| Wimbledon        | 6.9 miles  | £1,948         | £2,000      |
+| Surbiton         | 11.2 miles | £1,604         | £1,725      |
+
+Now remember that spatial equilibrium means the total cost of living at any location (rent + commuting) must be approximately constant.
+
+At Waterloo (SE1):
+
+- Rent: £2,492/month
+- Commuting cost: £0
+- Total: £2,492
+
+At Surbiton (KT6, 11.2 miles out):
+
+- Rent: £1,725/month
+- Commuting cost: ~£770/month (11.2 miles × 6 min/mile × 2 ways × 20 days × £40/hr ÷ 60)
+- Total: £2,495
+
+The maths works out almost perfectly. You pay for proximity either in higher rent or in commuting time. There's no free lunch.
+
+## Adding Flexible Housing Consumption
+
+So far, we've assumed everyone lives in identical flats. But in reality, people living further from the centre tend to have larger homes. Why?
+
+Because housing is cheaper further out, people substitute toward more housing and away from other consumption.
+
+Now, suppose workers can choose how much housing $H$ to consume. Utility is:
+
+$$
+U(C, H) = C + \alpha \ln(H)
+$$
+
+They get utility from consumption $C$ and from housing $H$, with the log function capturing diminishing returns (the first few square metres are very valuable, but the 100th square metre adds less).
+
+The budget constraint is now:
+
+$$
+W(1 - \tau d) = P_H(d) \cdot H + C
+$$
+
+Workers optimise by choosing $H$ to maximise utility. The first-order condition is:
+
+$$
+P_H(d) = \frac{\alpha}{H}
+$$
+
+<details>
+<summary>What is a "first-order condition"? (Click to expand)</summary>
+
+"First-order condition" is economist speak for finding the top of a hill.
+
+Imagine you are climbing a hill representing your utility. As long as the slope is pointing up, you keep climbing. You only stop when the ground flattens out - where the slope is zero.
+
+So in this instance, we model people as wanting to keep "buying more house" until the marginal benefit equals the marginal cost. The cost is obviously the price, and the benefit is the extra space, which gets smaller as you have more of it. If you stopped before this point, you'd be missing out on cheap space that makes you happy. If you went further, you'd be paying for space that doesn't bring you enough joy to justify the price tag.
+
+We want to choose the amount of housing $H$ that maximises utility, subject to our budget. The marginal benefit of more housing $\frac{\alpha}{H}$ must equal its price.
+
+From the budget constraint $W(1 - \tau d) = P_H(d) \cdot H + C$, we solve for $C$:
+
+$$
+C = W(1 - \tau d) - P_H(d) \cdot H
+$$
+
+Plug this expression for $C$ into the utility function $U = C + \alpha \ln(H)$:
+
+$$
+U(H) = [W(1 - \tau d) - P_H(d) \cdot H] + \alpha \ln(H)
+$$
+
+Take the derivative of $U$ with respect to $H$. Note that $W, \tau, d,$ and $P_H$ are treated as constants here, so the derivative of the constant term $W(1 - \tau d)$ is zero.
+
+$$
+\frac{dU}{dH} = - P_H(d) + \frac{\alpha}{H}
+$$
+
+To find the maximum, we set the slope (the derivative) to zero:
+
+$$
+0 = - P_H(d) + \frac{\alpha}{H}
+$$
+
+Rearranging, we get:
+
+$$
+P_H(d) = \frac{\alpha}{H}
+$$
+
+</details>
+
+From spatial equilibrium, utility is the same everywhere:
+
+$$
+U(C(d), H(d)) = \bar{U}
+$$
+
+This gives us two results:
+
+**Result 1: Housing consumption increases with distance**
+
+Rearranging $P_H(d) = \frac{\alpha}{H}$:
+
+$$
+H(d) = \frac{\alpha}{P_H(d)}
+$$
+
+Since $P_H(d)$ falls with distance, $H(d)$ rises with distance.
+
+**Result 2: Prices fall exponentially**
+
+Combining the spatial equilibrium condition with the first-order condition, we get:
+
+<details>
+<summary>The full derivation (Click to expand)</summary>
+
+Define Utility:
+
+$$
+U = C + \alpha \ln(H)
+$$
+
+From the budget constraint, we know:
+
+$$
+C = W(1 - \tau d) - P_H \cdot H
+$$
+
+Substituting this into the utility function:
+
+$$
+U = [W(1 - \tau d) - P_H \cdot H] + \alpha \ln(H)
+$$
+
+We established earlier that $H = \frac{\alpha}{P_H}$. This means that spending on housing is constant: $P_H \cdot H = \alpha$. Substituting these into our utility equation:
+
+$$
+U = [W(1 - \tau d) - \alpha] + \alpha \ln\left(\frac{\alpha}{P_H}\right)
+$$
+
+Spatial equilibrium means utility at distance $d$ must equal Utility at the centre ($d=0$):
+
+$$
+\begin{aligned}
+U(d) &= U(0) \\
+[W(1 - \tau d) - \alpha] + \alpha \ln\left(\frac{\alpha}{P_H(d)}\right) &= [W - \alpha] + \alpha \ln\left(\frac{\alpha}{P_H(0)}\right) \\
+-W \tau d - \alpha \ln(P_H(d)) &= - \alpha \ln(P_H(0)) \\
+\ln(P_H(d)) - \ln(P_H(0)) &= -\frac{W \tau}{\alpha} d \\
+\ln\left(\frac{P_H(d)}{P_H(0)}\right) &= -\frac{W \tau}{\alpha} d \\
+\frac{P_H(d)}{P_H(0)} &= e^{-\frac{W \tau}{\alpha} d}
+\end{aligned}
+$$
+
+</details>
+
+$$
+P_H(d) = P_H(0) \cdot e^{-\frac{W\tau}{\alpha}d}
+$$
+
+Prices fall exponentially rather than linearly. The parameter $\alpha$ determines how much people value housing. If $\alpha$ is large, it means people really like space, and prices will fall more slowly with distance. Hopefully, the bid-rent curve plot that we saw above makes more sense now. Here's another example below showing how the people who value proximity outbid the people who value space at the centre because they will pay a lot for a small number of square feet, but who are outbid as we move further out because their willingness to pay drops more steeply.
+
+<LocalImage
+  src="/images/alonso-muth-mills-model/city-sorting.svg"
+  alt="Proximity lovers outbid at the centre, space lovers outbid at the fringe"
+  size="full"
+  width={800}
+  height={600}
+  caption="Sorting within a city: proximity lovers outbid at the centre; space lovers outbid at the fringe"
+/>
+
+## Why Cities Have Skyscrapers
+
+We've explained why rents fall with distance from the centre. But why do buildings get taller near the centre? Richard Muth's work introduced the concept of the "production of housing", which integrated the supply side with Alonso's demand side intuition. He showed that developers respond to high land prices in the city centre by substituting capital for land, i.e. by building taller buildings.
+
+Imagine we own land that is a distance $d$ from the centre. We can build a building of height $h$. Taller buildings cost more per square foot:
+
+$$
+\text{Construction cost} = c_0 \cdot h^{\delta}
+$$
+
+where $\delta > 1$ captures increasing costs (it's harder to build tall).
+
+Our revenue is:
+
+$$
+\text{Revenue} = P_H(d) \cdot h
+$$
+
+We choose height to maximise profit:
+
+$$
+\pi(h) = P_H(d) \cdot h - c_0 \cdot h^{\delta}
+$$
+
+where the first term is revenue and the second is cost.
+
+We can take the derivative with respect to height $h$. The derivative of the revenue term $P_H(d) \cdot h$ is simply $P_H(d)$. The derivative of the cost term uses the power rule ($nx^{n-1}$): the derivative of $h^\delta$ is $\delta \cdot h^{\delta-1}$.
+
+$$
+\frac{d\pi}{dh} = P_H(d) - c_0 \cdot \delta \cdot h^{\delta - 1}
+$$
+
+To find the maximum profit, we set the derivative to zero. This is equivalent to saying we keep building higher until the revenue from the extra floor equals the cost of building it.
+
+$$
+\begin{aligned}
+0 &= P_H(d) - c_0 \cdot \delta \cdot h^{\delta - 1} \\
+P_H(d) &= c_0 \cdot \delta \cdot h^{\delta - 1}
+\end{aligned}
+$$
+
+Solving for $h$:
+
+$$
+h(d) = \left(\frac{P_H(d)}{c_0 \delta}\right)^{\frac{1}{\delta-1}}
+$$
+
+Since $P_H(d)$ falls with distance from the centre, $h(d)$ also falls with distance from the centre.
+
+Hence, buildings are taller where land is more expensive. This explains why the City of London and Canary Wharf have skyscrapers whilst the suburbs have two-storey houses.
+
+### Density Gradients
+
+If each person consumes one unit of housing but buildings are taller near the centre, then density (people per square kilometre) falls with distance from the centre.
+
+$$
+\text{Density}(d) = \frac{1}{\text{Land per person}(d)} = h(d)
+$$
+
+This matches what we observe. Central London has about 15,000 people per km², whilst outer London has about 4,000 per km².[^2]
+
+<LocalImage
+  src="/images/alonso-muth-mills-model/london-borough-density.svg"
+  alt="Density by borough in London"
+  size="full"
+  width={800}
+  height={600}
+  caption="Density by borough in London"
+/>
+
+## Does This Match Reality?
+
+The model captures the essential features of urban geography remarkably well. Rents do fall with distance from employment centres, housing does get larger as you move toward the suburbs, density does decline from centre to fringe, and tall buildings do cluster where land is most valuable. The example along the South West Main Line showed predictions within 10% of actual rents.[^3]
+
+That said, real cities are messier than the model suggests. Rent gradients aren't smooth curves but have kinks and jumps, particularly near tube stations or at zone boundaries. London isn't organised around a single centre but has multiple employment nodes: the City, Canary Wharf, the West End, and increasingly areas like King's Cross. Transport infrastructure creates accessibility that doesn't map neatly onto distance; Reading is further from central London than Croydon, but often better connected. Local amenities, from good schools to nice parks to trendy restaurants, create price premiums that have nothing to do with commuting. And crucially, planning restrictions prevent developers from building as tall as the market would dictate, distorting the patterns the model predicts.
+
+None of these complications invalidates the core insight. They simply remind us that the Alonso-Muth-Mills model is a lens for understanding cities, not a complete description of them.[^4]
+
+## Why This Matters for Policy
+
+Understanding the rent gradient isn't just an academic exercise; it has implications for how we govern cities.
+
+Consider height restrictions. London protects views of St Paul's Cathedral and designates vast swathes as conservation areas, limiting how tall buildings can be in many central locations. The model tells us what happens when you do this: if the market wants tall buildings near the centre but planning prevents them, rents in central zones rise artificially. Workers who would have lived centrally are pushed further out. Commutes lengthen. Time is wasted. Productivity falls.
+
+Transport investment works through the same mechanism but in reverse. The Elizabeth Line effectively shrank London by reducing journey times from places like Reading and Shenfield. In the language of the model, it lowered $\tau$ for locations along the route, flattening the rent gradient. This is why house prices rose along the line before it even opened: markets anticipate changes in accessibility. Economists have long argued that we should capture some of this land value appreciation to fund future infrastructure, since the benefits otherwise accrue entirely to existing landowners who did nothing to create them.
+
+The rise of remote work represents perhaps the most dramatic change to the rent gradient in decades. When people commute five days a week, living close to the office is extremely valuable. When they commute two days a week, that value falls by more than half. The effective $\tau$ plummets. We saw this play out during COVID: central London rents fell whilst prices in suburbs and satellite towns surged. The model predicted exactly this pattern.
+
+## What's Next
+
+In the [last blog](/posts/why-cities-exist), we looked at spatial patterns across cities. In this blog, we have looked at spatial patterns within cities. But there are lots of things we haven't considered:
+
+- Where do the jobs come from?
+- Why is there a "centre" at all?
+- Why do firms cluster?
+- What determines which cities are productive?
+- How do firms choose locations? We've only modelled workers so far.
+
+These questions lead us to the subject of the next blog: the Rosen-Roback model with firm location decisions and labour demand. We'll see how wages are determined by both worker preferences (labour supply) and firm productivity (labour demand), and how housing supply constraints affect them.
+
+[^1]: Using [Q3 2025 median rents for two-bedroom flats](https://www.ons.gov.uk/economy/inflationandpriceindices/adhocs/3080privaterentalmarketinlondonoctober2024toseptember2025) along the South West Main Line.
+
+[^2]: Using [Land Area and Population Density, Ward and Borough](https://data.london.gov.uk/dataset/land-area-and-population-density-ward-and-borough-e1zp8/) from the Greater London Authority.
+
+[^3]: There are, of course, all the caveats about it being a single, cherry-picked example. More robust investigations will come in future posts.
+
+[^4]: Edwin Mills incorporated transportation systems into the model. He is also credited with developing a general equilibrium framework in which the location of housing, the height of buildings, and the price of land are determined simultaneously.

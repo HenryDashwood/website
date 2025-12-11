@@ -295,6 +295,7 @@ img {
 
 /* Style for the <details> element */
 details {
+  @apply mt-4;
   border: 1px solid var(--nav-background);
   border-radius: 8px;
   padding: 1rem;
