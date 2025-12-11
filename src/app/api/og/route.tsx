@@ -11,7 +11,7 @@ export async function GET(request: Request) {
       (
         <div
           style={{
-            backgroundColor: "var(--color-nav-background)", // --color-nav-background
+            backgroundColor: "#faad19", // navBackground color
             backgroundSize: "150px 150px",
             height: "100%",
             width: "100%",
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
               fontSize: 60,
               fontStyle: "normal",
               letterSpacing: "-0.025em",
-              color: "var(--color-foreground)", // --color-foreground
+              color: "#000000", // foreground color
               marginTop: 30,
               padding: "0 120px",
               lineHeight: 1.4,
