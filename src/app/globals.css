@@ -155,6 +155,31 @@ pre code {
   font-size: inherit;
 }
 
+/* KaTeX display math - allow horizontal scroll for long equations */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-nav-background) transparent;
+}
+
+.katex-display::-webkit-scrollbar {
+  height: 6px;
+}
+
+.katex-display::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.katex-display::-webkit-scrollbar-thumb {
+  background-color: var(--color-nav-background);
+  border-radius: 3px;
+}
+
+.katex-display::-webkit-scrollbar-thumb:hover {
+  background-color: #e09a16;
+}
+
 /* Syntax highlighting overrides for better contrast */
 .hljs {
   background: var(--color-code-bg) !important;
