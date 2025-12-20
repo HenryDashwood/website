@@ -284,8 +284,10 @@ We want to know to know the equilibrium values for $x_A$ and $x_B$.
 Let's start by writing down a pair of equations to describe each firm's profit, the profit functions. Intially we could say that each firm's profit will be the price they sell their goods minus the cost of manufacturing them, all multiplied by the quantity that is manufactured:
 
 $$
-\pi_A = (p_A - c)x_A \\
-\pi_B = (p_B - c)x_B
+\begin{aligned}
+\pi_A &= (p_A - c)x_A \\
+\pi_B &= (p_B - c)x_B
+\end{aligned}
 $$
 
 Now as described in the question above, the prices of $A$ and $B$'s goods are given by their inverse demand functions. So we can subsitute them into the profit functions:
@@ -393,15 +395,19 @@ Of course, the same principles hold if with swap $A$ and $B$ around.
 First we find invert the inverse demand functions to get the demand functions.
 
 $$
-p_A = a - x_A - bx_B \\
-p_B = a - x_B - bx_A
+\begin{aligned}
+p_A &= a - x_A - bx_B \\
+p_B &= a - x_B - bx_A
+\end{aligned}
 $$
 
 We start by isolating the $x$ terms in each equation
 
 $$
-x_A = a - p_A - bx_B \\
-x_B = a - p_B - bx_A
+\begin{aligned}
+x_A &= a - p_A - bx_B \\
+x_B &= a - p_B - bx_A
+\end{aligned}
 $$
 
 We can then substitute the expression for $x_B$ into the expression for $x_A$
@@ -426,8 +432,10 @@ $$
 We should also re-note the profit equations for each firm
 
 $$
-\pi_A = (P_A - c)x_A \\
-\pi_B = (P_B - c)x_B
+\begin{aligned}
+\pi_A &= (P_A - c)x_A \\
+\pi_B &= (P_B - c)x_B
+\end{aligned}
 $$
 
 Each firm will choose the price that maximises its profits given the price chosen by the other firm. We can substitute the demand functions that we have just derived into the profit functions
@@ -482,8 +490,10 @@ $$
 Because the firms respective functions are identical we can declare by symmetry that
 
 $$
-p_A = \frac{a(1 - b) + bp_B + c}{2} \\
-p_B = \frac{a(1 - b) + bp_A + c}{2}
+\begin{aligned}
+p_A &= \frac{a(1 - b) + bp_B + c}{2} \\
+p_B &= \frac{a(1 - b) + bp_A + c}{2}
+\end{aligned}
 $$
 
 As in the last question, to find the Nash equilibrium we have to solve these equations simulataneously. This time the algebra is even more of a nightmare to keep track of by hand so lets use a tool.
@@ -565,7 +575,7 @@ $$
 In a Stackelberg model though, firm $A$ anticipates this which means we need to update firm $A$'s profit function. We do this by substituting the reaction function into it.
 
 $$
-\pi_A = (a - x_A - b(\frac{a - bx_A - c}{2}) - c)x_A \\
+\pi_A = (a - x_A - b(\frac{a - bx_A - c}{2}) - c)x_A
 $$
 
 This updated profit function is what we need to differentiate, set to 0, and rearrange to get the reaction function for firm $A$. Again, too much algebra for me to do by hand. However, we can use Sympy.
