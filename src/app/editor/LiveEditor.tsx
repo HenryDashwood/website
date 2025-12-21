@@ -14,7 +14,10 @@ import { useCallback, useEffect, useRef } from "react";
 export interface EditorActions {
   undo: () => boolean;
   redo: () => boolean;
-  insertText: (text: string) => void;
+  insertText: (text: string, suffix?: string) => void;
+  getCursorPosition: () => number;
+  getContent: () => string;
+  setContent: (content: string) => void;
 }
 
 interface PostMetadata {
@@ -157,7 +160,19 @@ class DetailsWidget extends WidgetType {
 
     const summary = document.createElement("summary");
     summary.className = "font-bold cursor-pointer";
-    summary.textContent = this.summary;
+
+    // Process inline math in summary
+    let processedSummary = this.summary;
+    processedSummary = processedSummary.replace(/\$([^$\n]+)\$/g, (_, math) => {
+      const tempSpan = document.createElement("span");
+      try {
+        katex.render(math, tempSpan, { displayMode: false, throwOnError: false });
+        return tempSpan.innerHTML;
+      } catch {
+        return `<code>${math}</code>`;
+      }
+    });
+    summary.innerHTML = processedSummary;
     details.appendChild(summary);
 
     const content = document.createElement("div");
@@ -1190,15 +1205,51 @@ export default function LiveEditor({ content, onChange, metadata, postKey, onRea
             }
             return false;
           },
-          insertText: (text: string) => {
+          insertText: (text: string, suffix?: string) => {
             const view = editorRef.current?.view;
             if (view) {
               const { from } = view.state.selection.main;
-              view.dispatch({
-                changes: { from, to: from, insert: text },
-                selection: { anchor: from + text.length },
-              });
+              const docLength = view.state.doc.length;
+
+              if (suffix) {
+                // Insert text at cursor and suffix at end of document
+                view.dispatch({
+                  changes: [
+                    { from, to: from, insert: text },
+                    { from: docLength, to: docLength, insert: suffix },
+                  ],
+                  selection: { anchor: from + text.length },
+                });
+              } else {
+                // Just insert text at cursor
+                view.dispatch({
+                  changes: { from, to: from, insert: text },
+                  selection: { anchor: from + text.length },
+                });
+              }
               view.focus();
+            }
+          },
+          getCursorPosition: () => {
+            const view = editorRef.current?.view;
+            if (view) {
+              return view.state.selection.main.from;
+            }
+            return 0;
+          },
+          getContent: () => {
+            const view = editorRef.current?.view;
+            if (view) {
+              return view.state.doc.toString();
+            }
+            return "";
+          },
+          setContent: (newContent: string) => {
+            const view = editorRef.current?.view;
+            if (view) {
+              view.dispatch({
+                changes: { from: 0, to: view.state.doc.length, insert: newContent },
+              });
             }
           },
         });
