@@ -285,10 +285,10 @@ export default function EditorPage() {
           handleSave();
         }
       }
-      // CMD+Z - Undo, CMD+Shift+Z - Redo
+      // CMD+Z - Undo, CMD+Shift+Z - Redo (only for CodeMirror editor)
       if ((e.metaKey || e.ctrlKey) && e.key === "z") {
-        e.preventDefault();
         if (editorActionsRef.current) {
+          e.preventDefault();
           if (e.shiftKey) {
             editorActionsRef.current.redo();
           } else {

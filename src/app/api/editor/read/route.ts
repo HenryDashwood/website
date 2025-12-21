@@ -16,9 +16,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing slug parameter" }, { status: 400 });
   }
 
-  // Validate slug to prevent directory traversal
-  if (slug.includes("..") || slug.includes("/") || slug.includes("\\")) {
-    return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+  // Validate slug: only allow lowercase letters, numbers, and hyphens
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return NextResponse.json(
+      { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
+      { status: 400 }
+    );
   }
 
   try {

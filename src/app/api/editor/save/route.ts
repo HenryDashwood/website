@@ -29,9 +29,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing slug or content" }, { status: 400 });
     }
 
-    // Validate slug to prevent directory traversal
-    if (slug.includes("..") || slug.includes("/") || slug.includes("\\")) {
-      return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+    // Validate slug: only allow lowercase letters, numbers, and hyphens
+    // This prevents both directory traversal and code injection when interpolating into page.tsx
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return NextResponse.json(
+        { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
+        { status: 400 }
+      );
     }
 
     const postDir = path.join(process.cwd(), `src/app/posts/${slug}`);
@@ -56,8 +60,8 @@ export async function POST(request: NextRequest) {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "${metadata.title.replace(/"/g, '\\"')}",
-  description: "${metadata.description.replace(/"/g, '\\"')}",
+  title: "${metadata.title.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}",
+  description: "${metadata.description.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}",
   openGraph: {
     images: [{ url: \`\${process.env.WEBSITE_URL}/api/og?title=${encodeURIComponent(metadata.title)}\` }],
   },
