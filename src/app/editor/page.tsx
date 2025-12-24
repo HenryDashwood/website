@@ -61,6 +61,7 @@ function EditorContent() {
   const [fileMtime, setFileMtime] = useState<number | null>(null);
   const [footnoteModalOpen, setFootnoteModalOpen] = useState(false);
   const [footnoteText, setFootnoteText] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const contentRef = useRef(content);
   const editorActionsRef = useRef<EditorActions | null>(null);
   const isCheckingRef = useRef(false);
@@ -207,23 +208,44 @@ function EditorContent() {
     return () => window.removeEventListener("focus", handleFocus);
   }, [checkForExternalChanges]);
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const slug = e.target.value;
-    if (slug === "__new__") {
-      setIsCreatingNew(true);
-      setSelectedSlug("");
-      setSelectedPost(null);
-      setContent("");
-      setOriginalContent("");
-      updateUrlWithSlug("");
-    } else {
-      setIsCreatingNew(false);
-      setIsLoading(true); // Set loading BEFORE changing slug to prevent editor from rendering with empty content
-      setSelectedSlug(slug);
-      updateUrlWithSlug(slug);
-      loadPost(slug);
-    }
+  // Handle selecting a post from the list
+  const handleSelectPost = (slug: string) => {
+    setIsCreatingNew(false);
+    setIsLoading(true);
+    setSelectedSlug(slug);
+    updateUrlWithSlug(slug);
+    loadPost(slug);
   };
+
+  // Handle going back to post list
+  const handleBackToList = () => {
+    setSelectedSlug("");
+    setSelectedPost(null);
+    setContent("");
+    setOriginalContent("");
+    setIsCreatingNew(false);
+    updateUrlWithSlug("");
+  };
+
+  // Handle creating new post
+  const handleCreateNew = () => {
+    setIsCreatingNew(true);
+    setSelectedSlug("");
+    setSelectedPost(null);
+    setContent("");
+    setOriginalContent("");
+  };
+
+  // Filter posts based on search query
+  const filteredPosts = posts.filter((post) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      post.title.toLowerCase().includes(query) ||
+      post.slug.toLowerCase().includes(query) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(query)) ||
+      post.description?.toLowerCase().includes(query)
+    );
+  });
 
   const handleSave = useCallback(async () => {
     if (!selectedSlug && !isCreatingNew) return;
@@ -485,6 +507,9 @@ function EditorContent() {
     );
   }
 
+  // Show post list when no post is selected and not creating new
+  const showPostList = !selectedSlug && !isCreatingNew;
+
   return (
     <div className="bg-background flex min-h-screen flex-col">
       {/* Toast notifications - fixed position, no layout shift */}
@@ -503,56 +528,68 @@ function EditorContent() {
 
       {/* Header - clean single row */}
       <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-4 border-b border-stone-300 bg-stone-100 px-4">
-        <Link href="/" className="text-stone-600 hover:text-stone-900">
-          ←
-        </Link>
-        <div className="h-5 w-px bg-stone-300" />
+        {showPostList ? (
+          <>
+            <Link href="/" className="text-stone-600 hover:text-stone-900">
+              ←
+            </Link>
+            <div className="h-5 w-px bg-stone-300" />
+            <h1 className="font-arizona-flare text-lg font-medium text-stone-800">Posts</h1>
+            <div className="ml-auto">
+              <button
+                onClick={handleCreateNew}
+                className="h-8 rounded bg-amber-500 px-4 text-sm font-medium text-white transition-colors hover:bg-amber-600"
+              >
+                + New Post
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <button onClick={handleBackToList} className="text-stone-600 hover:text-stone-900" title="Back to posts">
+              ←
+            </button>
+            <div className="h-5 w-px bg-stone-300" />
 
-        {/* Post selector */}
-        <select
-          value={isCreatingNew ? "__new__" : selectedSlug}
-          onChange={handleSelectChange}
-          className="h-8 max-w-[400px] min-w-[200px] flex-1 rounded border-0 bg-white px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-        >
-          <option value="">Select a post...</option>
-          <option value="__new__">+ New post</option>
-          {posts.map((post) => (
-            <option key={post.slug} value={post.slug}>
-              {post.title}
-            </option>
-          ))}
-        </select>
+            {/* Post title */}
+            <span className="max-w-[400px] truncate text-sm font-medium text-stone-800">
+              {isCreatingNew ? "New Post" : selectedPost?.title || "Loading..."}
+            </span>
 
-        <div className="flex items-center gap-1">
-          {/* View mode toggle */}
-          <button
-            onClick={() => setViewMode("edit")}
-            className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-              viewMode === "edit"
-                ? "bg-amber-500 text-white"
-                : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-            }`}
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setViewMode("preview")}
-            className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-              viewMode === "preview"
-                ? "bg-amber-500 text-white"
-                : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-            }`}
-          >
-            Preview
-          </button>
-        </div>
+            <div className="flex items-center gap-1">
+              {/* View mode toggle */}
+              <button
+                onClick={() => setViewMode("edit")}
+                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                  viewMode === "edit"
+                    ? "bg-amber-500 text-white"
+                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                }`}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => setViewMode("preview")}
+                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                  viewMode === "preview"
+                    ? "bg-amber-500 text-white"
+                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                }`}
+              >
+                Preview
+              </button>
+            </div>
 
-        {/* Status indicator */}
-        <div className="ml-auto flex items-center gap-3">
-          {isSaving && <span className="text-xs text-stone-500">Saving...</span>}
-          {!isSaving && hasUnsavedChanges && <span className="text-xs text-amber-600">● Unsaved</span>}
-          {!isSaving && !hasUnsavedChanges && selectedSlug && <span className="text-xs text-stone-400">✓ Saved</span>}
-        </div>
+            {/* Status indicator */}
+            <div className="ml-auto flex items-center gap-3">
+              {isSaving && <span className="text-xs text-stone-500">Saving...</span>}
+              {!isSaving && hasUnsavedChanges && <span className="text-xs text-amber-600">● Unsaved</span>}
+              {!isSaving && !hasUnsavedChanges && selectedSlug && (
+                <span className="text-xs text-stone-400">✓ Saved</span>
+              )}
+            </div>
+          </>
+        )}
       </header>
 
       {/* Toolbar - only in edit mode with a post selected */}
@@ -660,7 +697,76 @@ function EditorContent() {
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
-        {isLoading ? (
+        {showPostList ? (
+          /* Post list view */
+          <div className="mx-auto max-w-4xl px-6 py-8">
+            {/* Search bar */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Search posts by title, slug, or tags..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-10 w-full rounded-lg border-0 bg-white px-4 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            {/* Posts list */}
+            <div className="space-y-2">
+              {filteredPosts.length === 0 ? (
+                <div className="py-12 text-center text-stone-500">
+                  {searchQuery ? "No posts match your search." : "No posts found."}
+                </div>
+              ) : (
+                filteredPosts.map((post) => (
+                  <button
+                    key={post.slug}
+                    onClick={() => handleSelectPost(post.slug)}
+                    className="group w-full rounded-lg border border-stone-200 bg-white p-4 text-left shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <h2 className="font-arizona-flare truncate text-lg font-medium text-stone-900 group-hover:text-amber-700">
+                          {post.title}
+                        </h2>
+                        {post.description && (
+                          <p className="mt-1 truncate text-sm text-stone-500">{post.description}</p>
+                        )}
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {post.published && (
+                            <span className="text-xs text-stone-400">{formatDate(post.published)}</span>
+                          )}
+                          {post.tags.length > 0 && (
+                            <>
+                              <span className="text-stone-300">·</span>
+                              <div className="flex flex-wrap gap-1">
+                                {post.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-stone-400 transition-transform group-hover:translate-x-0.5">→</span>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Post count */}
+            <div className="mt-6 text-center text-sm text-stone-400">
+              {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}
+              {searchQuery && ` matching "${searchQuery}"`}
+            </div>
+          </div>
+        ) : isLoading ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-gray-500">Loading post...</div>
           </div>
