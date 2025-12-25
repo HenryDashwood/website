@@ -8,7 +8,20 @@ import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/v
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import hljs from "highlight.js";
 import katex from "katex";
-import { useCallback, useEffect, useRef } from "react";
+import { ComponentType, useCallback, useEffect, useRef } from "react";
+import { createRoot, Root } from "react-dom/client";
+
+// Import blog components for live preview
+import LaborMarketDiagram from "@/components/blog_components/LaborMarketDiagram";
+import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
+import PowerLawViz from "@/components/blog_components/PowerLawViz";
+
+// Map of component names to actual React components
+const reactComponents: Record<string, ComponentType> = {
+  LaborMarketDiagram,
+  MigrationStabilityViz,
+  PowerLawViz,
+};
 
 // Export interface for parent component to call editor actions
 export interface EditorActions {
@@ -432,6 +445,101 @@ class CodeBlockWidget extends WidgetType {
   }
 }
 
+// Widget for rendering React components inline
+class ReactComponentWidget extends WidgetType {
+  private root: Root | null = null;
+
+  constructor(
+    readonly componentName: string,
+    readonly Component: ComponentType
+  ) {
+    super();
+  }
+
+  eq(other: ReactComponentWidget) {
+    return other.componentName === this.componentName;
+  }
+
+  toDOM() {
+    const container = document.createElement("div");
+    container.className = "react-component-widget";
+    container.setAttribute("data-component", this.componentName);
+
+    // Create React root and render component
+    this.root = createRoot(container);
+    this.root.render(<this.Component />);
+
+    return container;
+  }
+
+  destroy() {
+    // Cleanup React root when widget is removed
+    if (this.root) {
+      // Use setTimeout to avoid React warnings about synchronous unmount
+      setTimeout(() => {
+        this.root?.unmount();
+        this.root = null;
+      }, 0);
+    }
+  }
+
+  // Return true to allow the component to handle its own events (interactivity)
+  ignoreEvent() {
+    return true;
+  }
+}
+
+// Widget for unknown/unrecognized React components
+class UnknownComponentWidget extends WidgetType {
+  constructor(readonly componentName: string) {
+    super();
+  }
+
+  eq(other: UnknownComponentWidget) {
+    return other.componentName === this.componentName;
+  }
+
+  toDOM() {
+    const container = document.createElement("div");
+    container.className = "unknown-component-widget";
+    container.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; color: #b45309;">
+        <span style="font-size: 18px;">⚠️</span>
+        <span style="font-weight: 500;">Unknown component: </span>
+        <code style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 14px;">${this.componentName}</code>
+      </div>
+    `;
+    return container;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+}
+
+// Widget for collapsing import statements
+class ImportWidget extends WidgetType {
+  constructor(readonly imports: string[]) {
+    super();
+  }
+
+  eq(other: ImportWidget) {
+    return other.imports.join(",") === this.imports.join(",");
+  }
+
+  toDOM() {
+    const span = document.createElement("span");
+    span.className = "import-widget";
+    const count = this.imports.length;
+    span.textContent = `// ${count} import${count > 1 ? "s" : ""}`;
+    return span;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+}
+
 // Find inline math
 function findInlineMath(
   text: string,
@@ -806,6 +914,88 @@ function findCodeBlocks(
   return results;
 }
 
+// Find React component tags (self-closing or with children)
+function findReactComponents(
+  text: string,
+  cursorFrom: number,
+  cursorTo: number
+): { from: number; to: number; componentName: string }[] {
+  const results: { from: number; to: number; componentName: string }[] = [];
+
+  // Get list of known component names for the regex
+  const knownComponentNames = Object.keys(reactComponents);
+
+  // Match self-closing tags like <ComponentName /> or <ComponentName prop="value" />
+  // Only match components we know about (starts with uppercase letter)
+  const selfClosingRegex = new RegExp(`<(${knownComponentNames.join("|")})(?:\\s+[^>]*)?\\s*/>`, "g");
+
+  let match;
+  while ((match = selfClosingRegex.exec(text)) !== null) {
+    const from = match.index;
+    const to = from + match[0].length;
+    if (cursorFrom <= to && cursorTo >= from) continue;
+    results.push({
+      from,
+      to,
+      componentName: match[1],
+    });
+  }
+
+  // Match opening/closing tag pairs like <ComponentName>...</ComponentName>
+  const tagPairRegex = new RegExp(`<(${knownComponentNames.join("|")})(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/\\1>`, "g");
+
+  while ((match = tagPairRegex.exec(text)) !== null) {
+    const from = match.index;
+    const to = from + match[0].length;
+    if (cursorFrom <= to && cursorTo >= from) continue;
+    results.push({
+      from,
+      to,
+      componentName: match[1],
+    });
+  }
+
+  return results;
+}
+
+// Find import statements at the beginning of the document
+function findImports(
+  text: string,
+  cursorFrom: number,
+  cursorTo: number
+): { from: number; to: number; imports: string[] } | null {
+  // Find all consecutive import lines at the start of the document
+  const lines = text.split("\n");
+  const importLines: string[] = [];
+  let endIndex = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    // Skip empty lines at the start
+    if (line === "" && importLines.length === 0) {
+      endIndex += lines[i].length + 1; // +1 for newline
+      continue;
+    }
+    // Check if it's an import line
+    if (line.startsWith("import ")) {
+      importLines.push(line);
+      endIndex += lines[i].length + 1;
+    } else {
+      break;
+    }
+  }
+
+  if (importLines.length === 0) return null;
+
+  const from = 0;
+  const to = endIndex;
+
+  // Don't hide if cursor is within the import block
+  if (cursorFrom <= to && cursorTo >= from) return null;
+
+  return { from, to, imports: importLines };
+}
+
 // Build decorations from state
 function buildDecorations(state: EditorState): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
@@ -818,6 +1008,16 @@ function buildDecorations(state: EditorState): DecorationSet {
   const decorations: Range<Decoration>[] = [];
 
   // Block-level elements first (to avoid conflicts)
+
+  // Import statements (collapse them)
+  const imports = findImports(text, cursorFrom, cursorTo);
+  if (imports) {
+    decorations.push(
+      Decoration.replace({
+        widget: new ImportWidget(imports.imports),
+      }).range(imports.from, imports.to)
+    );
+  }
 
   // Block math
   const blockMath = findBlockMath(text, cursorFrom, cursorTo);
@@ -867,6 +1067,25 @@ function buildDecorations(state: EditorState): DecorationSet {
         widget: new ImageWidget(img.src, img.alt, img.caption),
       }).range(img.from, img.to)
     );
+  }
+
+  // React components
+  const components = findReactComponents(text, cursorFrom, cursorTo);
+  for (const comp of components) {
+    const Component = reactComponents[comp.componentName];
+    if (Component) {
+      decorations.push(
+        Decoration.replace({
+          widget: new ReactComponentWidget(comp.componentName, Component),
+        }).range(comp.from, comp.to)
+      );
+    } else {
+      decorations.push(
+        Decoration.replace({
+          widget: new UnknownComponentWidget(comp.componentName),
+        }).range(comp.from, comp.to)
+      );
+    }
   }
 
   // Headings
@@ -1153,6 +1372,27 @@ const editorTheme = EditorView.theme({
     padding: "0.125rem 0.25rem",
     borderRadius: "0.25rem",
     border: "1px solid #e2e8f0",
+  },
+  // React component widget
+  ".react-component-widget": {
+    display: "block",
+    margin: "1rem 0",
+  },
+  // Unknown component warning
+  ".unknown-component-widget": {
+    display: "block",
+    margin: "0.5rem 0",
+    padding: "0.75rem 1rem",
+    backgroundColor: "#fef3c7",
+    border: "2px dashed #f59e0b",
+    borderRadius: "0.5rem",
+  },
+  // Import widget - collapsed imports (subtle inline style)
+  ".import-widget": {
+    display: "inline-block",
+    fontSize: "11px",
+    color: "#9ca3af",
+    fontFamily: "ui-monospace, monospace",
   },
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "#faad19",

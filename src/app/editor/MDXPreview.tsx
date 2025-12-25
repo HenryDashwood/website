@@ -8,6 +8,11 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
+// Import blog components for preview
+import LaborMarketDiagram from "@/components/blog_components/LaborMarketDiagram";
+import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
+import PowerLawViz from "@/components/blog_components/PowerLawViz";
+
 // Error boundary to catch render errors from undefined components
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -193,6 +198,10 @@ const knownComponents = {
   LocalImageGrid: PreviewLocalImageGrid,
   LocalImageSideBySide: PreviewLocalImageSideBySide,
   table: PreviewTableWrapper,
+  // Blog components
+  LaborMarketDiagram,
+  MigrationStabilityViz,
+  PowerLawViz,
 } as unknown as Record<string, React.ComponentType>;
 
 // Proxy to catch unknown components and show a placeholder
@@ -242,7 +251,14 @@ export default function MDXPreview({ content, className = "" }: MDXPreviewProps)
     setRenderKey((k) => k + 1); // Reset error boundary on new compile
 
     try {
-      const compiled = await compile(mdxContent, {
+      // Strip import statements since we provide components directly via the components prop
+      // This handles both single-line and multi-line imports
+      const contentWithoutImports = mdxContent
+        .replace(/^import\s+.*?from\s+['"].*?['"];?\s*$/gm, "")
+        .replace(/^import\s+{[^}]*}\s+from\s+['"].*?['"];?\s*$/gm, "")
+        .replace(/^import\s+['"].*?['"];?\s*$/gm, "");
+
+      const compiled = await compile(contentWithoutImports, {
         outputFormat: "function-body",
         remarkPlugins: [remarkGfm, remarkMath],
         rehypePlugins: [rehypeKatex, rehypeHighlight],
