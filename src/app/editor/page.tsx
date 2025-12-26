@@ -444,25 +444,30 @@ function EditorContent() {
     }
   }, [footnoteModalOpen]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts - use capture phase to intercept before browser default behavior
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // CMD+E - Toggle view mode
-      if ((e.metaKey || e.ctrlKey) && e.key === "e") {
-        e.preventDefault();
-        setViewMode((prev) => (prev === "edit" ? "preview" : "edit"));
-      }
-      // CMD+S - Save
+      // CMD+S - Save (handle this first and stop propagation to prevent any browser refresh)
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
+        e.stopPropagation();
         if ((selectedSlug || isCreatingNew) && !isSaving) {
           handleSave();
         }
+        return; // Exit early to prevent any other handling
+      }
+      // CMD+E - Toggle view mode
+      if ((e.metaKey || e.ctrlKey) && e.key === "e") {
+        e.preventDefault();
+        e.stopPropagation();
+        setViewMode((prev) => (prev === "edit" ? "preview" : "edit"));
+        return;
       }
       // CMD+Z - Undo, CMD+Shift+Z - Redo (only for CodeMirror editor)
       if ((e.metaKey || e.ctrlKey) && e.key === "z") {
         if (editorActionsRef.current) {
           e.preventDefault();
+          e.stopPropagation();
           if (e.shiftKey) {
             editorActionsRef.current.redo();
           } else {
@@ -471,8 +476,9 @@ function EditorContent() {
         }
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    // Use capture phase to intercept events before they reach other handlers
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [selectedSlug, isCreatingNew, isSaving, handleSave]);
 
   const hasUnsavedChanges = content !== originalContent;

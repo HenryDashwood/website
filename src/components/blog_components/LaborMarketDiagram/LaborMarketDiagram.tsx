@@ -204,7 +204,7 @@ export default function LaborMarketDiagram() {
 
   return (
     <div className="not-prose labor-market-diagram my-8 rounded-lg border border-gray-200 bg-gray-50 p-6">
-      <h3 className="mb-4 text-center text-xl font-bold">The Roback Diagram: Wages vs Rents</h3>
+      <h3 className="mb-4 text-center text-xl font-bold">The Roback Diagram</h3>
 
       {/* Chart */}
       <div className="mb-6 overflow-x-auto">
@@ -455,8 +455,8 @@ export default function LaborMarketDiagram() {
       </div>
 
       {/* Controls */}
-      <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded border border-red-200 bg-red-50 p-4">
+      <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="flex flex-col rounded border border-red-200 bg-red-50 p-4">
           <h4 className="mb-3 flex items-center gap-2 font-bold text-red-700">
             <span className="inline-block h-3 w-3 rounded-full bg-red-500"></span>
             Productivity (<InlineMath math="A" />)
@@ -465,26 +465,28 @@ export default function LaborMarketDiagram() {
             Higher productivity means firms can pay higher wages at any rent level. This shifts the iso-profit curve
             up.
           </p>
-          <div className="flex items-center gap-4">
-            <input
-              type="range"
-              min="50"
-              max="150"
-              step="5"
-              value={productivity}
-              onChange={(e) => setProductivity(Number(e.target.value))}
-              className="flex-1"
-            />
-            <span className="w-16 text-right font-mono font-bold text-red-700">{productivity}%</span>
-          </div>
-          <div className="mt-1 flex justify-between text-xs text-gray-500">
-            <span>Low</span>
-            <span>Baseline</span>
-            <span>High</span>
+          <div className="mt-auto">
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="50"
+                max="150"
+                step="5"
+                value={productivity}
+                onChange={(e) => setProductivity(Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="w-16 text-right font-mono font-bold text-red-700">{productivity}%</span>
+            </div>
+            <div className="mt-1 flex justify-between text-xs text-gray-500">
+              <span>Low</span>
+              <span>Baseline</span>
+              <span>High</span>
+            </div>
           </div>
         </div>
 
-        <div className="rounded border border-blue-200 bg-blue-50 p-4">
+        <div className="flex flex-col rounded border border-blue-200 bg-blue-50 p-4">
           <h4 className="mb-3 flex items-center gap-2 font-bold text-blue-700">
             <span className="inline-block h-3 w-3 rounded-full bg-blue-500"></span>
             Amenities (<InlineMath math="Z" />)
@@ -492,26 +494,28 @@ export default function LaborMarketDiagram() {
           <p className="mb-3 text-sm text-gray-600">
             Better amenities mean workers accept lower wages for the same rent. This shifts the iso-utility curve down.
           </p>
-          <div className="flex items-center gap-4">
-            <input
-              type="range"
-              min="50"
-              max="150"
-              step="5"
-              value={amenities}
-              onChange={(e) => setAmenities(Number(e.target.value))}
-              className="flex-1"
-            />
-            <span className="w-16 text-right font-mono font-bold text-blue-700">{amenities}%</span>
-          </div>
-          <div className="mt-1 flex justify-between text-xs text-gray-500">
-            <span>Poor</span>
-            <span>Baseline</span>
-            <span>Nice</span>
+          <div className="mt-auto">
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="50"
+                max="150"
+                step="5"
+                value={amenities}
+                onChange={(e) => setAmenities(Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="w-16 text-right font-mono font-bold text-blue-700">{amenities}%</span>
+            </div>
+            <div className="mt-1 flex justify-between text-xs text-gray-500">
+              <span>Poor</span>
+              <span>Baseline</span>
+              <span>Nice</span>
+            </div>
           </div>
         </div>
 
-        <div className="rounded border border-purple-200 bg-purple-50 p-4">
+        <div className="flex flex-col rounded border border-purple-200 bg-purple-50 p-4">
           <h4 className="mb-3 flex items-center gap-2 font-bold text-purple-700">
             <span className="inline-block h-3 w-3 rounded-full bg-purple-500"></span>
             Housing Share (<InlineMath math="\beta" />)
@@ -519,22 +523,24 @@ export default function LaborMarketDiagram() {
           <p className="mb-3 text-sm text-gray-600">
             The share of income spent on housing. Higher values make the iso-utility curve steeper.
           </p>
-          <div className="flex items-center gap-4">
-            <input
-              type="range"
-              min="0.1"
-              max="0.5"
-              step="0.05"
-              value={beta}
-              onChange={(e) => setBeta(Number(e.target.value))}
-              className="flex-1"
-            />
-            <span className="w-16 text-right font-mono font-bold text-purple-700">{(beta * 100).toFixed(0)}%</span>
-          </div>
-          <div className="mt-1 flex justify-between text-xs text-gray-500">
-            <span>10%</span>
-            <span>30%</span>
-            <span>50%</span>
+          <div className="mt-auto">
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                min="0.1"
+                max="0.5"
+                step="0.05"
+                value={beta}
+                onChange={(e) => setBeta(Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="w-16 text-right font-mono font-bold text-purple-700">{(beta * 100).toFixed(0)}%</span>
+            </div>
+            <div className="mt-1 flex justify-between text-xs text-gray-500">
+              <span>10%</span>
+              <span>30%</span>
+              <span>50%</span>
+            </div>
           </div>
         </div>
       </div>

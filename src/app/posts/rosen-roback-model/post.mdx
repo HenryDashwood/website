@@ -1,0 +1,263 @@
+import LaborMarketDiagram from "@/components/blog_components/LaborMarketDiagram";
+
+## Introduction
+
+In the [first post](/posts/why-cities-exist) of this series, we saw that London has higher wages than Newcastle, but also higher costs. Workers migrate between cities until they're indifferent about where to live. Economists call this spatial equilibrium.
+
+In the [second post](/posts/alonso-muth-mills-model), we modelled a single city. We showed why Putney is more expensive than Teddington: proximity to jobs commands a premium. Housing prices fall with distance from the centre, and building heights respond to land values.
+
+We've modelled workers carefully, showing how they choose between locations and how their choices affect housing markets. But we've said almost nothing about firms. Where do the jobs come from? Why is London more productive than Newcastle in the first place? And if London's high wages are fully offset by high housing costs, leaving workers no better off, why do firms bother paying those premium wages?
+
+Here is something else that our earlier framework struggles with. Consider the Cotswolds. Wages there are lower than in Leeds, yet housing costs are higher. Why would anyone pay more to live somewhere that pays less?
+
+To answer these questions, we need to consider both productivity differences (which affect firms) and amenity differences (which affect workers). This leads us to the Rosen-Roback model. Named after Sherwin Rosen and Jennifer Roback, who developed it in the late 1970s and early 1980s, this framework shows how wages and prices are jointly determined by what makes cities productive for firms and pleasant for workers.
+
+## Adding firms to the picture
+
+Until now, we have taken wages as a given. We assumed London paid x, and Newcastle paid y, and then asked how workers would respond. But where do wages in fact come from?
+
+Wages are set by firms. And firms, like workers, make location decisions. A hedge fund could operate from London or Leeds. A software company could be based in Manchester or Bristol. What determines where they choose to go?
+
+Firms care about two things: the wages they must pay and the productivity of their workers. If workers in London are more productive (perhaps due to agglomeration economies, better infrastructure, or access to specialised skills), firms might be willing to pay higher wages there. But there's a limit. If wages in London rise too high relative to productivity, firms will relocate to cheaper cities.
+
+This gives us a second equilibrium condition. Just as workers must be indifferent across cities (or they'd move), firms must earn similar profits across cities (or they'd relocate). In economics jargon, we need both labour supply (workers choosing where to live) and labour demand (firms choosing where to hire) to clear simultaneously.
+
+### The zero-profit condition
+
+In a competitive economy with free entry, firms earn zero economic profit in equilibrium. If profits were positive in London, new firms would enter, competing for workers and driving up wages until profits disappeared. If profits were negative, firms would exit until wages fell.
+
+This means that in each city, the value of what workers produce must equal the cost of employing them:
+
+$$
+A_c \cdot f(L_c) = W_c \cdot L_c + r \cdot K_c
+$$
+
+where:
+
+- $A_c$ is the city's total factor productivity (TFP).
+- $L_c$ is employment.
+- $f(L_c)$ is the production function.
+- $W_c$ is wages.
+- $r$ is the cost of capital.
+- $K_c$ is capital used.
+
+For our purposes, the key point is wages equal the marginal product of labour.
+
+$$
+W_c = A_c \cdot MPL_c
+$$
+
+Cities with higher productivity ($A_c$) can pay higher wages. But as more workers arrive in a city, the marginal product of each additional worker falls (diminishing returns), which puts downward pressure on wages. This gives us a downward-sloping labour demand curve for each city.
+
+The position of this curve depends on productivity. A city with high TFP (like London, with its agglomeration economies, deep capital markets, and skilled workforce) has its demand curve shifted outward: it can pay higher wages at any given employment level.
+
+## The two equilibrium conditions
+
+We now have two conditions that must hold simultaneously in every city.
+
+### Worker indifference (labour supply)
+
+Workers achieve equal utility everywhere. If utility were higher in London, people would move there until crowding and high prices eliminated the advantage.
+
+$$
+V = \frac{W_c \cdot Z_c}{P_c^\beta} = \bar{V}
+$$
+
+Here:
+
+- $W_c$ is the nominal wages in city $c$.
+- $P_c$ is the price of housing.
+- $Z_c$ captures amenities (climate, culture, safety, etc.).
+- $\beta$ is the share of income spent on housing
+- $\bar{V}$ is the reservation utility achievable anywhere
+
+Utility depends on wages (good), amenities (good), and housing costs (bad). Rearranging:
+
+$$
+W_c = \bar{V} \cdot \frac{P_c^\beta}{Z_c}
+$$
+
+Workers accept lower wages in cities with good amenities ($Z_c$ high) or low housing costs ($P_c$ low). This is why someone might choose to live in the Cotswolds despite earning less than they would in Leeds.
+
+### Firm indifference (labour demand)
+
+As established above, wages equal the marginal product of labour. For a simple production function:
+
+$$
+W_c = A_c \cdot L_c^{\alpha - 1}
+$$
+
+where:
+
+- $W_c$ is wages in city $c$.
+- $A_c$ is total factor productivity (TFP).
+- $L_c$ is employment.
+- $\alpha$ is the output elasticity of labour: the percentage change in output for a 1% increase in labour. We assume diminishing returns (0 < $\alpha$ < 1), so $\alpha$ - 1 < 0.
+
+Wages depend on local productivity $A_c$ and decline as employment $L_c$ rises (since $\alpha - 1 < 0$). Firms pay higher wages in more productive cities.
+
+### Putting them together
+
+In equilibrium, both conditions hold. Workers are indifferent across cities, and firms earn zero profits everywhere. Wages and prices are functions of the city's productivity ($A_c$) and amenities ($Z_c$).
+
+## What wages and prices tell us
+
+Suppose we observe that City A has higher wages and higher housing prices than City B. What can we infer?
+
+High wages tell us that either the city is very productive (firms can afford to pay more) or it has poor amenities (workers demand compensation to live there).
+
+High prices tell us that either the city has good amenities (people want to live there) or high wages (people can afford to bid more for housing).
+
+The combination of high wages and high prices suggests the city has good amenities. If the city were just productive but had bad amenities, firms would pay high wages, but workers wouldn't particularly want to live there. Housing demand would be modest, so prices wouldn't rise much. We'd see high wages but moderate prices.
+
+Conversely, low wages but high prices (the Cotswolds pattern) suggests good amenities but low productivity. Workers want to live there despite limited job opportunities, bidding up housing.
+
+### Inferring amenities
+
+From the worker indifference condition, we can rearrange for amenities:
+
+$$
+Z_c = \bar{V} \cdot \frac{P_c^\beta}{W_c}
+$$
+
+Since $\bar{V}$ is constant across cities, relative amenities are:
+
+$$
+Z_c \propto \frac{P_c^\beta}{W_c}
+$$
+
+<details>
+<summary>What does $\propto$ mean?</summary>
+
+The symbol $\propto$ means "is proportional to."
+
+When we write $Z_c \propto \frac{P_c^\beta}{W_c}$, we're saying that amenities are proportional to that ratio, meaning they differ by some constant multiplier that's the same for all cities.
+
+So if City A has twice the value of $\frac{P^\beta}{W}$ as City B, then City A has twice the amenities.
+
+It's a way of expressing the relationship without pinning down the exact units or scale. Since we can't directly measure "amenities" in absolute terms anyway, we only care about relative comparisons between cities.
+
+We could rewrite it more explicitly as:
+
+$$
+Z_c = k \cdot \frac{P_c^\beta}{W_c}
+$$
+
+where $k$ is some constant. But since $k$ cancels out when comparing cities, using $\propto$ is cleaner.
+
+</details>
+
+We can't directly observe how nice a city is to live in. But we can observe wages and prices, and their ratio tells us about amenities.
+
+## A Worked Example
+
+Let's apply this framework to three locations:
+
+| City               | Median Wage (£)[^1] | Average Rent (£/m²/month)[^2] |
+| ------------------ | ------------------- | ----------------------------- |
+| Southwark (London) | 43,006              | 33.30                         |
+| Leeds              | 36,527              | 14.16                         |
+| West Oxfordshire   | 35,388              | 16.10                         |
+
+### Calculating Amenities
+
+Let's assume $\beta = 0.33$ (housing is about a third of expenditure). We need annual rent, so we'll multiply monthly rent per m² by 12 and assume a 50m² flat, giving us annual rents of £19,980 (Southwark), £8,496 (Leeds), and £9,660 (West Oxfordshire).
+
+Using $Z_c \propto \frac{P_c^\beta}{W_c}$:
+
+Southwark: $Z_S \propto \frac{19980^{0.33}}{43006} = \frac{27.1}{43006} = 0.000630$
+
+Leeds: $Z_L \propto \frac{8496^{0.33}}{36527} = \frac{20.4}{36527} = 0.000558$
+
+West Oxfordshire: $Z_W \propto \frac{9660^{0.33}}{35388} = \frac{21.3}{35388} = 0.000602$
+
+Normalising to Southwark = 100:
+
+| City             | Relative Amenities |
+| ---------------- | ------------------ |
+| Southwark        | 100                |
+| Leeds            | 89                 |
+| West Oxfordshire | 96                 |
+
+### Interpretation
+
+West Oxfordshire scores almost as highly as Southwark on amenities, despite having much lower wages. This is exactly what we'd expect: the Cotswolds' rolling hills and honey-coloured villages compensate for the lack of high-paying jobs.
+
+Leeds scores lower on amenities. This doesn't mean Leeds is unpleasant; it means that the combination of wages and prices suggests workers aren't paying as much of a premium (in foregone wages or high rents) to live there.
+
+Remember what "amenities" captures in this framework: everything that makes people willing to accept lower real wages. Natural beauty, lower stress, good schools, proximity to family. The measure captures the net effect of all these factors.
+
+From the firm's side, wages reflect productivity. Southwark wages are 22% higher than West Oxfordshire's, suggesting workers there are substantially more productive. This makes sense. Southwark hosts headquarters, professional services firms, and benefits from London's agglomeration economies.
+
+Southwark is therefore expensive because it's both productive and has decent amenities. West Oxfordshire has similar amenity value but lower productivity, so wages are lower while prices remain relatively high.
+
+## Graphical Analysis
+
+<LaborMarketDiagram />
+
+For workers, we draw iso-utility curves showing combinations of wages and rents that deliver equal utility. These slope upward: if rents increase, wages must also increase to maintain utility. Better amenities shift this curve down, as workers accept lower wages at any rent level.
+
+For firms, we draw iso-profit curves showing combinations of wages and rents that deliver zero profit. Assuming firms use land as well as labour, higher rents mean higher costs, so wages must be lower for profits to remain zero. These curves slope downward. Better productivity shifts this curve up, as firms can afford higher wages at any rent level.
+
+The equilibrium is where the curves intersect. Different cities have different equilibria depending on their productivity and amenities.
+
+### Comparative statics
+
+What happens when a city's fundamentals change?
+
+**Productivity increases** (tech boom, infrastructure investment): The iso-profit curve shifts up. Firms can pay more. The new equilibrium has higher wages. If workers now have more money, they bid up housing, so rents rise too.
+
+**Amenities improve** (new park, lower crime, better schools): The iso-utility curve shifts down. Workers accept lower wages. The new equilibrium has lower wages but higher rents. People trade wages for quality of life.
+
+**Amenities worsen** (more pollution, rising crime): The iso-utility curve shifts up. Workers demand higher wages to stay. The new equilibrium has higher wages but lower rents. This is the "compensating differential": workers are paid extra for enduring unpleasant conditions.
+
+## The firm's perspective: why locate in expensive cities?
+
+We can now answer one of our opening questions: why do firms locate in London if they have to pay premium wages?
+
+The productivity advantage offsets the wage premium. A hedge fund in London pays higher wages, but each worker generates more revenue. A law firm charges higher fees because clients value proximity to courts and other financial institutions. A tech company accesses a deeper talent pool and benefits from knowledge spillovers. In equilibrium, the productivity advantage exactly offsets the wage premium: firms earn zero economic profit in London just as they do elsewhere.
+
+Amenities also play a role, though perhaps not in the way you'd expect. When a city has good amenities, workers accept lower wages than they otherwise would for a given level of productivity. This helps firms: they get productive workers without paying the full productivity premium. Conversely, a productive city with poor amenities must pay very high wages because workers have no other reason to be there.
+
+This has implications for local economic development. Investing in amenities (parks, transport, schools) doesn't just make residents happier: it can attract firms by reducing the wage premium they must pay.
+
+## What determines city size?
+
+So far, we've taken city populations as given: London has this many workers, Leeds has that many. But in a fuller model, city size is itself an outcome. How many people live in a city depends on its productivity, amenities, and housing supply:
+
+$$
+L_c = f(A_c, Z_c, \gamma_c)
+$$
+
+where:
+
+- $L_c$ is employment in city $c$
+- $A_c$ is total factor productivity (TFP)
+- $Z_c$ is amenities
+- $\gamma_c$ is the elasticity of housing supply
+
+More productive cities attract more firms, which hire more workers. Cities with better amenities attract more workers, which in turn attracts more firms. And cities that build more housing accommodate more people without prices exploding. A city with high productivity, good amenities, and elastic housing supply will be large; a city lacking these will be smaller.
+
+## Extensions and Limitations
+
+The basic Rosen-Roback model makes several simplifying assumptions that are worth noting.
+
+**Homogeneous workers**. We've assumed all workers are identical. In reality, a young professional might value London's nightlife while a family might value suburban schools. These differences create sorting: different types of workers concentrate in different cities. Rebecca Diamond's 2015 paper [The Determinants and Welfare Implications of US Workers' Diverging Location Choices by Skill](https://web.stanford.edu/~diamondr/jmp_final_all_files.pdf) shows that college-educated workers increasingly cluster in high-amenity, high-productivity cities, while non-college workers are priced out.
+
+**Perfect mobility.** We've assumed workers can move costlessly. In reality, moving is expensive: financially, professionally, and emotionally. Some frameworks handle this by introducing preference heterogeneity, where workers have idiosyncratic attachments to particular places. This dampens migration responses to productivity shocks.
+
+**Fixed amenities.** We've treated amenities as exogenous. But amenities can be endogenous: crime might rise as cities decline, cultural offerings might improve as cities grow, and congestion worsens with population. If amenities are endogenous, feedback effects complicate the analysis.
+
+**Single sector.** We've assumed one type of job. Real cities have multiple sectors with different productivity levels. Finance might have strong agglomeration economies, while retail does not. This creates within-city wage variation and affects which types of firms locate where.
+
+## Conclusion
+
+The Rosen-Roback framework explains why wages and prices vary across cities. High wages reflect productivity; high prices relative to wages reflect amenities. Firms locate in expensive cities because workers there are more productive. Workers accept lower real wages in nice cities because amenities compensate them.
+
+But we've assumed housing supply adjusts to accommodate demand. What happens when it doesn't?
+
+If a highly productive city like London restricts housing supply, its productivity advantage doesn't translate into more employment. Instead, it shows up in higher prices and wages. Workers who could be more productive are stuck in less productive cities because they can't afford housing. The economy produces less than it could because workers are in the wrong places.
+
+[^1]: https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/placeofresidencebylocalauthorityashetable8
+
+[^2]: https://yimbyalliance.org/2025/12/18/how-much-space-can-you-afford-to-rent/

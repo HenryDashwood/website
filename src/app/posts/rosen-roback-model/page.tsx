@@ -8,8 +8,8 @@ export const metadata: Metadata = {
     images: [{ url: `${process.env.WEBSITE_URL}/api/og?title=Across%20Cities%3A%20The%20Rosen-Roback%20Model` }],
   },
   other: {
-    slug: "across-cities-the-rosen-roback-model",
-    published: "2025-12-21",
+    slug: "rosen-roback-model",
+    published: "2025-12-26",
     tags: ["Economics", "Housing"],
   },
 };
