@@ -59,7 +59,7 @@ The `src/lib/posts.ts` module provides:
 MDX is configured in `next.config.mjs` with the following plugins:
 
 - `remark-gfm` - GitHub Flavored Markdown
-- `remark-math` - Math notation support
+- `remark-math` - Maths notation support
 - `rehype-katex` - KaTeX math rendering (requires importing `katex/dist/katex.min.css` in layout)
 - `rehype-highlight` - Code syntax highlighting with highlight.js
 

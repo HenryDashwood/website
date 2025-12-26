@@ -25,6 +25,17 @@ const nextConfig = {
     domains: [],
     unoptimized: false,
   },
+  // Exclude post.mdx files from triggering Fast Refresh
+  // This prevents the editor from refreshing when saving posts
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [...(config.watchOptions?.ignored || []), /src\/app\/posts\/.*\/post\.mdx$/],
+      };
+    }
+    return config;
+  },
 };
 
 const withMDX = createMDX({
