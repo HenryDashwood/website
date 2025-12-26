@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import Content from "@/components/Content";
 import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
 import { GetPosts } from "@/lib/posts";
@@ -25,24 +24,22 @@ async function PostList() {
 
   return (
     <NavContentWrapper>
-      <Content>
-        <h1>Blog Posts</h1>
-        <ul className="list-none p-0">
-          {posts.map((post) => {
-            if (!post.metadata.other) return null;
+      <h1>Blog Posts</h1>
+      <ul className="list-none p-0">
+        {posts.map((post) => {
+          if (!post.metadata.other) return null;
 
-            return (
-              <li key={String(post.metadata.other.slug)} className="mb-4">
-                <Link href={`/posts/` + post.metadata.other.slug}>{String(post.metadata.title)}</Link>
-                <br />
-                <small>
-                  <Date dateString={String(post.metadata.other.published)} />
-                </small>
-              </li>
-            );
-          })}
-        </ul>
-      </Content>
+          return (
+            <li key={String(post.metadata.other.slug)} className="mb-4">
+              <Link href={`/posts/` + post.metadata.other.slug}>{String(post.metadata.title)}</Link>
+              <br />
+              <small>
+                <Date dateString={String(post.metadata.other.published)} />
+              </small>
+            </li>
+          );
+        })}
+      </ul>
     </NavContentWrapper>
   );
 }
