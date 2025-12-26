@@ -176,32 +176,6 @@ export default function LaborMarketDiagram() {
       .join(" ");
   };
 
-  // Determine what changed for explanation
-  const getExplanation = () => {
-    if (productivity > 100 && amenities === 100) {
-      return "Higher productivity shifts the iso-profit curve up. Firms can pay higher wages at any rent level. The new equilibrium has higher wages and higher rents.";
-    }
-    if (productivity < 100 && amenities === 100) {
-      return "Lower productivity shifts the iso-profit curve down. Firms must pay lower wages. The new equilibrium has lower wages and lower rents.";
-    }
-    if (amenities > 100 && productivity === 100) {
-      return "Better amenities shift the iso-utility curve down. Workers accept lower wages for the same rent because amenities compensate them. The new equilibrium has lower wages but higher rents.";
-    }
-    if (amenities < 100 && productivity === 100) {
-      return "Worse amenities shift the iso-utility curve up. Workers demand higher wages to compensate for poor living conditions. The new equilibrium has higher wages but lower rents.";
-    }
-    if (productivity > 100 && amenities > 100) {
-      return "Both higher productivity and better amenities: productivity raises wages while amenities lower them. Rents rise due to both effects. The net wage change depends on which effect dominates.";
-    }
-    if (productivity < 100 && amenities < 100) {
-      return "Both lower productivity and worse amenities: a declining city. Rents fall, but wages depend on which effect dominates.";
-    }
-    if (productivity !== 100 || amenities !== 100) {
-      return "The curves have shifted. The new equilibrium reflects the combined effects of changes in productivity and amenities.";
-    }
-    return "";
-  };
-
   return (
     <div className="not-prose labor-market-diagram my-8 rounded-lg border border-gray-200 bg-gray-50 p-6">
       <h3 className="mb-4 text-center text-xl font-bold">The Roback Diagram</h3>
