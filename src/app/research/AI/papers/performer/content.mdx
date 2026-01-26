@@ -1,0 +1,11 @@
+[Performer](https://arxiv.org/pdf/2009.14794) (2020) proposed a workaround to the fact that, because softmax is non-linear, we have to calculate the full attention matrix rather than decomposing it into independent parts. It bypasses this bottleneck using a method called FAVOR+ (Fast Attention Via Positive Orthogonal Random Features). Instead of calculating the exact softmax attention, it approximates it using a mathematical kernel trick. The Query and Key vectors are mapped using random Fourier features into a feature space where the dot product approximates the softmax function.
+
+In standard attention, when calculating $(Q \times K^T) \times V$, we calculate the $Q \times K^T$ part first because that the input to softmax function. It's this term that produces the huge $N \times N$ matrix. By approximating the softmax as a dot product of feature maps, the equation changes to roughly $(Q' \times (K')^T) \times V$. Because matrix multiplication is associative $(A \times(B \times C) = (A \times B) \times C)$, the Performer can compute this in a different order:
+
+$$
+Q' \times ((K')^T \times V)
+$$
+
+This way $(K')T \times V$ is calculated first. Since both $K'$ and $V$ have dimensions $N \times d$, the result is a small $d \times d$ matrix, and the massive $N \times N$ matrix can be avoided.
+
+This reordering allows the Performer to achieve linear time $O(N)$ and linear space complexity. The paper claims that this method provably approximates regular softmax attention with a bounded error.
