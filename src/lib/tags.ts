@@ -1,11 +1,12 @@
 export enum Tags {
+  AI = "AI",
   Mathematics = "Mathematics",
   Literature = "Literature",
-  Biology = "Biology",
   Programming = "Programming",
   Recommendations = "Recommendations",
   Economics = "Economics",
-  Roundups = "Roundups",
   History = "History",
   Housing = "Housing",
+  Roundups = "Roundups",
+  Biology = "Biology",
 }

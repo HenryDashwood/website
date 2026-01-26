@@ -1,0 +1,44 @@
+The three big papers that led to the original form of self-attention were:
+
+- [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473) (2014)
+- [Effective Approaches to Attention-based Neural Machine Translation](https://arxiv.org/pdf/1508.04025) (2015)
+- [Attention is all you need](https://arxiv.org/pdf/1706.03762) (2017)
+
+Standard self-attention, as described in _Attention is all you need_, is expressed like so:
+
+$$
+\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$
+
+In code, this looks like:
+
+```python
+def self_attention(X, W_q, W_k, W_v):
+    """
+    X: (seq_len, d_model) - input embeddings
+    W_q, W_k: (d_k, d_model) - query/key projection weights
+    W_v: (d_v, d_model) - value projection weights
+    """
+    # Project to Q, K, V
+    Q = X @ W_q.T  # (seq_len, d_k)
+    K = X @ W_k.T  # (seq_len, d_k)
+    V = X @ W_v.T  # (seq_len, d_v)
+
+    # Scaled dot-product attention
+    d_k = K.shape[1]
+    scores = Q @ K.T / (d_k**0.5)  # (seq_len, seq_len)
+    attn_weights = F.softmax(scores, dim=-1)
+
+    # Weighted sum of values
+    output = attn_weights @ V  # (seq_len, d_v)
+    return output, attn_weights
+```
+
+And visually it looks like this ([from here](https://sebastianraschka.com/blog/2023/self-attention-from-scratch.html)):
+
+<LocalImage
+  src="/images/research/AI/self-attention/self-attention.png"
+  alt="Self-attention visualisation"
+  width={800}
+  height={600}
+/>

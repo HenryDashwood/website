@@ -1,14 +1,21 @@
 import { GetPost } from "@/lib/posts";
+import { GetAllResearch } from "@/lib/research";
 import { readdirSync, statSync } from "fs";
 import { Metadata } from "next";
 import path from "path";
-async function GetPostTags() {
+
+interface LinkItem {
+  metadata: Metadata;
+  type: "post" | "research";
+}
+
+async function GetPostsWithType(): Promise<LinkItem[]> {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(
     (item) => statSync(path.join(postsPath, item)).isDirectory() && !item.startsWith("[")
   );
 
-  const postPreviews: Metadata[] = [];
+  const items: LinkItem[] = [];
   for (const postDirectory of postDirectories) {
     const post = await GetPost(postDirectory, false);
 
@@ -16,34 +23,53 @@ async function GetPostTags() {
       throw new Error("Metadata is undefined");
     }
 
-    postPreviews.push({
-      ...post.metadata,
+    items.push({
+      metadata: { ...post.metadata },
+      type: "post",
     });
   }
 
-  return postPreviews;
+  return items;
+}
+
+async function GetResearchWithType(): Promise<LinkItem[]> {
+  const research = await GetAllResearch(false);
+
+  return research.map((item) => ({
+    metadata: item.metadata,
+    type: "research" as const,
+  }));
 }
 
 async function LinkBox({ tag }: { tag: string }) {
-  const postsData = await GetPostTags();
+  const [posts, research] = await Promise.all([GetPostsWithType(), GetResearchWithType()]);
 
-  const filteredPosts = postsData.filter(
-    (post) => post.other && post.other.tags && Array.isArray(post.other.tags) && post.other.tags.includes(tag)
+  const allItems = [...posts, ...research];
+
+  const filteredItems = allItems.filter(
+    (item) =>
+      item.metadata.other &&
+      item.metadata.other.tags &&
+      Array.isArray(item.metadata.other.tags) &&
+      item.metadata.other.tags.includes(tag)
   );
 
   return (
     <div className="border-nav-background m-[2.5%] rounded-lg border-2 p-4">
       <h2>{tag}</h2>
       <ul className="pl-4">
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map((post: Metadata) => {
-            if (!post.title || !post.other || !post.other.slug) {
+        {filteredItems.length > 0 ? (
+          filteredItems.map((item: LinkItem) => {
+            if (!item.metadata.title || !item.metadata.other || !item.metadata.other.slug) {
               throw new Error("Metadata is undefined");
             }
 
+            const href =
+              item.type === "post" ? `/posts/${item.metadata.other.slug}` : `/research/${item.metadata.other.slug}`;
+
             return (
-              <li key={String(post.other.slug)} className="mb-2 ml-2">
-                <a href={`/posts/${post.other.slug}`}>{String(post.title)}</a>
+              <li key={String(item.metadata.other.slug)} className="mb-2 ml-2">
+                <a href={href}>{String(item.metadata.title)}</a>
               </li>
             );
           })

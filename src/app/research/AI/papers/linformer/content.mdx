@@ -1,0 +1,14 @@
+[Linformer](https://arxiv.org/pdf/2006.04768) (2020) is built on the observation that the self-attention matrix is "low-rank" and so contains a lot of redundancy. The authors introduce two learned projection matrices $E$ and $F$. These matrices project the Key and Value inputs along the sequence length dimension, rather than the feature dimension, reducing them from the typical $n \times d$ to $k \times d$, where $k$ is a much smaller fixed-size number. The Query matrix (Q) remains its original size $n \times d$ to ensure the output sequence maintains the correct length. The attention calculation ends up being:
+
+$$
+\text{Attention} = \text{softmax}\left(\frac{Q⋅(K_\text{projected})^T}{\sqrt{d_k}}\right) \cdot V_\text{projected}
+$$
+
+<LocalImage
+  src="/images/research/AI/papers/linformer/linformer-attention.png"
+  alt="Linformer attention"
+  width={800}
+  height={600}
+/>
+
+Because $k$ is a fixed constant much smaller than $n$, the complexity drops from $O(n^2)$ to $O(nk)$. Since $k$ does not grow with the input, this is effectively linear complexity $O(n)$.

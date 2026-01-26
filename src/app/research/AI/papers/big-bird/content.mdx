@@ -1,0 +1,13 @@
+[Big Bird](https://arxiv.org/pdf/2007.14062) (2020) similarly proposed a combination of global and local attention. But they also had each token attend to a random selection of tokens from elsewhere in the sequence. Each token attending to $O(g + w + r)$ tokens instead of $O(n)$ tokens meant that the complexity is merely $O(n)$ instead of $O(n^2)$.
+
+<LocalImage
+  src="/images/research/AI/papers/bigbird/bigbird-attention.png"
+  alt="BigBird attention"
+  width={800}
+  height={600}
+  caption="Big Bird attention"
+/>
+
+The paper includes quite an involved existence proof that this sparse pattern preserves the theoretical expressiveness of full attention, being both Turing-complete and a universal approximator of sequence functions.
+
+Empirically, the model was able to handle sequences 8x longer than previous models on the same hardware.

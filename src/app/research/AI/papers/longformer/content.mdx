@@ -1,0 +1,13 @@
+[Longformer](https://arxiv.org/pdf/2004.05150) (2020) used three different kinds of sparse attention to reduce complexity to $O(n)$.
+
+1. Sliding window attention: Instead of attending to all tokens, each token attends only to a fixed window of $w$ neighbours on each side. If you have multiple layers, it's still possible for information for propagate from further along the sequence. The receptive field ends up being $l \times w$. This is similar to how CNNs build up global context from their local convolutions.
+2. The authors also allow their sliding windows to "dilate", leaving gaps in order to become wider. They report that allowing different attention heads different dilation amounts worked well.
+3. They also allow certain tokens to attend globally. For instance, the CLS token, which is used for text classification, or the question tokens in a QA setting.
+
+<LocalImage
+  src="/images/research/AI/papers/longformer/longformer-attention.png"
+  alt="Longformer attention"
+  width={800}
+  height={600}
+  caption="Longformer attention"
+/>
