@@ -3,6 +3,7 @@ import NavContentWrapper from "@/components/NavContentWrapper";
 import { GetResearchTree, ResearchTreeNode } from "@/lib/research";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Changelog from "./changelog.mdx";
 
 export const revalidate = 3600;
 
@@ -58,6 +59,15 @@ function TreeNode({ node, depth = 0 }: { node: ResearchTreeNode; depth?: number 
   );
 }
 
+function ChangelogSection() {
+  return (
+    <div className="mt-8">
+      <h2>Changelog</h2>
+      <Changelog />
+    </div>
+  );
+}
+
 async function ResearchList() {
   const tree = await GetResearchTree();
 
@@ -79,6 +89,7 @@ async function ResearchList() {
           <TreeNode key={node.name} node={node} />
         ))}
       </div>
+      <ChangelogSection />
     </NavContentWrapper>
   );
 }

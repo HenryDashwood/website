@@ -1,0 +1,34 @@
+A function written in C/C++ that runs on the GPU (Device) rather than the CPU (Host). It does not run just once. It is executed N times in parallel by N different CUDA threads. Threads distinguish themselves using built-in variables (like a unique ID), allowing them to calculate a specific part of a larger problem.
+
+To manage threads, CUDA organises them into a 3-tier hierarchy:
+
+- Thread: The smallest unit of execution.
+- Block: A group of threads that run on the same Streaming Multiprocessor (SM). Threads in a block can share fast memory (Shared Memory).
+- Grid: A collection of blocks. This represents the entire kernel launch.
+
+A kernel is defined using the `global` declaration specifier. This tells the compiler that the function is callable from the CPU but executes on the GPU.
+
+An example of a kernel that adds two arrays (A and B) and puts the result in C:
+
+```C
+// The Kernel definition (__global__ indicates it runs on GPU)
+__global__ void vectorAdd(float* A, float* B, float* C, int N) {
+    // Calculate global thread ID
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // Ensure we don't access memory out of bounds
+    if (i < N) {
+        C[i] = A[i] + B[i];
+    }
+}
+
+int main() {
+    // ... (Memory allocation would happen here) ...
+
+    // The Kernel Launch
+    // Execute with 1 Block containing 256 Threads
+    vectorAdd<<<1, 256>>>(d_A, d_B, d_C, N);
+
+    // ... (Clean up) ...
+}
+```

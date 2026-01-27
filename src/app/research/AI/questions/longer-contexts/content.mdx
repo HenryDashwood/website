@@ -33,18 +33,18 @@ Limitations:
     - Implementing block-sparse attention required writing custom CUDA kernels. These kernels were often difficult to optimise and could not leverage the heavily optimised Tensor Core primitives designed for dense GEMM (General Matrix Multiply) operations.
     - https://arxiv.org/pdf/2306.01160
   - Wall clock reality
-    - While sparse attention reduced the theoretical FLOPs, it often did not reduce the wall-clock training time.
+    - While sparse attention reduced the theoretical FLOPs, it often did not reduce the wall-clock training time.
     - The overhead of managing the sparsity patterns (masking, gathering indices) often outweighed the savings in compute.
     - A dense operation that uses 100% of the GPU's potential is often faster than a sparse operation that uses only 10%.
   - "Needle" Problem
     - Sparse attention assumes that not all token interactions are important
     - But in needle-in-a-haystack tasks, a single specific token interaction might be the only one that matters.
     - If the random or sliding window sparsity pattern fails to capture that specific connection, the model will fail.
-  - The path forward was not to do less work (sparsity), but to do it more efficiently (IO-awareness).
+  - The path forward was not to do less work (sparsity), but to do it more efficiently (IO-awareness).
 
 ## Scaling long sequences with recurrence and memory
 
-break long sequences into *segments* and propagate information across segments, effectively giving an “infinite” context length through recurrence.
+break long sequences into segments and propagate information across segments, effectively giving an “infinite” context length through recurrence.
 
 [Transformer-XL](https://arxiv.org/pdf/1901.02860) (2019) introduced segment-level recurrence. Instead of discarding the hidden states of the previous segment after processing, the model caches them in memory. It is then able to attend to the next segment along with the cached tokens from the one before. The Query is derived from the current segment, while the Key and Value vectors are derived from the concatenation of the previous segment's output (with gradients stopped) and the current segment.
 
@@ -118,7 +118,7 @@ https://arxiv.org/pdf/2406.13282v1
   - One can take a model like LLaMA-2 (trained on 4K context with RoPE) and interpolate the RoPE angles to a 16K or 32K context range, then fine-tune on some data with the extended context. Only takes about 1000 steps.
   - effectively “stretches” the learned positional representation to cover a longer sequence
   - Empirically, this can work surprisingly well, albeit typically with some drop in perplexity that can often be recovered through a bit of additional training on long sequences
-  - This kind of post-hoc extension is a testament to how much of the *mechanics* for long context can be achieved by adjusting positional encodings and continuing training, without needing to redesign the entire architecture
+  - This kind of post-hoc extension is a testament to how much of the _mechanics_ for long context can be achieved by adjusting positional encodings and continuing training, without needing to redesign the entire architecture
   - But it did reduce the "resolution" of the attention. By squeezing the positions, adjacent tokens became harder to distinguish, degrading performance on tasks requiring high local precision.
 
 - Neural Tangent Kernel (NTK) aware scaling
@@ -144,46 +144,9 @@ https://arxiv.org/pdf/2406.13282v1
 
 https://arxiv.org/pdf/2112.05682
 
-bottleneck in attention is not the arithmetic of $QK^T$. It is the reading and writing of the $N \times N$ matrix to HBM.
+The bottleneck in attention is not the arithmetic of $QK^T$. It is the reading and writing of the $N \times N$ matrix to HBM.
 
-- Flash Attention
-  - 2022
-  - https://arxiv.org/pdf/2205.14135
-  - Optimised kernel for computing attention on a GPU. Specifically, the NVIDIA A100.
-  - Standard attention implementations write the full n×n attention matrix to GPU high-bandwidth memory (HBM), read it back for softmax, write again, then read for the final multiplication.
-    1. Load $Q$ and $K$ from HBM to on-chip SRAM.
-    2. Compute $S = QK^T$.
-    3. Write $S$ (size $N^2$) back to HBM.
-    4. Load $S$ from HBM to SRAM.
-    5. Compute $P = \text{softmax}(S)$.
-    6. Write $P$ back to HBM.
-    7. Load $P$ and $V$ from HBM.
-    8. Compute $O = PV$.
-    9. Write $O$ to HBM.
-  - Flash Attention restructures computation around the GPU memory hierarchy.
-    1. Load small blocks of $Q$, $K$, and $V$ into SRAM. This technique is called tiling.
-    2. Compute the attention scores, (online) softmax, and output within the fast SRAM incrementally.
-    3. Ideally, never write the intermediate $N \times N$ matrix to HBM at all.
-    - SRAM is 20MB with 19TB/s bandwidth versus 1.5TB/s for HBM.
-  - The result is exact attention (no approximation) with $O(n)$ memory complexity. Wall clock speeds also improved by 2–4× for long sequences.
-  - Enabled training with 16K+ token sequences on hardware that previously supported only 2K. The maximum sequence length was no longer limited by the size of the attention matrix (which caused OOM errors) but only by the linear cost of storing the KV cache.
-  - Parallel over Batch Dimension
-  - ~150 TFLOPS (FP16)
-
-- Flash Attention 2
-  - 2023
-  - Added parallisation over the sequence dimension, allowing it to use more streaming multiprocessors on the GPU for long sequences.
-  - Reduced the number of non-matrix-multiplication operations that do not use Tensor Cores, e.g. scaling and masking
-  - ~350 TFLOPS (FP16)
-
-- Flash Attention 3
-  - 2024
-  - Optimised for NVIDIA H100 Hopper GPUs.
-  - The H100 introduced the Tensor Memory Accelerator (TMA), which allows the GPU to copy memory from HBM to SRAM asynchronously, without blocking the compute threads.
-  - warp specialisation:
-    - Some threads (warps) act as producers (loading data via TMA) and others as consumers (computing GEMMs), creating a perfect pipeline where computation and data transfer happen simultaneously.
-  - FP8 support
-  - ~740 TFLOPS (FP16) / 1.2 PFLOPS (FP8)
+[Flash Attention](/research/AI/attention/flash-attention/)
 
 During autoregressive generation, each new token requires attending to all previous tokens.
 
