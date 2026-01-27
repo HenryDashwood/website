@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Self Attention",
   description: "",
   other: {
-    slug: "AI/self-attention",
+    slug: "AI/attention/self-attention",
     created: "2026-01-26",
     lastUpdated: "2026-01-26",
     tags: [],
