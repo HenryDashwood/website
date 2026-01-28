@@ -2,7 +2,7 @@ In 2019, models such as BERT and GPT-2 were limited to relatively short inputs (
 
 ## Understanding attention and its quadratic cost
 
-[Self-attention](/research/AI/self-attention/)
+[Self-attention](/research/AI/attention/self-attention/)
 
 In self-attention, the relationship between every token and every other token must be computed. The $Q \cdot K.T$ operation that produces the $n \times n$ attention matrix requires $n^2 \cdot d$ operations, the $n^2$ results of which have to be stored and have the softmax operation applied to them. For a 512 token sequence, that means 262,144 values. For 100,000 tokens, 10,000,000,000 values would be needed.
 
