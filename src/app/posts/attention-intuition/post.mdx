@@ -1,8 +1,12 @@
-Neural networks are universal function approximators. They can, with an infinite number of parameters and data, learn any function. In practice, we can structure our models to encode priors about the problem we are working on and reduce its complexity significantly. For instance, a convolutional neural network bakes in the assumption that local spatial patterns are important. Attention assumes that context matters, and that any token could be a relevant bit of context for any other. Relevance is determined by a token's content.
+Neural networks are universal function approximators. They can, with an infinite number of parameters and data, learn any function. In practice, we can structure our models to encode priors about the problem we are working on, significantly reducing its complexity. For instance, a convolutional neural network bakes in the assumption that local spatial patterns are important. Attention assumes that context matters, and that any token could be a relevant bit of context for any other. Relevance is determined by a token's content.
 
 The formula for self-attention is:
-$$\text{Attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V$$
-A standard one sentence description of what going here reads something like:
+
+$$
+\text{Attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
+$$
+
+A standard one-sentence description of what is going on here reads something like:
 
 > _Each token is projected into three separate vectors:_
 >
@@ -21,7 +25,7 @@ Imagine our model's embedding size $d$ is 4, that is to say imagine our model re
 | d3        | Syntactic role (high = subject)            |
 | d4        | Semantic content: "cat-ness" vs "mat-ness" |
 
-Now imagine we feed in the sentence:
+Now, imagine we feed in the sentence:
 
 > **The cat sat on the mat because it was tired.**
 
