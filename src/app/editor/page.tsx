@@ -33,6 +33,16 @@ interface PostInfo {
   description?: string;
 }
 
+interface ResearchInfo {
+  slug: string;
+  title: string;
+  created: string | null;
+  lastUpdated: string | null;
+  tags: string[];
+  description?: string;
+}
+
+type ContentType = "posts" | "research";
 type ViewMode = "edit" | "preview";
 
 function EditorContent() {
@@ -40,23 +50,28 @@ function EditorContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Read initial slug from URL
-  const initialSlug = searchParams.get("post") || "";
+  // Read initial values from URL
+  const initialType = (searchParams.get("type") as ContentType) || "posts";
+  const initialSlug = searchParams.get("slug") || searchParams.get("post") || ""; // Support legacy "post" param
 
+  const [contentType, setContentType] = useState<ContentType>(initialType);
   const [posts, setPosts] = useState<PostInfo[]>([]);
+  const [research, setResearch] = useState<ResearchInfo[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>(initialSlug);
   const [selectedPost, setSelectedPost] = useState<PostInfo | null>(null);
+  const [selectedResearch, setSelectedResearch] = useState<ResearchInfo | null>(null);
   const [content, setContent] = useState<string>("");
   const [originalContent, setOriginalContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
-  const [newPostSlug, setNewPostSlug] = useState("");
-  const [newPostTitle, setNewPostTitle] = useState("");
-  const [newPostDescription, setNewPostDescription] = useState("");
-  const [newPostTags, setNewPostTags] = useState("");
+  const [newItemSlug, setNewItemSlug] = useState("");
+  const [newItemTitle, setNewItemTitle] = useState("");
+  const [newItemDescription, setNewItemDescription] = useState("");
+  const [newItemTags, setNewItemTags] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
   const [fileMtime, setFileMtime] = useState<number | null>(null);
   const [footnoteModalOpen, setFootnoteModalOpen] = useState(false);
@@ -68,19 +83,18 @@ function EditorContent() {
   const footnoteInputRef = useRef<HTMLTextAreaElement>(null);
   const hasLoadedFromUrl = useRef(false);
 
-  // Update URL when selected post changes (without triggering navigation)
-  const updateUrlWithSlug = useCallback(
-    (slug: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+  // Update URL when selected item changes (without triggering navigation)
+  const updateUrl = useCallback(
+    (type: ContentType, slug: string) => {
+      const params = new URLSearchParams();
+      params.set("type", type);
       if (slug) {
-        params.set("post", slug);
-      } else {
-        params.delete("post");
+        params.set("slug", slug);
       }
       const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
       router.replace(newUrl, { scroll: false });
     },
-    [pathname, router, searchParams]
+    [pathname, router]
   );
 
   // Keep ref in sync
@@ -91,6 +105,7 @@ function EditorContent() {
   // Check if in development mode
   const [isDev, setIsDev] = useState<boolean | null>(null);
 
+  // Fetch posts
   useEffect(() => {
     fetch("/api/editor/posts")
       .then((res) => {
@@ -104,23 +119,38 @@ function EditorContent() {
       .then((data) => {
         if (data) {
           setPosts(data);
-          // If there's a slug in the URL, load that post once we have the posts list
-          if (initialSlug && data.some((p: PostInfo) => p.slug === initialSlug)) {
-            // Post will be loaded by the effect that watches selectedSlug
-          }
         }
       })
       .catch(() => {
         setIsDev(false);
       });
-  }, [initialSlug]);
+  }, []);
 
-  const loadPost = useCallback(
-    async (slug: string) => {
+  // Fetch research
+  useEffect(() => {
+    fetch("/api/editor/research")
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        if (data) {
+          setResearch(data);
+        }
+      })
+      .catch(() => {
+        // Silently fail - research endpoint might not exist yet
+      });
+  }, []);
+
+  const loadItem = useCallback(
+    async (slug: string, type: ContentType) => {
       if (!slug) {
         setContent("");
         setOriginalContent("");
         setSelectedPost(null);
+        setSelectedResearch(null);
         return;
       }
 
@@ -128,34 +158,45 @@ function EditorContent() {
       setError(null);
 
       try {
-        const res = await fetch(`/api/editor/read?slug=${encodeURIComponent(slug)}`);
+        const typeParam = type === "posts" ? "post" : "research";
+        const res = await fetch(`/api/editor/read?slug=${encodeURIComponent(slug)}&type=${typeParam}`);
         if (!res.ok) {
-          throw new Error("Failed to load post");
+          throw new Error(`Failed to load ${type === "posts" ? "post" : "research"}`);
         }
         const data = await res.json();
         setContent(data.content);
         setOriginalContent(data.content);
         setFileMtime(data.mtime);
 
-        // Find the post metadata
-        const post = posts.find((p) => p.slug === slug);
-        setSelectedPost(post || null);
+        // Find the item metadata
+        if (type === "posts") {
+          const post = posts.find((p) => p.slug === slug);
+          setSelectedPost(post || null);
+          setSelectedResearch(null);
+        } else {
+          const researchItem = research.find((r) => r.slug === slug);
+          setSelectedResearch(researchItem || null);
+          setSelectedPost(null);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load post");
+        setError(err instanceof Error ? err.message : `Failed to load ${type === "posts" ? "post" : "research"}`);
       } finally {
         setIsLoading(false);
       }
     },
-    [posts]
+    [posts, research]
   );
 
-  // Load post from URL on initial mount (once posts are available)
+  // Load item from URL on initial mount (once data is available)
   useEffect(() => {
-    if (!hasLoadedFromUrl.current && initialSlug && posts.length > 0 && !isLoading) {
-      hasLoadedFromUrl.current = true;
-      loadPost(initialSlug);
+    if (!hasLoadedFromUrl.current && initialSlug && !isLoading) {
+      const dataAvailable = initialType === "posts" ? posts.length > 0 : research.length > 0;
+      if (dataAvailable) {
+        hasLoadedFromUrl.current = true;
+        loadItem(initialSlug, initialType);
+      }
     }
-  }, [initialSlug, posts, isLoading, loadPost]);
+  }, [initialSlug, initialType, posts, research, isLoading, loadItem]);
 
   // Check for external file changes (e.g., edited in Cursor)
   const checkForExternalChanges = useCallback(async () => {
@@ -163,8 +204,9 @@ function EditorContent() {
 
     isCheckingRef.current = true;
     try {
+      const typeParam = contentType === "posts" ? "post" : "research";
       const res = await fetch(
-        `/api/editor/read?slug=${encodeURIComponent(selectedSlug)}&checkOnly=true&mtime=${fileMtime}`
+        `/api/editor/read?slug=${encodeURIComponent(selectedSlug)}&type=${typeParam}&checkOnly=true&mtime=${fileMtime}`
       );
       if (!res.ok) return;
 
@@ -196,7 +238,7 @@ function EditorContent() {
     } finally {
       isCheckingRef.current = false;
     }
-  }, [selectedSlug, fileMtime, isSaving]);
+  }, [selectedSlug, contentType, fileMtime, isSaving]);
 
   // Check for external changes when tab gains focus
   useEffect(() => {
@@ -208,35 +250,51 @@ function EditorContent() {
     return () => window.removeEventListener("focus", handleFocus);
   }, [checkForExternalChanges]);
 
-  // Handle selecting a post from the list
-  const handleSelectPost = (slug: string) => {
+  // Handle selecting an item from the list
+  const handleSelectItem = (slug: string) => {
     setIsCreatingNew(false);
     setIsLoading(true);
     setSelectedSlug(slug);
-    updateUrlWithSlug(slug);
-    loadPost(slug);
+    updateUrl(contentType, slug);
+    loadItem(slug, contentType);
   };
 
-  // Handle going back to post list
+  // Handle going back to list
   const handleBackToList = () => {
     setSelectedSlug("");
     setSelectedPost(null);
+    setSelectedResearch(null);
     setContent("");
     setOriginalContent("");
     setIsCreatingNew(false);
-    updateUrlWithSlug("");
+    updateUrl(contentType, "");
   };
 
-  // Handle creating new post
+  // Handle creating new item
   const handleCreateNew = () => {
     setIsCreatingNew(true);
     setSelectedSlug("");
     setSelectedPost(null);
+    setSelectedResearch(null);
     setContent("");
     setOriginalContent("");
   };
 
-  // Filter posts based on search query
+  // Handle switching content type
+  const handleSwitchContentType = (type: ContentType) => {
+    if (type === contentType) return;
+    setContentType(type);
+    setSelectedSlug("");
+    setSelectedPost(null);
+    setSelectedResearch(null);
+    setContent("");
+    setOriginalContent("");
+    setIsCreatingNew(false);
+    setSearchQuery("");
+    updateUrl(type, "");
+  };
+
+  // Filter items based on search query
   const filteredPosts = posts.filter((post) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -247,6 +305,19 @@ function EditorContent() {
     );
   });
 
+  const filteredResearch = research.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(query) ||
+      item.slug.toLowerCase().includes(query) ||
+      item.tags.some((tag) => tag.toLowerCase().includes(query)) ||
+      item.description?.toLowerCase().includes(query)
+    );
+  });
+
+  // Get currently selected item for display
+  const selectedItem = contentType === "posts" ? selectedPost : selectedResearch;
+
   const handleSave = useCallback(async () => {
     if (!selectedSlug && !isCreatingNew) return;
 
@@ -255,15 +326,17 @@ function EditorContent() {
     setSuccessMessage(null);
 
     try {
+      const typeParam = contentType === "posts" ? "post" : "research";
       const body = isCreatingNew
         ? {
-            slug: newPostSlug,
+            slug: newItemSlug,
             content: contentRef.current,
+            type: typeParam,
             createNew: true,
             metadata: {
-              title: newPostTitle,
-              description: newPostDescription,
-              tags: newPostTags
+              title: newItemTitle,
+              description: newItemDescription,
+              tags: newItemTags
                 .split(",")
                 .map((t) => t.trim())
                 .filter(Boolean),
@@ -272,6 +345,7 @@ function EditorContent() {
         : {
             slug: selectedSlug,
             content: contentRef.current,
+            type: typeParam,
           };
 
       const res = await fetch("/api/editor/save", {
@@ -287,14 +361,9 @@ function EditorContent() {
 
       const data = await res.json();
 
-      // Update with formatted content from prettier
-      if (data.content) {
-        setContent(data.content);
-        setOriginalContent(data.content);
-        contentRef.current = data.content;
-      } else {
-        setOriginalContent(contentRef.current);
-      }
+      // Mark current content as saved - don't update editor to avoid UI flash
+      // The editor already has what the user typed, just sync the "original" state
+      setOriginalContent(contentRef.current);
 
       // Update mtime
       if (data.mtime) {
@@ -304,26 +373,44 @@ function EditorContent() {
       setSuccessMessage("Saved!");
 
       if (isCreatingNew) {
-        const postsRes = await fetch("/api/editor/posts");
-        const postsData = await postsRes.json();
-        setPosts(postsData);
-        setSelectedSlug(newPostSlug);
-        updateUrlWithSlug(newPostSlug);
-        setSelectedPost({
-          slug: newPostSlug,
-          title: newPostTitle,
-          published: new Date().toISOString().split("T")[0],
-          tags: newPostTags
-            .split(",")
-            .map((t) => t.trim())
-            .filter(Boolean),
-          description: newPostDescription,
-        });
+        const today = new Date().toISOString().split("T")[0];
+        const tags = newItemTags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
+
+        if (contentType === "posts") {
+          const postsRes = await fetch("/api/editor/posts");
+          const postsData = await postsRes.json();
+          setPosts(postsData);
+          setSelectedPost({
+            slug: newItemSlug,
+            title: newItemTitle,
+            published: today,
+            tags,
+            description: newItemDescription,
+          });
+        } else {
+          const researchRes = await fetch("/api/editor/research");
+          const researchData = await researchRes.json();
+          setResearch(researchData);
+          setSelectedResearch({
+            slug: newItemSlug,
+            title: newItemTitle,
+            created: today,
+            lastUpdated: today,
+            tags,
+            description: newItemDescription,
+          });
+        }
+
+        setSelectedSlug(newItemSlug);
+        updateUrl(contentType, newItemSlug);
         setIsCreatingNew(false);
-        setNewPostSlug("");
-        setNewPostTitle("");
-        setNewPostDescription("");
-        setNewPostTags("");
+        setNewItemSlug("");
+        setNewItemTitle("");
+        setNewItemDescription("");
+        setNewItemTags("");
       }
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -332,7 +419,62 @@ function EditorContent() {
     } finally {
       setIsSaving(false);
     }
-  }, [selectedSlug, isCreatingNew, newPostSlug, newPostTitle, newPostDescription, newPostTags, updateUrlWithSlug]);
+  }, [
+    selectedSlug,
+    isCreatingNew,
+    contentType,
+    newItemSlug,
+    newItemTitle,
+    newItemDescription,
+    newItemTags,
+    updateUrl,
+  ]);
+
+  // Format content with prettier (saves and syncs formatted content back)
+  const handleFormat = useCallback(async () => {
+    if (!selectedSlug || isFormatting || isSaving) return;
+
+    setIsFormatting(true);
+    setError(null);
+
+    try {
+      const typeParam = contentType === "posts" ? "post" : "research";
+      const res = await fetch("/api/editor/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: selectedSlug,
+          content: contentRef.current,
+          type: typeParam,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to format");
+      }
+
+      const data = await res.json();
+
+      // Update editor with formatted content
+      if (data.content && editorActionsRef.current) {
+        editorActionsRef.current.setContent(data.content);
+        setOriginalContent(data.content);
+        contentRef.current = data.content;
+      }
+
+      if (data.mtime) {
+        setFileMtime(data.mtime);
+      }
+
+      setSuccessMessage("Formatted!");
+      setTimeout(() => setSuccessMessage(null), 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to format");
+    } finally {
+      setIsFormatting(false);
+    }
+  }, [selectedSlug, isFormatting, isSaving, contentType]);
 
   // Footnote handling
   const handleFootnoteInsert = useCallback(() => {
@@ -513,8 +655,8 @@ function EditorContent() {
     );
   }
 
-  // Show post list when no post is selected and not creating new
-  const showPostList = !selectedSlug && !isCreatingNew;
+  // Show list when no item is selected and not creating new
+  const showItemList = !selectedSlug && !isCreatingNew;
 
   return (
     <div className="bg-background flex min-h-screen flex-col">
@@ -534,32 +676,62 @@ function EditorContent() {
 
       {/* Header - clean single row */}
       <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-4 border-b border-stone-300 bg-stone-100 px-4">
-        {showPostList ? (
+        {showItemList ? (
           <>
             <Link href="/" className="text-stone-600 hover:text-stone-900">
               ←
             </Link>
             <div className="h-5 w-px bg-stone-300" />
-            <h1 className="font-arizona-flare text-lg font-medium text-stone-800">Posts</h1>
+
+            {/* Content type toggle */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleSwitchContentType("posts")}
+                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                  contentType === "posts"
+                    ? "bg-amber-500 text-white"
+                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                }`}
+              >
+                Posts
+              </button>
+              <button
+                onClick={() => handleSwitchContentType("research")}
+                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                  contentType === "research"
+                    ? "bg-amber-500 text-white"
+                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                }`}
+              >
+                Research
+              </button>
+            </div>
+
             <div className="ml-auto">
               <button
                 onClick={handleCreateNew}
                 className="h-8 rounded bg-amber-500 px-4 text-sm font-medium text-white transition-colors hover:bg-amber-600"
               >
-                + New Post
+                + New {contentType === "posts" ? "Post" : "Research"}
               </button>
             </div>
           </>
         ) : (
           <>
-            <button onClick={handleBackToList} className="text-stone-600 hover:text-stone-900" title="Back to posts">
+            <button
+              onClick={handleBackToList}
+              className="text-stone-600 hover:text-stone-900"
+              title={`Back to ${contentType}`}
+            >
               ←
             </button>
             <div className="h-5 w-px bg-stone-300" />
 
-            {/* Post title */}
+            {/* Item title */}
             <span className="max-w-[400px] truncate text-sm font-medium text-stone-800">
-              {isCreatingNew ? "New Post" : selectedPost?.title || "Loading..."}
+              {isCreatingNew
+                ? `New ${contentType === "posts" ? "Post" : "Research"}`
+                : selectedItem?.title || "Loading..."}
             </span>
 
             <div className="flex items-center gap-1">
@@ -650,20 +822,44 @@ function EditorContent() {
             <span className="text-stone-400">¹</span>
             Footnote
           </button>
+
+          {/* Separator */}
+          <div className="mx-2 h-5 w-px bg-stone-300" />
+
+          {/* Format button */}
+          <button
+            onClick={handleFormat}
+            disabled={isFormatting || !selectedSlug}
+            className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50"
+            title="Format with Prettier (saves file)"
+          >
+            <span className="text-stone-400">✨</span>
+            {isFormatting ? "Formatting..." : "Format"}
+          </button>
         </div>
       )}
 
-      {/* New post form - collapsible panel */}
+      {/* New item form - collapsible panel */}
       {isCreatingNew && (
         <div className="shrink-0 border-b border-stone-200 bg-amber-50 px-4 py-3">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <div>
-              <label className="mb-1 block text-xs font-medium text-stone-600">Slug</label>
+              <label className="mb-1 block text-xs font-medium text-stone-600">
+                {contentType === "posts" ? "Slug" : "Path"}
+              </label>
               <input
                 type="text"
-                value={newPostSlug}
-                onChange={(e) => setNewPostSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
-                placeholder="my-new-post"
+                value={newItemSlug}
+                onChange={(e) => {
+                  if (contentType === "posts") {
+                    // Posts: only allow lowercase letters, numbers, and hyphens
+                    setNewItemSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"));
+                  } else {
+                    // Research: allow letters, numbers, hyphens, and forward slashes
+                    setNewItemSlug(e.target.value.replace(/[^a-zA-Z0-9-/]/g, ""));
+                  }
+                }}
+                placeholder={contentType === "posts" ? "my-new-post" : "AI/topic/subtopic"}
                 className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -671,9 +867,9 @@ function EditorContent() {
               <label className="mb-1 block text-xs font-medium text-stone-600">Title</label>
               <input
                 type="text"
-                value={newPostTitle}
-                onChange={(e) => setNewPostTitle(e.target.value)}
-                placeholder="My New Post"
+                value={newItemTitle}
+                onChange={(e) => setNewItemTitle(e.target.value)}
+                placeholder={contentType === "posts" ? "My New Post" : "Research Title"}
                 className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -681,8 +877,8 @@ function EditorContent() {
               <label className="mb-1 block text-xs font-medium text-stone-600">Description</label>
               <input
                 type="text"
-                value={newPostDescription}
-                onChange={(e) => setNewPostDescription(e.target.value)}
+                value={newItemDescription}
+                onChange={(e) => setNewItemDescription(e.target.value)}
                 placeholder="A description..."
                 className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
               />
@@ -691,8 +887,8 @@ function EditorContent() {
               <label className="mb-1 block text-xs font-medium text-stone-600">Tags</label>
               <input
                 type="text"
-                value={newPostTags}
-                onChange={(e) => setNewPostTags(e.target.value)}
+                value={newItemTags}
+                onChange={(e) => setNewItemTags(e.target.value)}
                 placeholder="Tag1, Tag2"
                 className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
               />
@@ -703,50 +899,97 @@ function EditorContent() {
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
-        {showPostList ? (
-          /* Post list view */
+        {showItemList ? (
+          /* Item list view */
           <div className="mx-auto max-w-4xl px-6 py-8">
             {/* Search bar */}
             <div className="mb-6">
               <input
                 type="text"
-                placeholder="Search posts by title, slug, or tags..."
+                placeholder={`Search ${contentType} by title, ${contentType === "posts" ? "slug" : "path"}, or tags...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-10 w-full rounded-lg border-0 bg-white px-4 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
               />
             </div>
 
-            {/* Posts list */}
+            {/* Items list */}
             <div className="space-y-2">
-              {filteredPosts.length === 0 ? (
+              {contentType === "posts" ? (
+                filteredPosts.length === 0 ? (
+                  <div className="py-12 text-center text-stone-500">
+                    {searchQuery ? "No posts match your search." : "No posts found."}
+                  </div>
+                ) : (
+                  filteredPosts.map((post) => (
+                    <button
+                      key={post.slug}
+                      onClick={() => handleSelectItem(post.slug)}
+                      className="group w-full rounded-lg border border-stone-200 bg-white p-4 text-left shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <h2 className="font-arizona-flare truncate text-lg font-medium text-stone-900 group-hover:text-amber-700">
+                            {post.title}
+                          </h2>
+                          {post.description && (
+                            <p className="mt-1 truncate text-sm text-stone-500">{post.description}</p>
+                          )}
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            {post.published && (
+                              <span className="text-xs text-stone-400">{formatDate(post.published)}</span>
+                            )}
+                            {post.tags.length > 0 && (
+                              <>
+                                <span className="text-stone-300">·</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {post.tags.map((tag) => (
+                                    <span
+                                      key={tag}
+                                      className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-stone-400 transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
+                    </button>
+                  ))
+                )
+              ) : filteredResearch.length === 0 ? (
                 <div className="py-12 text-center text-stone-500">
-                  {searchQuery ? "No posts match your search." : "No posts found."}
+                  {searchQuery ? "No research matches your search." : "No research found."}
                 </div>
               ) : (
-                filteredPosts.map((post) => (
+                filteredResearch.map((item) => (
                   <button
-                    key={post.slug}
-                    onClick={() => handleSelectPost(post.slug)}
+                    key={item.slug}
+                    onClick={() => handleSelectItem(item.slug)}
                     className="group w-full rounded-lg border border-stone-200 bg-white p-4 text-left shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <h2 className="font-arizona-flare truncate text-lg font-medium text-stone-900 group-hover:text-amber-700">
-                          {post.title}
+                          {item.title}
                         </h2>
-                        {post.description && (
-                          <p className="mt-1 truncate text-sm text-stone-500">{post.description}</p>
+                        <p className="mt-1 truncate font-mono text-xs text-stone-400">{item.slug}</p>
+                        {item.description && (
+                          <p className="mt-1 truncate text-sm text-stone-500">{item.description}</p>
                         )}
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          {post.published && (
-                            <span className="text-xs text-stone-400">{formatDate(post.published)}</span>
+                          {item.lastUpdated && (
+                            <span className="text-xs text-stone-400">Updated: {formatDate(item.lastUpdated)}</span>
                           )}
-                          {post.tags.length > 0 && (
+                          {item.tags.length > 0 && (
                             <>
                               <span className="text-stone-300">·</span>
                               <div className="flex flex-wrap gap-1">
-                                {post.tags.map((tag) => (
+                                {item.tags.map((tag) => (
                                   <span
                                     key={tag}
                                     className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700"
@@ -766,15 +1009,23 @@ function EditorContent() {
               )}
             </div>
 
-            {/* Post count */}
+            {/* Item count */}
             <div className="mt-6 text-center text-sm text-stone-400">
-              {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}
+              {contentType === "posts" ? (
+                <>
+                  {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}
+                </>
+              ) : (
+                <>
+                  {filteredResearch.length} research {filteredResearch.length === 1 ? "item" : "items"}
+                </>
+              )}
               {searchQuery && ` matching "${searchQuery}"`}
             </div>
           </div>
         ) : isLoading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-gray-500">Loading post...</div>
+            <div className="text-gray-500">Loading {contentType === "posts" ? "post" : "research"}...</div>
           </div>
         ) : viewMode === "edit" ? (
           <LiveEditor
@@ -785,44 +1036,59 @@ function EditorContent() {
               editorActionsRef.current = actions;
             }}
             metadata={
-              selectedPost
+              selectedItem
                 ? {
-                    title: selectedPost.title,
-                    published: selectedPost.published,
-                    tags: selectedPost.tags,
-                    description: selectedPost.description,
+                    title: selectedItem.title,
+                    published:
+                      contentType === "posts"
+                        ? (selectedItem as PostInfo).published
+                        : (selectedItem as ResearchInfo).lastUpdated,
+                    tags: selectedItem.tags,
+                    description: selectedItem.description,
                   }
                 : isCreatingNew
                   ? {
-                      title: newPostTitle || "New Post",
+                      title: newItemTitle || (contentType === "posts" ? "New Post" : "New Research"),
                       published: new Date().toISOString().split("T")[0],
-                      tags: newPostTags
+                      tags: newItemTags
                         .split(",")
                         .map((t) => t.trim())
                         .filter(Boolean),
-                      description: newPostDescription,
+                      description: newItemDescription,
                     }
                   : undefined
             }
           />
         ) : (
           <div className="min-h-full" style={{ backgroundColor: "var(--background)" }}>
-            {/* Full preview with title and metadata, matching actual blog rendering */}
+            {/* Full preview with title and metadata, matching actual rendering */}
             <div className="mx-auto max-w-4xl px-6 py-8">
-              {selectedPost && (
+              {selectedItem && (
                 <>
-                  <h1 className="font-arizona-flare mb-4 text-4xl font-normal">{selectedPost.title}</h1>
-                  {selectedPost.published && (
-                    <div className="font-mallory-book mb-6 text-gray-600">{formatDate(selectedPost.published)}</div>
+                  <h1 className="font-arizona-flare mb-4 text-4xl font-normal">{selectedItem.title}</h1>
+                  {contentType === "posts" && (selectedItem as PostInfo).published && (
+                    <div className="font-mallory-book mb-6 text-gray-600">
+                      {formatDate((selectedItem as PostInfo).published!)}
+                    </div>
+                  )}
+                  {contentType === "research" && (
+                    <div className="font-mallory-book mb-6 text-sm text-gray-600">
+                      {(selectedItem as ResearchInfo).lastUpdated && (
+                        <div>Last updated: {formatDate((selectedItem as ResearchInfo).lastUpdated!)}</div>
+                      )}
+                      {(selectedItem as ResearchInfo).created && (
+                        <div>Created: {formatDate((selectedItem as ResearchInfo).created!)}</div>
+                      )}
+                    </div>
                   )}
                 </>
               )}
               <div className="prose-content">
                 <MDXPreview content={content} />
               </div>
-              {selectedPost?.tags && selectedPost.tags.length > 0 && (
+              {selectedItem?.tags && selectedItem.tags.length > 0 && (
                 <div className="font-mallory-book mt-8 text-gray-600">
-                  <p>Tags: {selectedPost.tags.join(", ")}</p>
+                  <p>Tags: {selectedItem.tags.join(", ")}</p>
                 </div>
               )}
             </div>

@@ -1222,15 +1222,23 @@ const editorTheme = EditorView.theme({
     fontFamily: "var(--font-martina-plantijn), Georgia, serif",
     backgroundColor: "var(--background, #f9e9cb)",
   },
+  "&.cm-editor": {
+    outline: "none",
+  },
+  "&.cm-editor.cm-focused": {
+    outline: "none",
+  },
   ".cm-scroller": {
     overflow: "auto",
     backgroundColor: "var(--background, #f9e9cb)",
+    fontFamily: "var(--font-martina-plantijn), Georgia, serif",
   },
   ".cm-content": {
     padding: "0 1.5rem",
     maxWidth: "800px",
     margin: "0 auto",
     caretColor: "#faad19",
+    fontFamily: "var(--font-martina-plantijn), Georgia, serif",
   },
   ".cm-line": {
     padding: "0",

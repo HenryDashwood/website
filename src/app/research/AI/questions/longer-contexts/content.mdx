@@ -10,7 +10,7 @@ This set a ceiling on the length of inputs we could practically feed to transfor
 
 ## Attempts to make more efficient transformers
 
-In 2020 a series of papers came out that aimed to increase the maximum supported input sequence length by sacrificing the all-to-all relationships of self-attention in a controlled way, either by limiting each token’s field of view (local/sparse attention) or by compressing the attention computation (low-rank or hashed approximations).
+In 2020, a series of papers aimed to increase the maximum supported input sequence length by sacrificing the all-to-all relationships of self-attention in a controlled way, either by limiting each token’s field of view (local/sparse attention) or by compressing the attention computation (low-rank or hashed approximations).
 
 - [Sparse transformer](https://arxiv.org/pdf/1904.10509) (2019)
 - [Longformer](/research/AI/papers/longformer/)
@@ -24,7 +24,7 @@ Limitations:
 - Some tasks that truly require global interactions could still suffer when using only sparse/local attention.
 - required custom CUDA kernels
 - struggled with autoregressive generation
-- quality degradation on tasks requiring precise long-range dependencies
+- quality degradatifon on tasks requiring precise long-range dependencies
 - Unsuitability for GPU hardware
   - Irregular memory access patterns
     - GPUs are Single Instruction, Multiple Data (SIMD) machines. They excel at performing the same operation on contiguous blocks of memory (dense matrix multiplication).
@@ -52,7 +52,7 @@ Gradients are not back-propagated to the cached segment. But the forward pass st
 
 Transformer-XL was also built on relative positional encodings. This was needed to get around the cached tokens from segment A and the tokens of segment A clashing if absolute positional encodings were used. In Transformer-XL, the relative distance between the Query and Key tokens is what is used.
 
-[Compressive Transformer](https://arxiv.org/pdf/1911.05507) (2019) extended the ideas in the Transformer-XL paper. The authors distinguish between episodic memory focussed on detailed recollection of recent events, and semantic memory for storing compressed and more abstract concepts. The former works the same way as Transformer-XL's memory. The latter stores compressed states when the primary memory fills up. The compression is performed using a 1D convolution that was empirically shown to work better than, e.g. max or mean pooling.
+[Compressive Transformer](https://arxiv.org/pdf/1911.05507) (2019) extended the ideas in the Transformer-XL paper. The authors distinguish between episodic memory, focused on detailed recollection of recent events, and semantic memory for storing compressed and more abstract concepts. The former works the same way as Transformer-XL's memory. The latter stores compressed states when the primary memory fills up. The compression is performed using a 1D convolution that was empirically shown to work better than, e.g. max or mean pooling.
 
 During the forward pass, the Query vector attends to a concatenation of the current segment, the primary memory and the compressed memory. Because the compression function is differentiable, the model learns during training how to compress memories in a way that preserves the underlying information.
 
@@ -268,7 +268,7 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
   - Mambda
     - replaces Attention with a selective scan mechanism
     - Throughput scales linearly $O(N)$
-    - The "KV Cache" does not grow. It is a fixed size vector.
+    - The "KV Cache" does not grow. It is a fixed-size vector.
     - struggles with "Copying" tasks. Because it compresses the entire history into a fixed-size state, it cannot perfectly recall a specific token from 100k steps ago if that token was not deemed "important" at the time.
       - The Transformer, by keeping the full history (KV Cache), has "perfect memory".
   - Jamba
@@ -279,7 +279,7 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
   - GPT-J’s retrieval
 
 - Perceiver
-  - Muti modal model that uses a latent bottleneck to handle very large inputs by projecting them to a smaller set of latent vectors.
+  - A multi-modal model that uses a latent bottleneck to handle very large inputs by projecting them to a smaller set of latent vectors.
 
 ## Other papers to reading
 

@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   }
 
   const slug = request.nextUrl.searchParams.get("slug");
+  const type = request.nextUrl.searchParams.get("type") || "post"; // Default to post for backwards compatibility
   const checkOnly = request.nextUrl.searchParams.get("checkOnly") === "true";
   const knownMtime = request.nextUrl.searchParams.get("mtime");
 
@@ -16,19 +17,40 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing slug parameter" }, { status: 400 });
   }
 
-  // Validate slug: only allow lowercase letters, numbers, and hyphens
-  if (!/^[a-z0-9-]+$/.test(slug)) {
-    return NextResponse.json(
-      { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
-      { status: 400 }
-    );
+  // Validate slug based on type
+  if (type === "post") {
+    // Posts: only allow lowercase letters, numbers, and hyphens
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return NextResponse.json(
+        { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
+        { status: 400 }
+      );
+    }
+  } else if (type === "research") {
+    // Research: allow lowercase letters, numbers, hyphens, and forward slashes for nested paths
+    if (!/^[a-zA-Z0-9-/]+$/.test(slug)) {
+      return NextResponse.json(
+        { error: "Invalid slug: only letters, numbers, hyphens, and forward slashes allowed" },
+        { status: 400 }
+      );
+    }
+    // Prevent directory traversal
+    if (slug.includes("..") || slug.startsWith("/") || slug.endsWith("/")) {
+      return NextResponse.json({ error: "Invalid slug format" }, { status: 400 });
+    }
+  } else {
+    return NextResponse.json({ error: "Invalid type: must be 'post' or 'research'" }, { status: 400 });
   }
 
   try {
-    const mdxPath = path.join(process.cwd(), `src/app/posts/${slug}/post.mdx`);
+    // Determine the file path based on type
+    const mdxPath =
+      type === "post"
+        ? path.join(process.cwd(), `src/app/posts/${slug}/post.mdx`)
+        : path.join(process.cwd(), `src/app/research/${slug}/content.mdx`);
 
     if (!existsSync(mdxPath)) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+      return NextResponse.json({ error: `${type === "post" ? "Post" : "Research"} not found` }, { status: 404 });
     }
 
     const stats = statSync(mdxPath);
@@ -46,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ content, slug, mtime, changed: true });
   } catch (error) {
-    console.error("Error reading post:", error);
-    return NextResponse.json({ error: "Failed to read post" }, { status: 500 });
+    console.error(`Error reading ${type}:`, error);
+    return NextResponse.json({ error: `Failed to read ${type}` }, { status: 500 });
   }
 }

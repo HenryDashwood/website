@@ -6,6 +6,7 @@ import path from "path";
 interface SaveRequest {
   slug: string;
   content: string;
+  type?: "post" | "research"; // Default to post for backwards compatibility
   createNew?: boolean;
   metadata?: {
     title: string;
@@ -23,40 +24,84 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: SaveRequest = await request.json();
-    const { slug, content, createNew, metadata } = body;
+    const { slug, content, type = "post", createNew, metadata } = body;
 
     if (!slug || content === undefined) {
       return NextResponse.json({ error: "Missing slug or content" }, { status: 400 });
     }
 
-    // Validate slug: only allow lowercase letters, numbers, and hyphens
-    // This prevents both directory traversal and code injection when interpolating into page.tsx
-    if (!/^[a-z0-9-]+$/.test(slug)) {
-      return NextResponse.json(
-        { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
-        { status: 400 }
-      );
+    // Validate slug based on type
+    if (type === "post") {
+      // Posts: only allow lowercase letters, numbers, and hyphens
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        return NextResponse.json(
+          { error: "Invalid slug: only lowercase letters, numbers, and hyphens allowed" },
+          { status: 400 }
+        );
+      }
+    } else if (type === "research") {
+      // Research: allow letters, numbers, hyphens, and forward slashes for nested paths
+      if (!/^[a-zA-Z0-9-/]+$/.test(slug)) {
+        return NextResponse.json(
+          { error: "Invalid slug: only letters, numbers, hyphens, and forward slashes allowed" },
+          { status: 400 }
+        );
+      }
+      // Prevent directory traversal
+      if (slug.includes("..") || slug.startsWith("/") || slug.endsWith("/")) {
+        return NextResponse.json({ error: "Invalid slug format" }, { status: 400 });
+      }
+    } else {
+      return NextResponse.json({ error: "Invalid type: must be 'post' or 'research'" }, { status: 400 });
     }
 
-    const postDir = path.join(process.cwd(), `src/app/posts/${slug}`);
-    const mdxPath = path.join(postDir, "post.mdx");
-    const pagePath = path.join(postDir, "page.tsx");
+    // Determine paths based on type
+    const isResearch = type === "research";
+    const baseDir = isResearch
+      ? path.join(process.cwd(), `src/app/research/${slug}`)
+      : path.join(process.cwd(), `src/app/posts/${slug}`);
+    const mdxPath = path.join(baseDir, isResearch ? "content.mdx" : "post.mdx");
+    const pagePath = path.join(baseDir, "page.tsx");
 
-    // If creating a new post
+    // If creating a new item
     if (createNew) {
-      if (existsSync(postDir)) {
-        return NextResponse.json({ error: "Post already exists" }, { status: 409 });
+      if (existsSync(baseDir)) {
+        return NextResponse.json({ error: `${isResearch ? "Research" : "Post"} already exists` }, { status: 409 });
       }
 
       if (!metadata) {
-        return NextResponse.json({ error: "Metadata required for new posts" }, { status: 400 });
+        return NextResponse.json(
+          { error: `Metadata required for new ${isResearch ? "research" : "posts"}` },
+          { status: 400 }
+        );
       }
 
-      // Create the directory
-      mkdirSync(postDir, { recursive: true });
+      // Create the directory (recursive for nested research paths)
+      mkdirSync(baseDir, { recursive: true });
 
       // Create the page.tsx file with metadata
-      const pageContent = `import PostPage from "@/components/PostPage";
+      const today = new Date().toISOString().split("T")[0];
+
+      const pageContent = isResearch
+        ? `import ResearchPage from "@/components/ResearchPage";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "${metadata.title.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}",
+  description: "${metadata.description.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}",
+  other: {
+    slug: "${slug}",
+    created: "${today}",
+    lastUpdated: "${today}",
+    tags: ${JSON.stringify(metadata.tags)},
+  },
+};
+
+export default function Page() {
+  return <ResearchPage metadata={metadata} />;
+}
+`
+        : `import PostPage from "@/components/PostPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -67,7 +112,7 @@ export const metadata: Metadata = {
   },
   other: {
     slug: "${slug}",
-    published: "${new Date().toISOString().split("T")[0]}",
+    published: "${today}",
     tags: ${JSON.stringify(metadata.tags)},
   },
 };
@@ -78,9 +123,9 @@ export default function Page() {
 `;
       writeFileSync(pagePath, pageContent, "utf-8");
     } else {
-      // Check that the post exists for updates
+      // Check that the item exists for updates
       if (!existsSync(mdxPath)) {
-        return NextResponse.json({ error: "Post not found" }, { status: 404 });
+        return NextResponse.json({ error: `${isResearch ? "Research" : "Post"} not found` }, { status: 404 });
       }
     }
 
@@ -108,7 +153,7 @@ export default function Page() {
       mtime: stats.mtimeMs,
     });
   } catch (error) {
-    console.error("Error saving post:", error);
-    return NextResponse.json({ error: "Failed to save post" }, { status: 500 });
+    console.error("Error saving:", error);
+    return NextResponse.json({ error: "Failed to save" }, { status: 500 });
   }
 }
