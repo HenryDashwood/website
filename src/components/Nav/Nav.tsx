@@ -270,7 +270,7 @@ function Nav({ researchTree = [] }: NavProps) {
 
       {/* Navigation Content */}
       <nav
-        className={`bg-nav-background font-mallory-book fixed top-0 left-0 z-40 h-full w-64 p-6 pt-20 shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
+        className={`bg-nav-background font-mallory-book fixed top-0 left-0 z-40 h-full w-64 overflow-y-auto p-6 pt-20 shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:max-h-screen sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
       >
         {/* Mobile: Home link */}
         <div className="mb-6 border-b border-black/10 pb-6 sm:hidden">
