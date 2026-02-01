@@ -72,7 +72,7 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
   - 2021
   - https://arxiv.org/pdf/2108.12409
   - a simple method to encode positions that allows a model trained on shorter sequences to generalise to longer ones.
-  - Instead of using explicit positional embeddings added to tokens, ALiBi introduces a static, non-learned penalty to the attention scores that grows linearly with the distance between query and key.$$\text{Score}_{ij} = Q_i K_j^T - m \cdot |i-j|$$where $m$ is a slope specific to each attention head.
+  - Instead of using explicit positional embeddings added to tokens, ALiBi introduces a static, non-learned penalty to the attention scores that grows linearly with the distance between query and key. $\text{Score}_{ij} = Q_i K_j^T - m \cdot |i-j|$ where $m$ is a slope specific to each attention head.
   - penalises attention based on how far apart tokens are, biasing the model toward more recent tokens.
   - Bias does not depend on an absolute position index, so the model can naturally extend to longer sequences than it saw in training. You just continue applying the linear penalty beyond the training length.
   - Different attention heads use different penalty slopes (following a geometric series), allowing some heads to focus locally while others attend broadly.
@@ -89,9 +89,9 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
   - applies a rotating transform to queries/keys that encodes positions implicitly
   - dot products are invariant to shared rotations: if query and key vectors are both rotated by their respective positions, the attention score depends only on relative position.
   - Each pair of embedding dimensions is treated as a complex number and rotated by an angle proportional to position.
-    - For a token at position $m$ and a feature dimension pair, the rotation is defined as: $$f(x, m) = x \cdot e^{im\theta}$$
-      In matrix form for pairs of dimensions:$$\begin{pmatrix} q'_0 \\ q'_1 \end{pmatrix} = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix} \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}$$
-    - The attention score (dot product) between a Query at position $m$ and a Key at position $n$ becomes:$$\langle f(q, m), f(k, n) \rangle = q^T k \cdot \cos((m-n)\theta)$$
+    - For a token at position $m$ and a feature dimension pair, the rotation is defined as: $f(x, m) = x \cdot e^{im\theta}$
+      In matrix form for pairs of dimensions:$\begin{pmatrix} q'_0 \\ q'_1 \end{pmatrix} = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix} \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}$
+    - The attention score (dot product) between a Query at position $m$ and a Key at position $n$ becomes:$\langle f(q, m), f(k, n) \rangle = q^T k \cdot \cos((m-n)\theta)$
     - The result depends on the relative distance $(m-n)$, not on the absolute values of $m$ or $n$. This property, known as Translation Invariance, theoretically allows the model to handle sequences of infinite length, as the interaction mechanism is identical regardless of where in the sequence the tokens appear.
   - Different dimension pairs rotate at different frequencies, creating a rich positional signal that decays naturally with distance.
   - better generalisation to longer sequences than naive sinusoids
@@ -105,9 +105,10 @@ While RoPE is relative, models still failed when $m-n$ exceeded the maximum di
 - The rotation frequencies $\theta_d$ typically decay exponentially across the dimension $d$.
 - At long distances, the high-frequency dimensions rotate so rapidly that the model encounters "phases" (angles) it has never correlated with semantic meaning
 - led to high attention uncertainty and "garbage" outputs.
-- known as the xxtrapolation cliff
+- known as the extrapolation cliff
 
 https://arxiv.org/pdf/2309.16039
+
 https://arxiv.org/pdf/2406.13282v1
 
 - Position Interpolation
@@ -135,7 +136,7 @@ https://arxiv.org/pdf/2406.13282v1
   - refined NTK-Awareness by addressing the Entropy problem
     - As the sequence length $N$ grows, the attention distribution (softmax) naturally flattens because the probability mass is spread over more tokens.
     - The model becomes "unsure" (high entropy)
-  - YaRN introduces a Temperature Scaling factor $t$ (where $t < 1$): $$\text{Attention} = \text{softmax}\left(\frac{QK^T}{\sqrt{d} \cdot t}\right)$$
+  - YaRN introduces a Temperature Scaling factor $t$ (where $t < 1$): $\text{Attention} = \text{softmax}\left(\frac{QK^T}{\sqrt{d} \cdot t}\right)$
   - By dividing by a smaller number (effectively multiplying the logits), YaRN "sharpens" the distribution, counteracting the entropy increase caused by the longer sequence.
   - Combined with a sophisticated "NTK-by-parts" interpolation strategy, enabled extending Llama 2 to a 128K context with just 0.1% of pre-training data
   - Dynamic variants adjust scaling based on current sequence length, enabling zero-shot context extension without fine-tuning.
@@ -151,8 +152,13 @@ The bottleneck in attention is not the arithmetic of $QK^T$. It is the reading a
 During autoregressive generation, each new token requires attending to all previous tokens.
 
 - Storing previously computed key and value vectors (the "KV-cache") avoids recomputation but grows linearly with sequence length.
-- For a model with hidden dimension $d_{model}$, $L$ layers, and batch size $B$, the memory for a sequence of length $N$ is:$$\text{Memory}_{KV} = 2 \times N \times L \times d_{model} \times \text{Precision (bytes)}$$
-  For Llama 3 70B (approx config: $L=80$, $d=8192$), a 128k token context requires:$$2 \times 128,000 \times 80 \times 8192 \times 2 \approx 335 \text{ GB}$$This exceeds the memory of a single H100 (80GB). A single request requires 4+ GPUs just for memory.
+- For a model with hidden dimension $d_{model}$, $L$ layers, and batch size $B$, the memory for a sequence of length $N$ is:
+
+  $$
+  \text{Memory}_{KV} = 2 \times N \times L \times d_{model} \times \text{Precision (bytes)}
+  $$
+
+  For Llama 3 70B (approx config: $L=80$, $d=8192$), a 128k token context requires: $2 \times 128,000 \times 80 \times 8192 \times 2 \approx 335 \text{ GB}$. This exceeds the memory of a single H100 (80GB). A single request requires 4+ GPUs just for memory.
 
 - Attacking the raw size of the KV cache
   - Multi-head attention (MHA)

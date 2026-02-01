@@ -246,18 +246,27 @@ class LinkWidget extends WidgetType {
   }
 
   toDOM() {
-    const link = document.createElement("a");
-    link.href = this.href;
-    link.textContent = this.text;
-    link.className = "link-widget text-blue-600 hover:underline cursor-pointer";
-    // Prevent navigation when clicking in editor
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-    });
-    return link;
+    const span = document.createElement("span");
+    span.textContent = this.text;
+    span.className = "link-widget text-blue-600 hover:underline cursor-pointer";
+    span.title = "Cmd+click to open";
+    const href = this.href;
+    span.onmousedown = (e) => {
+      if (e.metaKey || e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(href, "_blank", "noopener,noreferrer");
+      }
+    };
+    return span;
   }
 
-  ignoreEvent() {
+  ignoreEvent(e: Event) {
+    // Only let mousedown with modifier keys through to the widget
+    if (e.type === "mousedown") {
+      const mouseEvent = e as MouseEvent;
+      return mouseEvent.metaKey || mouseEvent.ctrlKey;
+    }
     return false;
   }
 }
@@ -540,6 +549,118 @@ class ImportWidget extends WidgetType {
   }
 }
 
+// Helper function to format inline markdown (links, bold, italic, code, math) in text
+function formatInlineMarkdown(text: string): string {
+  let formatted = text;
+  // Escape HTML first
+  formatted = formatted.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // Inline math ($...$) - process early to protect math content
+  formatted = formatted.replace(/(?<!\$)\$(?!\$)([^\$\n]+?)\$(?!\$)/g, (_, math) => {
+    const tempSpan = document.createElement("span");
+    try {
+      katex.render(math, tempSpan, { displayMode: false, throwOnError: false });
+      return tempSpan.innerHTML;
+    } catch {
+      return `<code>${math}</code>`;
+    }
+  });
+  // Inline code (`code`) - process before other formatting
+  formatted = formatted.replace(/`([^`]+?)`/g, '<code class="inline-code-widget">$1</code>');
+  // Markdown links [text](url)
+  formatted = formatted.replace(
+    /\[([^\]]+?)\]\(([^)]+?)\)/g,
+    '<a href="$2" class="link-widget text-blue-600 hover:underline">$1</a>'
+  );
+  // Raw URLs (https:// or http://) - but not ones already in href=""
+  formatted = formatted.replace(
+    /(?<!href=")(?<!">)(https?:\/\/[^\s<>"]+)/g,
+    '<a href="$1" class="link-widget text-blue-600 hover:underline">$1</a>'
+  );
+  // Bold+italic (***text*** or ___text___)
+  formatted = formatted.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  formatted = formatted.replace(/___(.+?)___/g, "<strong><em>$1</em></strong>");
+  // Bold (**text** or __text__)
+  formatted = formatted.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  formatted = formatted.replace(/__(.+?)__/g, "<strong>$1</strong>");
+  // Italic (*text* or _text_)
+  formatted = formatted.replace(/\*([^*]+?)\*/g, "<em>$1</em>");
+  formatted = formatted.replace(/_([^_]+?)_/g, "<em>$1</em>");
+  return formatted;
+}
+
+// Widget for unordered list items (- or *)
+class UnorderedListItemWidget extends WidgetType {
+  constructor(
+    readonly text: string,
+    readonly indent: number
+  ) {
+    super();
+  }
+
+  eq(other: UnorderedListItemWidget) {
+    return other.text === this.text && other.indent === this.indent;
+  }
+
+  toDOM() {
+    const li = document.createElement("span");
+    li.className = "list-item-widget unordered-list-item";
+    // Padding is handled by line decoration (list-item-indent-N class)
+
+    const bullet = document.createElement("span");
+    bullet.className = "list-bullet";
+    bullet.textContent = "•";
+    li.appendChild(bullet);
+
+    const content = document.createElement("span");
+    content.className = "list-content";
+    content.innerHTML = formatInlineMarkdown(this.text);
+    li.appendChild(content);
+
+    return li;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+}
+
+// Widget for ordered list items (1., 2., etc.)
+class OrderedListItemWidget extends WidgetType {
+  constructor(
+    readonly text: string,
+    readonly number: string,
+    readonly indent: number
+  ) {
+    super();
+  }
+
+  eq(other: OrderedListItemWidget) {
+    return other.text === this.text && other.number === this.number && other.indent === this.indent;
+  }
+
+  toDOM() {
+    const li = document.createElement("span");
+    li.className = "list-item-widget ordered-list-item";
+    // Padding is handled by line decoration (list-item-indent-N class)
+
+    const number = document.createElement("span");
+    number.className = "list-number";
+    number.textContent = `${this.number}.`;
+    li.appendChild(number);
+
+    const content = document.createElement("span");
+    content.className = "list-content";
+    content.innerHTML = formatInlineMarkdown(this.text);
+    li.appendChild(content);
+
+    return li;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+}
+
 // Find inline math
 function findInlineMath(
   text: string,
@@ -659,6 +780,33 @@ function findLinks(
       to,
       linkText: match[1],
       href: match[2],
+    });
+  }
+
+  return results;
+}
+
+// Find bare URLs (https:// or http://)
+function findBareUrls(
+  text: string,
+  cursorFrom: number,
+  cursorTo: number
+): { from: number; to: number; url: string }[] {
+  const results: { from: number; to: number; url: string }[] = [];
+
+  // Match bare URLs not inside markdown link syntax
+  // Negative lookbehind for ]( to avoid matching URLs already in [text](url)
+  const regex = /(?<!\]\()https?:\/\/[^\s<>\[\]()]+/g;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    const from = match.index;
+    const to = from + match[0].length;
+    // Skip if cursor is on this URL
+    if (cursorFrom <= to && cursorTo >= from) continue;
+    results.push({
+      from,
+      to,
+      url: match[0],
     });
   }
 
@@ -958,6 +1106,80 @@ function findReactComponents(
   return results;
 }
 
+// Find unordered list items (- or *)
+// If skipCursorCheck is true, returns all items regardless of cursor position
+function findUnorderedListItems(
+  text: string,
+  cursorFrom: number,
+  cursorTo: number,
+  skipCursorCheck: boolean = false
+): { from: number; to: number; text: string; indent: number; cursorOnLine: boolean }[] {
+  const results: { from: number; to: number; text: string; indent: number; cursorOnLine: boolean }[] = [];
+
+  // Match lines starting with spaces/tabs followed by - or * and a space
+  const regex = /^([ \t]*)[-*]\s+(.+)$/gm;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    const from = match.index;
+    const to = from + match[0].length;
+    const cursorOnLine = cursorFrom <= to && cursorTo >= from;
+
+    if (!skipCursorCheck && cursorOnLine) continue;
+
+    // Calculate indent level (each 2 spaces or 1 tab = 1 level)
+    const indentStr = match[1];
+    const indent = Math.floor(indentStr.replace(/\t/g, "  ").length / 2);
+
+    results.push({
+      from,
+      to,
+      text: match[2],
+      indent,
+      cursorOnLine,
+    });
+  }
+
+  return results;
+}
+
+// Find ordered list items (1., 2., etc.)
+// If skipCursorCheck is true, returns all items regardless of cursor position
+function findOrderedListItems(
+  text: string,
+  cursorFrom: number,
+  cursorTo: number,
+  skipCursorCheck: boolean = false
+): { from: number; to: number; text: string; number: string; indent: number; cursorOnLine: boolean }[] {
+  const results: { from: number; to: number; text: string; number: string; indent: number; cursorOnLine: boolean }[] =
+    [];
+
+  // Match lines starting with spaces/tabs followed by number, dot, and space
+  const regex = /^([ \t]*)(\d+)\.\s+(.+)$/gm;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    const from = match.index;
+    const to = from + match[0].length;
+    const cursorOnLine = cursorFrom <= to && cursorTo >= from;
+
+    if (!skipCursorCheck && cursorOnLine) continue;
+
+    // Calculate indent level
+    const indentStr = match[1];
+    const indent = Math.floor(indentStr.replace(/\t/g, "  ").length / 2);
+
+    results.push({
+      from,
+      to,
+      text: match[3],
+      number: match[2],
+      indent,
+      cursorOnLine,
+    });
+  }
+
+  return results;
+}
+
 // Find import statements at the beginning of the document
 function findImports(
   text: string,
@@ -1098,6 +1320,40 @@ function buildDecorations(state: EditorState): DecorationSet {
     );
   }
 
+  // Find ALL list items (including ones where cursor is) for line decorations
+  const allUnorderedListItems = findUnorderedListItems(text, cursorFrom, cursorTo, true);
+  const allOrderedListItems = findOrderedListItems(text, cursorFrom, cursorTo, true);
+
+  // Unordered list items - only add widgets for items where cursor is NOT on the line
+  const unorderedListItems = allUnorderedListItems.filter((item) => !item.cursorOnLine);
+  for (const item of unorderedListItems) {
+    decorations.push(
+      Decoration.replace({
+        widget: new UnorderedListItemWidget(item.text, item.indent),
+      }).range(item.from, item.to)
+    );
+  }
+
+  // Ordered list items - only add widgets for items where cursor is NOT on the line
+  const orderedListItems = allOrderedListItems.filter((item) => !item.cursorOnLine);
+  for (const item of orderedListItems) {
+    decorations.push(
+      Decoration.replace({
+        widget: new OrderedListItemWidget(item.text, item.number, item.indent),
+      }).range(item.from, item.to)
+    );
+  }
+
+  // Collect line decorations for ALL list items (including ones being edited)
+  // This ensures consistent padding whether the widget is shown or not
+  const listItemLines: { pos: number; indent: number }[] = [];
+  for (const item of allUnorderedListItems) {
+    listItemLines.push({ pos: state.doc.lineAt(item.from).from, indent: item.indent });
+  }
+  for (const item of allOrderedListItems) {
+    listItemLines.push({ pos: state.doc.lineAt(item.from).from, indent: item.indent });
+  }
+
   // Get ranges already covered by block elements
   const coveredRanges: { from: number; to: number }[] = decorations.map((d) => ({ from: d.from, to: d.to }));
 
@@ -1153,6 +1409,19 @@ function buildDecorations(state: EditorState): DecorationSet {
     }
   }
 
+  // Bare URLs (https:// or http://)
+  const bareUrls = findBareUrls(text, cursorFrom, cursorTo);
+  for (const urlMatch of bareUrls) {
+    if (!isInCoveredRange(urlMatch.from, urlMatch.to)) {
+      decorations.push(
+        Decoration.replace({
+          widget: new LinkWidget(urlMatch.url, urlMatch.url),
+        }).range(urlMatch.from, urlMatch.to)
+      );
+      addToCovered(urlMatch.from, urlMatch.to);
+    }
+  }
+
   // Bold+Italic (must be before bold and italic to match first)
   const boldItalics = findBoldItalic(text, cursorFrom, cursorTo);
   for (const bi of boldItalics) {
@@ -1192,9 +1461,30 @@ function buildDecorations(state: EditorState): DecorationSet {
     }
   }
 
-  // Sort and build
+  // Sort widget decorations
   decorations.sort((a, b) => a.from - b.from);
-  for (const d of decorations) {
+
+  // Add line decorations for list items (sorted by position)
+  // Use a Map to deduplicate by position while keeping indent info
+  const linePositionMap = new Map<number, number>();
+  for (const item of listItemLines) {
+    // Keep the highest indent if there are duplicates (shouldn't happen but be safe)
+    const existing = linePositionMap.get(item.pos);
+    if (existing === undefined || item.indent > existing) {
+      linePositionMap.set(item.pos, item.indent);
+    }
+  }
+  const sortedLinePositions = Array.from(linePositionMap.entries()).sort((a, b) => a[0] - b[0]);
+  const lineDecorations = sortedLinePositions.map(([pos, indent]) =>
+    Decoration.line({
+      class: `list-item-line list-item-indent-${indent}`,
+    }).range(pos)
+  );
+
+  // Merge all decorations, keeping them sorted
+  const allDecorations = [...lineDecorations, ...decorations].sort((a, b) => a.from - b.from);
+
+  for (const d of allDecorations) {
     builder.add(d.from, d.to, d.value);
   }
 
@@ -1401,6 +1691,43 @@ const editorTheme = EditorView.theme({
     fontSize: "11px",
     color: "#9ca3af",
     fontFamily: "ui-monospace, monospace",
+  },
+  // List item line decoration - applies to all list item lines for consistent positioning
+  ".list-item-line": {
+    // Base class for all list items
+  },
+  // Indent levels for list items (matches widget padding)
+  ".list-item-indent-0": {
+    paddingLeft: "0rem",
+  },
+  ".list-item-indent-1": {
+    paddingLeft: "1.5rem",
+  },
+  ".list-item-indent-2": {
+    paddingLeft: "3rem",
+  },
+  ".list-item-indent-3": {
+    paddingLeft: "4.5rem",
+  },
+  ".list-item-indent-4": {
+    paddingLeft: "6rem",
+  },
+  // List item styles - inline display for proper CodeMirror measurement
+  ".list-item-widget": {
+    display: "inline",
+    lineHeight: "1.5",
+  },
+  ".list-bullet": {
+    fontWeight: "bold",
+    marginRight: "0.5em",
+  },
+  ".list-number": {
+    color: "#faad19",
+    fontWeight: "600",
+    marginRight: "0.5em",
+  },
+  ".list-content": {
+    // inherits inline display
   },
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "#faad19",

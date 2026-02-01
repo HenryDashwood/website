@@ -25,6 +25,11 @@ const MDXPreview = dynamic(() => import("./MDXPreview"), {
   ),
 });
 
+const EditorSidebar = dynamic(() => import("./EditorSidebar"), {
+  ssr: false,
+  loading: () => <div className="h-screen w-64 shrink-0 animate-pulse bg-stone-100" />,
+});
+
 interface PostInfo {
   slug: string;
   title: string;
@@ -42,6 +47,14 @@ interface ResearchInfo {
   description?: string;
 }
 
+interface ResearchTreeNode {
+  name: string;
+  slug: string | null;
+  title: string | null;
+  children: ResearchTreeNode[];
+  lastUpdated: string | null;
+}
+
 type ContentType = "posts" | "research";
 type ViewMode = "edit" | "preview";
 
@@ -57,6 +70,7 @@ function EditorContent() {
   const [contentType, setContentType] = useState<ContentType>(initialType);
   const [posts, setPosts] = useState<PostInfo[]>([]);
   const [research, setResearch] = useState<ResearchInfo[]>([]);
+  const [researchTree, setResearchTree] = useState<ResearchTreeNode[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>(initialSlug);
   const [selectedPost, setSelectedPost] = useState<PostInfo | null>(null);
   const [selectedResearch, setSelectedResearch] = useState<ResearchInfo | null>(null);
@@ -76,7 +90,6 @@ function EditorContent() {
   const [fileMtime, setFileMtime] = useState<number | null>(null);
   const [footnoteModalOpen, setFootnoteModalOpen] = useState(false);
   const [footnoteText, setFootnoteText] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const contentRef = useRef(content);
   const editorActionsRef = useRef<EditorActions | null>(null);
   const isCheckingRef = useRef(false);
@@ -141,6 +154,24 @@ function EditorContent() {
       })
       .catch(() => {
         // Silently fail - research endpoint might not exist yet
+      });
+  }, []);
+
+  // Fetch research tree for sidebar
+  useEffect(() => {
+    fetch("/api/editor/research-tree")
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        if (data) {
+          setResearchTree(data);
+        }
+      })
+      .catch(() => {
+        // Silently fail
       });
   }, []);
 
@@ -250,70 +281,37 @@ function EditorContent() {
     return () => window.removeEventListener("focus", handleFocus);
   }, [checkForExternalChanges]);
 
-  // Handle selecting an item from the list
-  const handleSelectItem = (slug: string) => {
-    setIsCreatingNew(false);
-    setIsLoading(true);
-    setSelectedSlug(slug);
-    updateUrl(contentType, slug);
-    loadItem(slug, contentType);
-  };
+  // Handle selecting an item from the sidebar
+  const handleSelectItem = useCallback(
+    (slug: string, type: ContentType) => {
+      setIsCreatingNew(false);
+      setIsLoading(true);
+      setSelectedSlug(slug);
+      setContentType(type);
+      updateUrl(type, slug);
+      loadItem(slug, type);
+    },
+    [updateUrl, loadItem]
+  );
 
-  // Handle going back to list
-  const handleBackToList = () => {
-    setSelectedSlug("");
-    setSelectedPost(null);
-    setSelectedResearch(null);
-    setContent("");
-    setOriginalContent("");
-    setIsCreatingNew(false);
-    updateUrl(contentType, "");
-  };
-
-  // Handle creating new item
-  const handleCreateNew = () => {
-    setIsCreatingNew(true);
-    setSelectedSlug("");
-    setSelectedPost(null);
-    setSelectedResearch(null);
-    setContent("");
-    setOriginalContent("");
-  };
-
-  // Handle switching content type
-  const handleSwitchContentType = (type: ContentType) => {
-    if (type === contentType) return;
-    setContentType(type);
-    setSelectedSlug("");
-    setSelectedPost(null);
-    setSelectedResearch(null);
-    setContent("");
-    setOriginalContent("");
-    setIsCreatingNew(false);
-    setSearchQuery("");
-    updateUrl(type, "");
-  };
-
-  // Filter items based on search query
-  const filteredPosts = posts.filter((post) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      post.title.toLowerCase().includes(query) ||
-      post.slug.toLowerCase().includes(query) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-      post.description?.toLowerCase().includes(query)
-    );
-  });
-
-  const filteredResearch = research.filter((item) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      item.title.toLowerCase().includes(query) ||
-      item.slug.toLowerCase().includes(query) ||
-      item.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-      item.description?.toLowerCase().includes(query)
-    );
-  });
+  // Handle creating new item from sidebar
+  const handleCreateNew = useCallback(
+    (type: ContentType) => {
+      setIsCreatingNew(true);
+      setContentType(type);
+      setSelectedSlug("");
+      setSelectedPost(null);
+      setSelectedResearch(null);
+      setContent("");
+      setOriginalContent("");
+      setNewItemSlug("");
+      setNewItemTitle("");
+      setNewItemDescription("");
+      setNewItemTags("");
+      updateUrl(type, "");
+    },
+    [updateUrl]
+  );
 
   // Get currently selected item for display
   const selectedItem = contentType === "posts" ? selectedPost : selectedResearch;
@@ -394,6 +392,10 @@ function EditorContent() {
           const researchRes = await fetch("/api/editor/research");
           const researchData = await researchRes.json();
           setResearch(researchData);
+          // Also refresh research tree
+          const treeRes = await fetch("/api/editor/research-tree");
+          const treeData = await treeRes.json();
+          setResearchTree(treeData);
           setSelectedResearch({
             slug: newItemSlug,
             title: newItemTitle,
@@ -655,495 +657,346 @@ function EditorContent() {
     );
   }
 
-  // Show list when no item is selected and not creating new
-  const showItemList = !selectedSlug && !isCreatingNew;
+  // Check if we have content to edit
+  const hasContent = selectedSlug || isCreatingNew;
 
   return (
-    <div className="bg-background flex min-h-screen flex-col">
-      {/* Toast notifications - fixed position, no layout shift */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
-        {error && (
-          <div className="animate-in slide-in-from-right rounded-lg bg-red-600 px-4 py-2 text-sm text-white shadow-lg">
-            {error}
-          </div>
-        )}
-        {successMessage && (
-          <div className="animate-in slide-in-from-right rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white shadow-lg">
-            ✓ Saved
-          </div>
-        )}
-      </div>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <EditorSidebar
+        posts={posts}
+        research={research}
+        researchTree={researchTree}
+        selectedSlug={selectedSlug}
+        contentType={contentType}
+        onSelectItem={handleSelectItem}
+        onCreateNew={handleCreateNew}
+        hasUnsavedChanges={hasUnsavedChanges}
+      />
 
-      {/* Header - clean single row */}
-      <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-4 border-b border-stone-300 bg-stone-100 px-4">
-        {showItemList ? (
-          <>
-            <Link href="/" className="text-stone-600 hover:text-stone-900">
-              ←
-            </Link>
-            <div className="h-5 w-px bg-stone-300" />
-
-            {/* Content type toggle */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => handleSwitchContentType("posts")}
-                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-                  contentType === "posts"
-                    ? "bg-amber-500 text-white"
-                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-                }`}
-              >
-                Posts
-              </button>
-              <button
-                onClick={() => handleSwitchContentType("research")}
-                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-                  contentType === "research"
-                    ? "bg-amber-500 text-white"
-                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-                }`}
-              >
-                Research
-              </button>
+      {/* Main content area */}
+      <div className="bg-background flex flex-1 flex-col overflow-hidden">
+        {/* Toast notifications - fixed position, no layout shift */}
+        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+          {error && (
+            <div className="animate-in slide-in-from-right rounded-lg bg-red-600 px-4 py-2 text-sm text-white shadow-lg">
+              {error}
             </div>
-
-            <div className="ml-auto">
-              <button
-                onClick={handleCreateNew}
-                className="h-8 rounded bg-amber-500 px-4 text-sm font-medium text-white transition-colors hover:bg-amber-600"
-              >
-                + New {contentType === "posts" ? "Post" : "Research"}
-              </button>
+          )}
+          {successMessage && (
+            <div className="animate-in slide-in-from-right rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white shadow-lg">
+              ✓ Saved
             </div>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={handleBackToList}
-              className="text-stone-600 hover:text-stone-900"
-              title={`Back to ${contentType}`}
-            >
-              ←
-            </button>
-            <div className="h-5 w-px bg-stone-300" />
-
-            {/* Item title */}
-            <span className="max-w-[400px] truncate text-sm font-medium text-stone-800">
-              {isCreatingNew
-                ? `New ${contentType === "posts" ? "Post" : "Research"}`
-                : selectedItem?.title || "Loading..."}
-            </span>
-
-            <div className="flex items-center gap-1">
-              {/* View mode toggle */}
-              <button
-                onClick={() => setViewMode("edit")}
-                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-                  viewMode === "edit"
-                    ? "bg-amber-500 text-white"
-                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-                }`}
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => setViewMode("preview")}
-                className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
-                  viewMode === "preview"
-                    ? "bg-amber-500 text-white"
-                    : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-                }`}
-              >
-                Preview
-              </button>
-            </div>
-
-            {/* Status indicator */}
-            <div className="ml-auto flex items-center gap-3">
-              {isSaving && <span className="text-xs text-stone-500">Saving...</span>}
-              {!isSaving && hasUnsavedChanges && <span className="text-xs text-amber-600">● Unsaved</span>}
-              {!isSaving && !hasUnsavedChanges && selectedSlug && (
-                <span className="text-xs text-stone-400">✓ Saved</span>
-              )}
-            </div>
-          </>
-        )}
-      </header>
-
-      {/* Toolbar - only in edit mode with a post selected */}
-      {viewMode === "edit" && (selectedSlug || isCreatingNew) && (
-        <div className="sticky top-14 z-40 flex h-10 shrink-0 items-center gap-1 border-b border-stone-200 bg-stone-50 px-4">
-          <span className="mr-2 text-xs text-stone-400">Insert:</span>
-          {[
-            {
-              label: "Image",
-              icon: "🖼",
-              text: `<LocalImage\n  src="/images/your-image.jpg"\n  alt="Description"\n  caption="Optional caption"\n/>`,
-            },
-            {
-              label: "Side by Side",
-              icon: "⧉",
-              text: `<LocalImageSideBySide\n  leftSrc="/images/left.jpg"\n  rightSrc="/images/right.jpg"\n  leftAlt="Left image"\n  rightAlt="Right image"\n/>`,
-            },
-            {
-              label: "Grid",
-              icon: "▦",
-              text: `<LocalImageGrid\n  images={[\n    { src: "/images/1.jpg", alt: "Image 1" },\n    { src: "/images/2.jpg", alt: "Image 2" },\n  ]}\n/>`,
-            },
-            {
-              label: "Details",
-              icon: "▸",
-              text: `<details>\n<summary>Click to expand</summary>\n\nYour content here...\n\n</details>`,
-            },
-            { label: "Maths", icon: "∑", text: `$$\n\\begin{aligned}\nx &= y \\\\\n\\end{aligned}\n$$` },
-            { label: "Code", icon: "</>", text: "```typescript\n// Your code here\n```" },
-            {
-              label: "Table",
-              icon: "▤",
-              text: `| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Cell 1   | Cell 2   | Cell 3   |`,
-            },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => editorActionsRef.current?.insertText(item.text)}
-              className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-              title={`Insert ${item.label}`}
-            >
-              <span className="text-stone-400">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-          {/* Footnote button - opens modal */}
-          <button
-            onClick={() => setFootnoteModalOpen(true)}
-            className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-            title="Insert Footnote"
-          >
-            <span className="text-stone-400">¹</span>
-            Footnote
-          </button>
-
-          {/* Separator */}
-          <div className="mx-2 h-5 w-px bg-stone-300" />
-
-          {/* Format button */}
-          <button
-            onClick={handleFormat}
-            disabled={isFormatting || !selectedSlug}
-            className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Format with Prettier (saves file)"
-          >
-            <span className="text-stone-400">✨</span>
-            {isFormatting ? "Formatting..." : "Format"}
-          </button>
+          )}
         </div>
-      )}
 
-      {/* New item form - collapsible panel */}
-      {isCreatingNew && (
-        <div className="shrink-0 border-b border-stone-200 bg-amber-50 px-4 py-3">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-stone-600">
-                {contentType === "posts" ? "Slug" : "Path"}
-              </label>
-              <input
-                type="text"
-                value={newItemSlug}
-                onChange={(e) => {
-                  if (contentType === "posts") {
-                    // Posts: only allow lowercase letters, numbers, and hyphens
-                    setNewItemSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"));
-                  } else {
-                    // Research: allow letters, numbers, hyphens, and forward slashes
-                    setNewItemSlug(e.target.value.replace(/[^a-zA-Z0-9-/]/g, ""));
-                  }
-                }}
-                placeholder={contentType === "posts" ? "my-new-post" : "AI/topic/subtopic"}
-                className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-stone-600">Title</label>
-              <input
-                type="text"
-                value={newItemTitle}
-                onChange={(e) => setNewItemTitle(e.target.value)}
-                placeholder={contentType === "posts" ? "My New Post" : "Research Title"}
-                className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-stone-600">Description</label>
-              <input
-                type="text"
-                value={newItemDescription}
-                onChange={(e) => setNewItemDescription(e.target.value)}
-                placeholder="A description..."
-                className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-stone-600">Tags</label>
-              <input
-                type="text"
-                value={newItemTags}
-                onChange={(e) => setNewItemTags(e.target.value)}
-                placeholder="Tag1, Tag2"
-                className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+        {/* Header */}
+        <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-4 border-b border-stone-300 bg-stone-100 px-4">
+          {hasContent ? (
+            <>
+              {/* Item title */}
+              <span className="max-w-[400px] truncate text-sm font-medium text-stone-800">
+                {isCreatingNew
+                  ? `New ${contentType === "posts" ? "Post" : "Research"}`
+                  : selectedItem?.title || "Loading..."}
+              </span>
 
-      {/* Main content */}
-      <div className="flex-1 overflow-auto">
-        {showItemList ? (
-          /* Item list view */
-          <div className="mx-auto max-w-4xl px-6 py-8">
-            {/* Search bar */}
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder={`Search ${contentType} by title, ${contentType === "posts" ? "slug" : "path"}, or tags...`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 w-full rounded-lg border-0 bg-white px-4 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-
-            {/* Items list */}
-            <div className="space-y-2">
-              {contentType === "posts" ? (
-                filteredPosts.length === 0 ? (
-                  <div className="py-12 text-center text-stone-500">
-                    {searchQuery ? "No posts match your search." : "No posts found."}
-                  </div>
-                ) : (
-                  filteredPosts.map((post) => (
-                    <button
-                      key={post.slug}
-                      onClick={() => handleSelectItem(post.slug)}
-                      className="group w-full rounded-lg border border-stone-200 bg-white p-4 text-left shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <h2 className="font-arizona-flare truncate text-lg font-medium text-stone-900 group-hover:text-amber-700">
-                            {post.title}
-                          </h2>
-                          {post.description && (
-                            <p className="mt-1 truncate text-sm text-stone-500">{post.description}</p>
-                          )}
-                          <div className="mt-2 flex flex-wrap items-center gap-2">
-                            {post.published && (
-                              <span className="text-xs text-stone-400">{formatDate(post.published)}</span>
-                            )}
-                            {post.tags.length > 0 && (
-                              <>
-                                <span className="text-stone-300">·</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {post.tags.map((tag) => (
-                                    <span
-                                      key={tag}
-                                      className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700"
-                                    >
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <span className="text-stone-400 transition-transform group-hover:translate-x-0.5">→</span>
-                      </div>
-                    </button>
-                  ))
-                )
-              ) : filteredResearch.length === 0 ? (
-                <div className="py-12 text-center text-stone-500">
-                  {searchQuery ? "No research matches your search." : "No research found."}
-                </div>
-              ) : (
-                filteredResearch.map((item) => (
-                  <button
-                    key={item.slug}
-                    onClick={() => handleSelectItem(item.slug)}
-                    className="group w-full rounded-lg border border-stone-200 bg-white p-4 text-left shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <h2 className="font-arizona-flare truncate text-lg font-medium text-stone-900 group-hover:text-amber-700">
-                          {item.title}
-                        </h2>
-                        <p className="mt-1 truncate font-mono text-xs text-stone-400">{item.slug}</p>
-                        {item.description && (
-                          <p className="mt-1 truncate text-sm text-stone-500">{item.description}</p>
-                        )}
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          {item.lastUpdated && (
-                            <span className="text-xs text-stone-400">Updated: {formatDate(item.lastUpdated)}</span>
-                          )}
-                          {item.tags.length > 0 && (
-                            <>
-                              <span className="text-stone-300">·</span>
-                              <div className="flex flex-wrap gap-1">
-                                {item.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <span className="text-stone-400 transition-transform group-hover:translate-x-0.5">→</span>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-
-            {/* Item count */}
-            <div className="mt-6 text-center text-sm text-stone-400">
-              {contentType === "posts" ? (
-                <>
-                  {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}
-                </>
-              ) : (
-                <>
-                  {filteredResearch.length} research {filteredResearch.length === 1 ? "item" : "items"}
-                </>
-              )}
-              {searchQuery && ` matching "${searchQuery}"`}
-            </div>
-          </div>
-        ) : isLoading ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-gray-500">Loading {contentType === "posts" ? "post" : "research"}...</div>
-          </div>
-        ) : viewMode === "edit" ? (
-          <LiveEditor
-            content={content}
-            onChange={setContent}
-            postKey={selectedSlug || (isCreatingNew ? "new" : undefined)}
-            onReady={(actions) => {
-              editorActionsRef.current = actions;
-            }}
-            metadata={
-              selectedItem
-                ? {
-                    title: selectedItem.title,
-                    published:
-                      contentType === "posts"
-                        ? (selectedItem as PostInfo).published
-                        : (selectedItem as ResearchInfo).lastUpdated,
-                    tags: selectedItem.tags,
-                    description: selectedItem.description,
-                  }
-                : isCreatingNew
-                  ? {
-                      title: newItemTitle || (contentType === "posts" ? "New Post" : "New Research"),
-                      published: new Date().toISOString().split("T")[0],
-                      tags: newItemTags
-                        .split(",")
-                        .map((t) => t.trim())
-                        .filter(Boolean),
-                      description: newItemDescription,
-                    }
-                  : undefined
-            }
-          />
-        ) : (
-          <div className="min-h-full" style={{ backgroundColor: "var(--background)" }}>
-            {/* Full preview with title and metadata, matching actual rendering */}
-            <div className="mx-auto max-w-4xl px-6 py-8">
-              {selectedItem && (
-                <>
-                  <h1 className="font-arizona-flare mb-4 text-4xl font-normal">{selectedItem.title}</h1>
-                  {contentType === "posts" && (selectedItem as PostInfo).published && (
-                    <div className="font-mallory-book mb-6 text-gray-600">
-                      {formatDate((selectedItem as PostInfo).published!)}
-                    </div>
-                  )}
-                  {contentType === "research" && (
-                    <div className="font-mallory-book mb-6 text-sm text-gray-600">
-                      {(selectedItem as ResearchInfo).lastUpdated && (
-                        <div>Last updated: {formatDate((selectedItem as ResearchInfo).lastUpdated!)}</div>
-                      )}
-                      {(selectedItem as ResearchInfo).created && (
-                        <div>Created: {formatDate((selectedItem as ResearchInfo).created!)}</div>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-              <div className="prose-content">
-                <MDXPreview content={content} />
+              <div className="flex items-center gap-1">
+                {/* View mode toggle */}
+                <button
+                  onClick={() => setViewMode("edit")}
+                  className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                    viewMode === "edit"
+                      ? "bg-amber-500 text-white"
+                      : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                  }`}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setViewMode("preview")}
+                  className={`h-8 rounded px-3 text-sm font-medium transition-colors ${
+                    viewMode === "preview"
+                      ? "bg-amber-500 text-white"
+                      : "text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                  }`}
+                >
+                  Preview
+                </button>
               </div>
-              {selectedItem?.tags && selectedItem.tags.length > 0 && (
-                <div className="font-mallory-book mt-8 text-gray-600">
-                  <p>Tags: {selectedItem.tags.join(", ")}</p>
+
+              {/* Status indicator */}
+              <div className="ml-auto flex items-center gap-3">
+                {isSaving && <span className="text-xs text-stone-500">Saving...</span>}
+                {!isSaving && hasUnsavedChanges && <span className="text-xs text-amber-600">● Unsaved</span>}
+                {!isSaving && !hasUnsavedChanges && selectedSlug && (
+                  <span className="text-xs text-stone-400">✓ Saved</span>
+                )}
+              </div>
+            </>
+          ) : (
+            <span className="text-sm text-stone-500">Select a post or research item from the sidebar</span>
+          )}
+        </header>
+
+        {/* Toolbar - only in edit mode with content selected */}
+        {viewMode === "edit" && hasContent && (
+          <div className="sticky top-14 z-30 flex h-10 shrink-0 items-center gap-1 border-b border-stone-200 bg-stone-50 px-4">
+            <span className="mr-2 text-xs text-stone-400">Insert:</span>
+            {[
+              {
+                label: "Image",
+                icon: "🖼",
+                text: `<LocalImage\n  src="/images/your-image.jpg"\n  alt="Description"\n  caption="Optional caption"\n/>`,
+              },
+              {
+                label: "Side by Side",
+                icon: "⧉",
+                text: `<LocalImageSideBySide\n  leftSrc="/images/left.jpg"\n  rightSrc="/images/right.jpg"\n  leftAlt="Left image"\n  rightAlt="Right image"\n/>`,
+              },
+              {
+                label: "Grid",
+                icon: "▦",
+                text: `<LocalImageGrid\n  images={[\n    { src: "/images/1.jpg", alt: "Image 1" },\n    { src: "/images/2.jpg", alt: "Image 2" },\n  ]}\n/>`,
+              },
+              {
+                label: "Details",
+                icon: "▸",
+                text: `<details>\n<summary>Click to expand</summary>\n\nYour content here...\n\n</details>`,
+              },
+              { label: "Maths", icon: "∑", text: `$$\n\\begin{aligned}\nx &= y \\\\\n\\end{aligned}\n$$` },
+              { label: "Code", icon: "</>", text: "```typescript\n// Your code here\n```" },
+              {
+                label: "Table",
+                icon: "▤",
+                text: `| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Cell 1   | Cell 2   | Cell 3   |`,
+              },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => editorActionsRef.current?.insertText(item.text)}
+                className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                title={`Insert ${item.label}`}
+              >
+                <span className="text-stone-400">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+            {/* Footnote button - opens modal */}
+            <button
+              onClick={() => setFootnoteModalOpen(true)}
+              className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+              title="Insert Footnote"
+            >
+              <span className="text-stone-400">¹</span>
+              Footnote
+            </button>
+
+            {/* Separator */}
+            <div className="mx-2 h-5 w-px bg-stone-300" />
+
+            {/* Format button */}
+            <button
+              onClick={handleFormat}
+              disabled={isFormatting || !selectedSlug}
+              className="flex h-7 items-center gap-1.5 rounded px-2 text-xs text-stone-600 hover:bg-stone-200 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50"
+              title="Format with Prettier (saves file)"
+            >
+              <span className="text-stone-400">✨</span>
+              {isFormatting ? "Formatting..." : "Format"}
+            </button>
+          </div>
+        )}
+
+        {/* New item form - collapsible panel */}
+        {isCreatingNew && (
+          <div className="shrink-0 border-b border-stone-200 bg-amber-50 px-4 py-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-stone-600">
+                  {contentType === "posts" ? "Slug" : "Path"}
+                </label>
+                <input
+                  type="text"
+                  value={newItemSlug}
+                  onChange={(e) => {
+                    if (contentType === "posts") {
+                      // Posts: only allow lowercase letters, numbers, and hyphens
+                      setNewItemSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"));
+                    } else {
+                      // Research: allow letters, numbers, hyphens, and forward slashes
+                      setNewItemSlug(e.target.value.replace(/[^a-zA-Z0-9-/]/g, ""));
+                    }
+                  }}
+                  placeholder={contentType === "posts" ? "my-new-post" : "AI/topic/subtopic"}
+                  className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-stone-600">Title</label>
+                <input
+                  type="text"
+                  value={newItemTitle}
+                  onChange={(e) => setNewItemTitle(e.target.value)}
+                  placeholder={contentType === "posts" ? "My New Post" : "Research Title"}
+                  className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-stone-600">Description</label>
+                <input
+                  type="text"
+                  value={newItemDescription}
+                  onChange={(e) => setNewItemDescription(e.target.value)}
+                  placeholder="A description..."
+                  className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-stone-600">Tags</label>
+                <input
+                  type="text"
+                  value={newItemTags}
+                  onChange={(e) => setNewItemTags(e.target.value)}
+                  placeholder="Tag1, Tag2"
+                  className="h-8 w-full rounded border-0 px-2 text-sm shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main content */}
+        <div className="flex-1 overflow-auto">
+          {!hasContent ? (
+            <div className="flex h-full items-center justify-center text-stone-400">
+              <div className="text-center">
+                <p className="mb-2">No content selected</p>
+                <p className="text-sm">Choose a post or research item from the sidebar to start editing</p>
+              </div>
+            </div>
+          ) : isLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-gray-500">Loading {contentType === "posts" ? "post" : "research"}...</div>
+            </div>
+          ) : viewMode === "edit" ? (
+            <LiveEditor
+              content={content}
+              onChange={setContent}
+              postKey={selectedSlug || (isCreatingNew ? "new" : undefined)}
+              onReady={(actions) => {
+                editorActionsRef.current = actions;
+              }}
+              metadata={
+                selectedItem
+                  ? {
+                      title: selectedItem.title,
+                      published:
+                        contentType === "posts"
+                          ? (selectedItem as PostInfo).published
+                          : (selectedItem as ResearchInfo).lastUpdated,
+                      tags: selectedItem.tags,
+                      description: selectedItem.description,
+                    }
+                  : isCreatingNew
+                    ? {
+                        title: newItemTitle || (contentType === "posts" ? "New Post" : "New Research"),
+                        published: new Date().toISOString().split("T")[0],
+                        tags: newItemTags
+                          .split(",")
+                          .map((t) => t.trim())
+                          .filter(Boolean),
+                        description: newItemDescription,
+                      }
+                    : undefined
+              }
+            />
+          ) : (
+            <div className="min-h-full" style={{ backgroundColor: "var(--background)" }}>
+              {/* Full preview with title and metadata, matching actual rendering */}
+              <div className="mx-auto max-w-4xl px-6 py-8">
+                {selectedItem && (
+                  <>
+                    <h1 className="font-arizona-flare mb-4 text-4xl font-normal">{selectedItem.title}</h1>
+                    {contentType === "posts" && (selectedItem as PostInfo).published && (
+                      <div className="font-mallory-book mb-6 text-gray-600">
+                        {formatDate((selectedItem as PostInfo).published!)}
+                      </div>
+                    )}
+                    {contentType === "research" && (
+                      <div className="font-mallory-book mb-6 text-sm text-gray-600">
+                        {(selectedItem as ResearchInfo).lastUpdated && (
+                          <div>Last updated: {formatDate((selectedItem as ResearchInfo).lastUpdated!)}</div>
+                        )}
+                        {(selectedItem as ResearchInfo).created && (
+                          <div>Created: {formatDate((selectedItem as ResearchInfo).created!)}</div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+                <div className="prose-content">
+                  <MDXPreview content={content} />
                 </div>
-              )}
+                {selectedItem?.tags && selectedItem.tags.length > 0 && (
+                  <div className="font-mallory-book mt-8 text-gray-600">
+                    <p>Tags: {selectedItem.tags.join(", ")}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footnote Modal */}
+        {footnoteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+              <h2 className="mb-4 text-lg font-semibold text-stone-800">Insert Footnote</h2>
+              <p className="mb-3 text-sm text-stone-600">
+                Enter the footnote text. The footnote number will be automatically determined based on its position in
+                the document.
+              </p>
+              <textarea
+                ref={footnoteInputRef}
+                value={footnoteText}
+                onChange={(e) => setFootnoteText(e.target.value)}
+                placeholder="Enter footnote text or citation..."
+                className="mb-4 h-32 w-full resize-none rounded-md border border-stone-300 p-3 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    handleFootnoteInsert();
+                  }
+                  if (e.key === "Escape") {
+                    setFootnoteModalOpen(false);
+                    setFootnoteText("");
+                  }
+                }}
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setFootnoteModalOpen(false);
+                    setFootnoteText("");
+                  }}
+                  className="rounded-md px-4 py-2 text-sm text-stone-600 hover:bg-stone-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleFootnoteInsert}
+                  disabled={!footnoteText.trim()}
+                  className="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Insert Footnote
+                </button>
+              </div>
+              <p className="mt-3 text-xs text-stone-400">Press ⌘+Enter to insert, Escape to cancel</p>
             </div>
           </div>
         )}
       </div>
-
-      {/* Footnote Modal */}
-      {footnoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
-            <h2 className="mb-4 text-lg font-semibold text-stone-800">Insert Footnote</h2>
-            <p className="mb-3 text-sm text-stone-600">
-              Enter the footnote text. The footnote number will be automatically determined based on its position in
-              the document.
-            </p>
-            <textarea
-              ref={footnoteInputRef}
-              value={footnoteText}
-              onChange={(e) => setFootnoteText(e.target.value)}
-              placeholder="Enter footnote text or citation..."
-              className="mb-4 h-32 w-full resize-none rounded-md border border-stone-300 p-3 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  handleFootnoteInsert();
-                }
-                if (e.key === "Escape") {
-                  setFootnoteModalOpen(false);
-                  setFootnoteText("");
-                }
-              }}
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setFootnoteModalOpen(false);
-                  setFootnoteText("");
-                }}
-                className="rounded-md px-4 py-2 text-sm text-stone-600 hover:bg-stone-100"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleFootnoteInsert}
-                disabled={!footnoteText.trim()}
-                className="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Insert Footnote
-              </button>
-            </div>
-            <p className="mt-3 text-xs text-stone-400">Press ⌘+Enter to insert, Escape to cancel</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
