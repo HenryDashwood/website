@@ -72,7 +72,7 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
   - 2021
   - https://arxiv.org/pdf/2108.12409
   - a simple method to encode positions that allows a model trained on shorter sequences to generalise to longer ones.
-  - Instead of using explicit positional embeddings added to tokens, ALiBi introduces a static, non-learned penalty to the attention scores that grows linearly with the distance between query and key. $\text{Score}_{ij} = Q_i K_j^T - m \cdot |i-j|$ where $m$ is a slope specific to each attention head.
+  - Instead of using explicit positional embeddings added to tokens, ALiBi introduces a static, non-learned penalty to the attention scores that grows linearly with the distance between query and key. $\text{Score}_{ij} = Q_i K_j^T - m \cdot |i-j|$ where $m$ is a slope specific to each attention head.
   - penalises attention based on how far apart tokens are, biasing the model toward more recent tokens.
   - Bias does not depend on an absolute position index, so the model can naturally extend to longer sequences than it saw in training. You just continue applying the linear penalty beyond the training length.
   - Different attention heads use different penalty slopes (following a geometric series), allowing some heads to focus locally while others attend broadly.
@@ -81,7 +81,7 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
 
 - Relative Positional Embeddings
   - introduced with Transformer-XL and further refined in subsequent models
-  - remove the fixed limit of absolute positions. Instead of embedding the absolute index, they embed the *distance* between tokens (often clipped to some maximum).
+  - remove the fixed limit of absolute positions. Instead of embedding the absolute index, they embed the _distance_ between tokens (often clipped to some maximum).
   - The model learns to weight interactions based on the distance between tokens, rather than their absolute positions in the sequence.
   - The model can slide to text of greater length without encountering unseen position indices.
 
@@ -89,10 +89,10 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
   - applies a rotating transform to queries/keys that encodes positions implicitly
   - dot products are invariant to shared rotations: if query and key vectors are both rotated by their respective positions, the attention score depends only on relative position.
   - Each pair of embedding dimensions is treated as a complex number and rotated by an angle proportional to position.
-    - For a token at position $m$ and a feature dimension pair, the rotation is defined as: $f(x, m) = x \cdot e^{im\theta}$
+    - For a token at position $m$ and a feature dimension pair, the rotation is defined as: $f(x, m) = x \cdot e^{im\theta}$
       In matrix form for pairs of dimensions:$\begin{pmatrix} q'_0 \\ q'_1 \end{pmatrix} = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix} \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}$
-    - The attention score (dot product) between a Query at position $m$ and a Key at position $n$ becomes:$\langle f(q, m), f(k, n) \rangle = q^T k \cdot \cos((m-n)\theta)$
-    - The result depends on the relative distance $(m-n)$, not on the absolute values of $m$ or $n$. This property, known as Translation Invariance, theoretically allows the model to handle sequences of infinite length, as the interaction mechanism is identical regardless of where in the sequence the tokens appear.
+    - The attention score (dot product) between a Query at position $m$ and a Key at position $n$ becomes:$\langle f(q, m), f(k, n) \rangle = q^T k \cdot \cos((m-n)\theta)$
+    - The result depends on the relative distance $(m-n)$, not on the absolute values of $m$ or $n$. This property, known as Translation Invariance, theoretically allows the model to handle sequences of infinite length, as the interaction mechanism is identical regardless of where in the sequence the tokens appear.
   - Different dimension pairs rotate at different frequencies, creating a rich positional signal that decays naturally with distance.
   - better generalisation to longer sequences than naive sinusoids
   - extensions:
@@ -100,9 +100,9 @@ Sinusoidal encodings theoretically could extrapolate, but in practice, perplexit
   - Adopted more widely than ALiBi
   - Even with RoPE, models trained on 4K contexts failed beyond that length, as rotation angles extrapolated to untested regimes caused attention score instability.
 
-While RoPE is relative, models still failed when $m-n$ exceeded the maximum distance seen during training.
+While RoPE is relative, models still failed when $m-n$ exceeded the maximum distance seen during training.
 
-- The rotation frequencies $\theta_d$ typically decay exponentially across the dimension $d$.
+- The rotation frequencies $\theta_d$ typically decay exponentially across the dimension $d$.
 - At long distances, the high-frequency dimensions rotate so rapidly that the model encounters "phases" (angles) it has never correlated with semantic meaning
 - led to high attention uncertainty and "garbage" outputs.
 - known as the extrapolation cliff
@@ -211,13 +211,13 @@ During autoregressive generation, each new token requires attending to all previ
 
 Even with FlashAttention (memory efficient) and RoPE (mathematically sound), physical hardware limits persist. The H100 GPU has 80GB of memory. A 70B parameter model uses ~140GB just for weights (FP16). The KV cache for a 1 million token context adds another ~100GB+ depending on architecture. No single GPU can hold this.
 
-To handle "infinite" contexts (1M+ tokens), the sequence itself must be distributed across multiple GPUs. This domain is known as Sequence Parallelism.
+To handle "infinite" contexts (1M+ tokens), the sequence itself must be distributed across multiple GPUs. This domain is known as Sequence Parallelism.
 
 - DeepSpeed Ulysses
   - 2023
   - https://arxiv.org/pdf/2309.14509
   - partitions the sequence along the Attention Head dimension.
-    - If a model has 64 heads and we have 8 GPUs, Ulysses ensures that each GPU computes the full attention for 8 specific heads over the entire sequence.
+    - If a model has 64 heads and we have 8 GPUs, Ulysses ensures that each GPU computes the full attention for 8 specific heads over the entire sequence.
     - requires a massive "All-to-All" transpose operation. Before attention, GPUs exchange tokens so that each GPU has the full sequence for its subset of heads. After attention, they transpose back.
     - Parallelism is hard-capped by the number of attention heads. If the model has 64 heads, you cannot use more than 64 GPUs. For extremely long sequences, the memory per GPU might still be too high even with maximum splitting
 
@@ -225,12 +225,12 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
   - 2023
   - https://arxiv.org/pdf/2310.01889
   - https://arxiv.org/pdf/2411.01783
-  - partitions the sequence across any number of devices, arranged in a conceptual ring
-    1. The sequence $Q, K, V$ is split into chunks. GPU 1 gets chunk 1, GPU 2 gets chunk 2, etc.
+  - partitions the sequence across any number of devices, arranged in a conceptual ring
+    1. The sequence $Q, K, V$ is split into chunks. GPU 1 gets chunk 1, GPU 2 gets chunk 2, etc.
     2. Each GPU computes attention between its local Query chunk and its local KV chunk.
-    3. GPU 1 sends its KV chunk to GPU 2, GPU 2 sends its KV chunk to GPU, GPU $N$ sends to GPU 1.
-    4. While the KV chunks are travelling over the NVLink/InfiniBand interconnect, the GPUs are simultaneously computing attention with the KV chunk they currently hold.
-    5. This repeats $N$ times until every Query has attended to every Key in the distributed system.
+    3. GPU 1 sends its KV chunk to GPU 2, GPU 2 sends its KV chunk to GPU, GPU $N$ sends to GPU 1.
+    4. While the KV chunks are travelling over the NVLink/InfiniBand interconnect, the GPUs are simultaneously computing attention with the KV chunk they currently hold.
+    5. This repeats $N$ times until every Query has attended to every Key in the distributed system.
   - Allows context length to scale linearly with the number of GPUs
   - The only cost is the latency of the ring pass, which is effectively hidden by the compute-heavy attention calculation.
   - Meta's context parallelism work (2024) refined Ring Attention for production inference, achieving 1 million token pre-fill with Llama 3.1 405B in 77 seconds on 128 H100s at 93% efficiency.
@@ -254,7 +254,7 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
   - This collapse causes the gradients to vanish (Z-loss spikes) and training to diverge.
 
   - Mitigation:
-    - Z-Loss Regularisation: A penalty term encouraging $\log \sum \exp(x)$ to remain small.
+    - Z-Loss Regularisation: A penalty term encouraging $\log \sum \exp(x)$ to remain small.
     - Logit Soft-Capping: Explicitly capping the logits using a tanh function: $\text{logits} = \text{cap} \cdot \tanh(\text{logits} / \text{cap})$
       This technique, used in Gemma 2 and Llama 3 prototypes, prevents the attention mechanism from "saturating" and ensures healthy gradient flow even at 100k+ tokens.
 
@@ -287,7 +287,9 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
 - Perceiver
   - A multi-modal model that uses a latent bottleneck to handle very large inputs by projecting them to a smaller set of latent vectors.
 
-## Other papers to reading
+## Other papers to read
 
 - [LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens](https://arxiv.org/pdf/2402.13753)
 - [BurstAttention: An Efficient Distributed Attention Framework for Extremely Long Sequences](https://arxiv.org/pdf/2403.09347)
+- [Make Your LLM Fully Utilize the Context](https://arxiv.org/abs/2404.16811)
+- [LLoCO: Learning Long Contexts Offline](https://arxiv.org/abs/2404.07979)
