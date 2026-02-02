@@ -1722,12 +1722,8 @@ const editorTheme = EditorView.theme({
     marginRight: "0.5em",
   },
   ".list-number": {
-    color: "#faad19",
-    fontWeight: "600",
+    fontWeight: "bold",
     marginRight: "0.5em",
-  },
-  ".list-content": {
-    // inherits inline display
   },
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "#faad19",

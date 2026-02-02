@@ -255,7 +255,7 @@ To handle "infinite" contexts (1M+ tokens), the sequence itself must be distribu
 
   - Mitigation:
     - Z-Loss Regularisation: A penalty term encouraging $\log \sum \exp(x)$ to remain small.
-    - Logit Soft-Capping: Explicitly capping the logits using a tanh function.$$\text{logits} = \text{cap} \cdot \tanh(\text{logits} / \text{cap})$$
+    - Logit Soft-Capping: Explicitly capping the logits using a tanh function: $\text{logits} = \text{cap} \cdot \tanh(\text{logits} / \text{cap})$
       This technique, used in Gemma 2 and Llama 3 prototypes, prevents the attention mechanism from "saturating" and ensures healthy gradient flow even at 100k+ tokens.
 
 ## Possible successors to attention
