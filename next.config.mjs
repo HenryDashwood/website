@@ -25,13 +25,22 @@ const nextConfig = {
     domains: [],
     unoptimized: false,
   },
-  // Exclude post.mdx files from triggering Fast Refresh
-  // This prevents the editor from refreshing when saving posts
+  // Exclude content files edited via /editor from triggering Fast Refresh
+  // This prevents the editor from hard-refreshing on save.
   webpack: (config, { dev }) => {
     if (dev) {
+      const existingIgnored = config.watchOptions?.ignored;
+      const customIgnored = ["**/src/app/posts/**/post.mdx", "**/src/app/research/**/content.mdx"];
+      const stringIgnored =
+        typeof existingIgnored === "string"
+          ? [existingIgnored]
+          : Array.isArray(existingIgnored)
+            ? existingIgnored.filter((item) => typeof item === "string" && item.length > 0)
+            : [];
+
       config.watchOptions = {
         ...config.watchOptions,
-        ignored: [...(config.watchOptions?.ignored || []), /src\/app\/posts\/.*\/post\.mdx$/],
+        ignored: [...stringIgnored, ...customIgnored],
       };
     }
     return config;

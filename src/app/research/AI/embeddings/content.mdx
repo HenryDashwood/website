@@ -1,0 +1,25 @@
+Neural networks operate on continuous vectors. Words in text are categorical. The process of converting them into a vector format is known as embedding.
+
+We don't have to embed text at the word level. Character, sentence, or paragraph embeddings could also be used.
+
+## Classic embedding models
+
+- Word2Vec
+- Glove
+
+Pretrained embeddings can be used in machine learning models. However, state-of-the-art models tend to produce their own embeddings that are part of the input layer and are updated during training. It's better to have embeddings that were optimised for the data and task the model is being trained for.
+
+Embeddings can have any number of dimensions. More dimensions can capture more nuanced relationships, but at the cost of computational efficiency.
+
+| Model                 | Embedding Dimensions |
+| --------------------- | -------------------- |
+| GPT 2 (117M and 125M) | 768                  |
+| GPT 3                 | 12,288               |
+
+## Tokenisation
+
+- Splitting text
+- Mapping to IDs
+- Special context tokens
+
+- Byte pair encoding
