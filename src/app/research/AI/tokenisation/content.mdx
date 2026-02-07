@@ -1,0 +1,88 @@
+The simplest tokeniser:
+
+1. Splits text into chunks in some rule-based way, e.g. a word-based tokeniser would split on sentences and punctuation.
+
+```python
+text = "Hello, world!"
+tokens = text.split()
+print(tokens)
+```
+
+```output
+['Hello,', 'world!']
+```
+
+Python's `split()` method only splits on spaces by default. We can use regular expressions to cover spaces and punctuation that also delimit words.
+
+<details>
+<summary>How does the `re.findall(r'\w+|[^\w\s]')` regex work?</summary>
+
+It has two parts separated by `|` (which means "or"):
+
+- `\w+` matches one or more word characters (letters, digits, underscores).
+- `[^\w\s]` matches anything that's not a word character and not whitespace. So it matches punctuation.
+
+The `^` inside the brackets `[^...]` means "not", so `[^\w\s]` literally means "not a word character, not whitespace".
+
+---
+
+Both `split()` and `findall()` break text into pieces, but they work differently:
+
+- `split()`: You tell it what to remove (the separators), and it gives you what's left.
+- `findall()`: You tell it what to keep (the pattern), and it gives you all matches.
+
+</details>
+
+```python
+import re
+tokens = re.findall(r'\w+|[^\w\s]', text)
+print(tokens)
+```
+
+```output
+['Hello', ',', 'world', '!']
+```
+
+2. Maps those chunks to numeric values:
+
+```python
+vocab = {token: idx for idx, token in enumerate(set(tokens))}
+print(vocab)
+```
+
+```output
+{'Hello': 0, ',': 1, '!': 2, 'world': 3}
+```
+
+```python
+token_ids = [vocab[token] for token in tokens]
+print(token_ids)
+```
+
+```output
+[0, 1, 3, 2]
+```
+
+If we try to tokenise text with a word not in our vocabulary, we'd get a KeyError. So we need our first example of a special token, "<UNK>".
+
+```python
+vocab['<UNK>'] = len(vocab)
+```
+
+Now we can safely encode any text by using `vocab.get(token, vocab['<UNK>'])` instead of `vocab[token]`.
+
+- Vocabulary size
+- Byte pair encoding
+
+## Converting tokens to embeddings
+
+How embedding layers function as a lookup operation, retrieving vectors corresponding to token IDs.
+
+## Positional embeddings
+
+- Absolute positional embeddings
+  - OpenAI style absolute embeddings that are optimised during training
+
+- Relative positional embeddings
+
+- Rotatary positional embeddings

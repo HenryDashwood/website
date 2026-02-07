@@ -294,6 +294,56 @@ export default function EditorSidebar({
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
+        {/* Research Section */}
+        <div>
+          <button
+            onClick={() => toggleSection("research")}
+            className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-stone-700 hover:bg-stone-100"
+          >
+            <span>Research ({filteredResearch.length})</span>
+            <svg
+              className={`h-4 w-4 transition-transform ${expandedSections.has("research") ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {expandedSections.has("research") && (
+            <div className="pb-2">
+              {/* New Research button */}
+              <button
+                onClick={() => handleCreateNew("research")}
+                className="mx-3 mb-2 flex w-[calc(100%-24px)] items-center justify-center gap-1 rounded-md border border-dashed border-stone-300 py-1.5 text-xs text-stone-500 transition-colors hover:border-amber-400 hover:bg-amber-50 hover:text-amber-600"
+              >
+                <span>+</span> New Research
+              </button>
+
+              {/* Research tree */}
+              <div className="flex flex-col px-2">
+                {displayResearchTree.map((node) => (
+                  <ResearchTreeNavNode
+                    key={node.name}
+                    node={node}
+                    parentPath=""
+                    selectedSlug={contentType === "research" ? selectedSlug : ""}
+                    expandedFolders={expandedFolders}
+                    toggleFolder={toggleFolder}
+                    onSelectItem={(slug) => handleSelectItem(slug, "research")}
+                  />
+                ))}
+                {displayResearchTree.length === 0 && (
+                  <div className="px-3 py-2 text-xs text-stone-400">
+                    {searchQuery ? "No research matches your search" : "No research found"}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Posts Section */}
         <div className="border-b border-stone-200">
           <button
@@ -349,56 +399,6 @@ export default function EditorSidebar({
                 {filteredPosts.length === 0 && (
                   <div className="px-3 py-2 text-xs text-stone-400">
                     {searchQuery ? "No posts match your search" : "No posts found"}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Research Section */}
-        <div>
-          <button
-            onClick={() => toggleSection("research")}
-            className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-stone-700 hover:bg-stone-100"
-          >
-            <span>Research ({filteredResearch.length})</span>
-            <svg
-              className={`h-4 w-4 transition-transform ${expandedSections.has("research") ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {expandedSections.has("research") && (
-            <div className="pb-2">
-              {/* New Research button */}
-              <button
-                onClick={() => handleCreateNew("research")}
-                className="mx-3 mb-2 flex w-[calc(100%-24px)] items-center justify-center gap-1 rounded-md border border-dashed border-stone-300 py-1.5 text-xs text-stone-500 transition-colors hover:border-amber-400 hover:bg-amber-50 hover:text-amber-600"
-              >
-                <span>+</span> New Research
-              </button>
-
-              {/* Research tree */}
-              <div className="flex flex-col px-2">
-                {displayResearchTree.map((node) => (
-                  <ResearchTreeNavNode
-                    key={node.name}
-                    node={node}
-                    parentPath=""
-                    selectedSlug={contentType === "research" ? selectedSlug : ""}
-                    expandedFolders={expandedFolders}
-                    toggleFolder={toggleFolder}
-                    onSelectItem={(slug) => handleSelectItem(slug, "research")}
-                  />
-                ))}
-                {displayResearchTree.length === 0 && (
-                  <div className="px-3 py-2 text-xs text-stone-400">
-                    {searchQuery ? "No research matches your search" : "No research found"}
                   </div>
                 )}
               </div>

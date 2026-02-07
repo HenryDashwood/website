@@ -104,10 +104,50 @@ function EditorContent() {
       if (slug) {
         params.set("slug", slug);
       }
-      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-      router.replace(newUrl, { scroll: false });
+      const basePath = pathname || "/editor";
+      const newUrl = params.toString() ? `${basePath}?${params.toString()}` : basePath;
+
+      try {
+        router.replace(newUrl, { scroll: false });
+      } catch (error) {
+        // Fallback for occasional URL parsing issues with nested slugs.
+        console.warn("Failed to update editor URL via router.replace, using history fallback:", error);
+        window.history.replaceState(null, "", newUrl);
+      }
     },
     [pathname, router]
+  );
+
+  const fetchJsonNoStore = useCallback(async (url: string) => {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${url}`);
+    }
+    return res.json();
+  }, []);
+
+  const refreshResearchData = useCallback(
+    async (expectedSlug?: string) => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const [researchData, treeData] = await Promise.all([
+          fetchJsonNoStore("/api/editor/research"),
+          fetchJsonNoStore("/api/editor/research-tree"),
+        ]);
+
+        setResearch(researchData);
+        setResearchTree(treeData);
+
+        if (
+          !expectedSlug ||
+          researchData.some((item: ResearchInfo) => item.slug === expectedSlug)
+        ) {
+          return;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 150));
+      }
+    },
+    [fetchJsonNoStore]
   );
 
   // Keep ref in sync
@@ -120,7 +160,7 @@ function EditorContent() {
 
   // Fetch posts
   useEffect(() => {
-    fetch("/api/editor/posts")
+    fetch("/api/editor/posts", { cache: "no-store" })
       .then((res) => {
         if (res.status === 403) {
           setIsDev(false);
@@ -141,7 +181,7 @@ function EditorContent() {
 
   // Fetch research
   useEffect(() => {
-    fetch("/api/editor/research")
+    fetch("/api/editor/research", { cache: "no-store" })
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -159,7 +199,7 @@ function EditorContent() {
 
   // Fetch research tree for sidebar
   useEffect(() => {
-    fetch("/api/editor/research-tree")
+    fetch("/api/editor/research-tree", { cache: "no-store" })
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -377,10 +417,15 @@ function EditorContent() {
           .map((t) => t.trim())
           .filter(Boolean);
 
+        // Update local selection state immediately so successful saves don't show as failed
+        setSelectedSlug(newItemSlug);
+        setIsCreatingNew(false);
+        setNewItemSlug("");
+        setNewItemTitle("");
+        setNewItemDescription("");
+        setNewItemTags("");
+
         if (contentType === "posts") {
-          const postsRes = await fetch("/api/editor/posts");
-          const postsData = await postsRes.json();
-          setPosts(postsData);
           setSelectedPost({
             slug: newItemSlug,
             title: newItemTitle,
@@ -388,14 +433,15 @@ function EditorContent() {
             tags,
             description: newItemDescription,
           });
+          setSelectedResearch(null);
+
+          try {
+            const postsData = await fetchJsonNoStore("/api/editor/posts");
+            setPosts(postsData);
+          } catch (refreshError) {
+            console.warn("Post save succeeded, but failed to refresh posts list:", refreshError);
+          }
         } else {
-          const researchRes = await fetch("/api/editor/research");
-          const researchData = await researchRes.json();
-          setResearch(researchData);
-          // Also refresh research tree
-          const treeRes = await fetch("/api/editor/research-tree");
-          const treeData = await treeRes.json();
-          setResearchTree(treeData);
           setSelectedResearch({
             slug: newItemSlug,
             title: newItemTitle,
@@ -404,15 +450,16 @@ function EditorContent() {
             tags,
             description: newItemDescription,
           });
+          setSelectedPost(null);
+
+          try {
+            await refreshResearchData(newItemSlug);
+          } catch (refreshError) {
+            console.warn("Research save succeeded, but failed to refresh research sidebar:", refreshError);
+          }
         }
 
-        setSelectedSlug(newItemSlug);
         updateUrl(contentType, newItemSlug);
-        setIsCreatingNew(false);
-        setNewItemSlug("");
-        setNewItemTitle("");
-        setNewItemDescription("");
-        setNewItemTags("");
       }
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -429,6 +476,8 @@ function EditorContent() {
     newItemTitle,
     newItemDescription,
     newItemTags,
+    fetchJsonNoStore,
+    refreshResearchData,
     updateUrl,
   ]);
 

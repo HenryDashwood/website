@@ -1040,9 +1040,10 @@ function findInlineCode(
 function findCodeBlocks(
   text: string,
   cursorFrom: number,
-  cursorTo: number
-): { from: number; to: number; code: string; language: string }[] {
-  const results: { from: number; to: number; code: string; language: string }[] = [];
+  cursorTo: number,
+  skipCursorCheck: boolean = false
+): { from: number; to: number; code: string; language: string; cursorOnBlock: boolean }[] {
+  const results: { from: number; to: number; code: string; language: string; cursorOnBlock: boolean }[] = [];
 
   // Match ```language\ncode\n``` - fenced code blocks
   const regex = /```(\w*)\n([\s\S]*?)\n```/g;
@@ -1050,12 +1051,14 @@ function findCodeBlocks(
   while ((match = regex.exec(text)) !== null) {
     const from = match.index;
     const to = from + match[0].length;
-    if (cursorFrom <= to && cursorTo >= from) continue;
+    const cursorOnBlock = cursorFrom <= to && cursorTo >= from;
+    if (!skipCursorCheck && cursorOnBlock) continue;
     results.push({
       from,
       to,
       language: match[1] || "",
       code: match[2],
+      cursorOnBlock,
     });
   }
 
@@ -1272,7 +1275,18 @@ function buildDecorations(state: EditorState): DecorationSet {
   }
 
   // Code blocks
-  const codeBlocks = findCodeBlocks(text, cursorFrom, cursorTo);
+  const allCodeBlocks = findCodeBlocks(text, cursorFrom, cursorTo, true);
+  const editableCodeBlocks = allCodeBlocks.filter((block) => block.cursorOnBlock);
+  const codeBlocks = allCodeBlocks.filter((block) => !block.cursorOnBlock);
+
+  for (const block of editableCodeBlocks) {
+    decorations.push(
+      Decoration.mark({
+        class: "editable-code-block",
+      }).range(block.from, block.to)
+    );
+  }
+
   for (const block of codeBlocks) {
     decorations.push(
       Decoration.replace({
@@ -1505,11 +1519,14 @@ const livePreviewField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-// Theme - tighter spacing to match published page
+const editorSourceFont =
+  "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace";
+
+// Theme - use a standard monospace editor font for predictable markdown editing
 const editorTheme = EditorView.theme({
   "&": {
     fontSize: "16px",
-    fontFamily: "var(--font-martina-plantijn), Georgia, serif",
+    fontFamily: editorSourceFont,
     backgroundColor: "var(--background, #f9e9cb)",
   },
   "&.cm-editor": {
@@ -1521,18 +1538,19 @@ const editorTheme = EditorView.theme({
   ".cm-scroller": {
     overflow: "auto",
     backgroundColor: "var(--background, #f9e9cb)",
-    fontFamily: "var(--font-martina-plantijn), Georgia, serif",
+    fontFamily: editorSourceFont,
   },
   ".cm-content": {
     padding: "0 1.5rem",
     maxWidth: "800px",
     margin: "0 auto",
     caretColor: "#faad19",
-    fontFamily: "var(--font-martina-plantijn), Georgia, serif",
+    fontFamily: editorSourceFont,
   },
   ".cm-line": {
     padding: "0",
     lineHeight: "1.5",
+    fontFamily: editorSourceFont,
   },
   // Empty lines (containing only a BR) should have reduced height
   ".cm-line:has(br:only-child)": {
@@ -1670,6 +1688,12 @@ const editorTheme = EditorView.theme({
     padding: "0.125rem 0.25rem",
     borderRadius: "0.25rem",
     border: "1px solid #e2e8f0",
+  },
+  // Raw markdown shown while editing inside a fenced code block
+  ".editable-code-block": {
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    fontVariantLigatures: "none",
+    fontFeatureSettings: '"liga" 0, "calt" 0',
   },
   // React component widget
   ".react-component-widget": {
@@ -1858,6 +1882,7 @@ export default function LiveEditor({ content, onChange, metadata, postKey, onRea
           foldGutter: false,
           highlightActiveLine: false,
           highlightSelectionMatches: false,
+          closeBrackets: false,
         }}
       />
     </div>

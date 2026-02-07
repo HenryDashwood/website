@@ -5,16 +5,16 @@
 @theme {
   /* Brand colors */
   --color-nav-background: #faad19;
-  --color-background: #f9e9cb;
-  --color-foreground: #171717;
+  --color-background: #f4ead6;
+  --color-foreground: #2d2a24;
 
   /* Link colors */
   --color-link: #0070f3;
 
   /* Code block colors */
-  --color-code-bg: #2d3748;
-  --color-code-text: #e2e8f0;
-  --color-code-border: #4a5568;
+  --color-code-bg: #2b364b;
+  --color-code-text: #e6edf5;
+  --color-code-border: #3b4a63;
   --color-code-inline-bg: #f7fafc;
   --color-code-inline-text: #2d3748;
   --color-code-inline-border: #e2e8f0;
@@ -135,6 +135,51 @@ pre {
   overflow-x: auto;
   margin: 1rem 0;
   border: 1px solid var(--color-code-border);
+}
+
+/* Join adjacent fenced blocks into a single visual unit in posts and editor */
+.prose-content pre + pre,
+.cm-content pre + pre {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+  border-left: 3px solid color-mix(in srgb, var(--color-nav-background) 62%, #f6cf6a 38%);
+  background-color: color-mix(in srgb, var(--color-code-bg) 85%, #1f2937 15%);
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(230, 237, 245, 0.14);
+}
+
+.prose-content pre + pre::before,
+.cm-content pre + pre::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -1px;
+  width: 12px;
+  height: 12px;
+  border-left: 3px solid color-mix(in srgb, var(--color-nav-background) 62%, #f6cf6a 38%);
+  border-top: 3px solid color-mix(in srgb, var(--color-nav-background) 62%, #f6cf6a 38%);
+  border-top-left-radius: 8px;
+  opacity: 0.9;
+}
+
+/* Only show the "Output" label when the second block is explicitly output */
+.prose-content pre + pre code[class*="language-output"],
+.cm-content pre + pre code[class*="language-output"] {
+  display: block;
+}
+
+.prose-content pre + pre code[class*="language-output"]::before,
+.cm-content pre + pre code[class*="language-output"]::before {
+  content: "Output ↳";
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mallory-book), sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-code-text) 78%, #9ca3af 22%);
 }
 
 code {
