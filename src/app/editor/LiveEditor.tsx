@@ -6,15 +6,16 @@ import { languages } from "@codemirror/language-data";
 import { EditorState, Range, RangeSetBuilder, StateField } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/view";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
-import hljs from "highlight.js";
 import katex from "katex";
 import { ComponentType, useCallback, useEffect, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
+import { createHighlighter } from "shiki/bundle/web";
 
 // Import blog components for live preview
 import LaborMarketDiagram from "@/components/blog_components/LaborMarketDiagram";
 import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
 import PowerLawViz from "@/components/blog_components/PowerLawViz";
+import { SHIKI_LIGHT_THEME } from "@/lib/rehypePrettyCode";
 
 // Map of component names to actual React components
 const reactComponents: Record<string, ComponentType> = {
@@ -46,6 +47,97 @@ interface LiveEditorProps {
   metadata?: PostMetadata;
   postKey?: string; // Used to force remount when switching posts
   onReady?: (actions: EditorActions) => void; // Callback to provide undo/redo methods to parent
+}
+
+const languageAliases: Record<string, string> = {
+  js: "javascript",
+  ts: "typescript",
+  jsx: "jsx",
+  tsx: "tsx",
+  py: "python",
+  rb: "ruby",
+  sh: "bash",
+  shell: "bash",
+  yml: "yaml",
+  md: "markdown",
+};
+
+let shikiHighlighterPromise: Promise<any> | null = null;
+const SHIKI_EDITOR_LANGS = [
+  "plaintext",
+  "python",
+  "javascript",
+  "typescript",
+  "jsx",
+  "tsx",
+  "bash",
+  "json",
+  "yaml",
+  "markdown",
+  "html",
+  "css",
+];
+
+function getShikiHighlighter() {
+  if (!shikiHighlighterPromise) {
+    shikiHighlighterPromise = createHighlighter({
+      themes: [SHIKI_LIGHT_THEME],
+      langs: SHIKI_EDITOR_LANGS,
+    });
+  }
+  return shikiHighlighterPromise;
+}
+
+function normalizeLanguage(language: string): string {
+  const trimmed = language.trim().toLowerCase();
+  if (!trimmed) return "plaintext";
+  return languageAliases[trimmed] || trimmed;
+}
+
+async function highlightCodeBlock(code: string, language: string): Promise<string | null> {
+  const highlighter = await getShikiHighlighter();
+  const normalizedLanguage = normalizeLanguage(language);
+
+  try {
+    return highlighter.codeToHtml(code, {
+      lang: normalizedLanguage,
+      theme: SHIKI_LIGHT_THEME,
+    });
+  } catch {
+    if (normalizedLanguage !== "plaintext") {
+      try {
+        await highlighter.loadLanguage(normalizedLanguage);
+        return highlighter.codeToHtml(code, {
+          lang: normalizedLanguage,
+          theme: SHIKI_LIGHT_THEME,
+        });
+      } catch {
+        // fall through to plaintext fallback
+      }
+    }
+  }
+
+  try {
+    return highlighter.codeToHtml(code, {
+      lang: "plaintext",
+      theme: SHIKI_LIGHT_THEME,
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function hydrateShikiBlock(container: HTMLElement, code: string, language: string) {
+  const highlightedHtml = await highlightCodeBlock(code, language);
+  if (!highlightedHtml || !container.isConnected) return;
+
+  const template = document.createElement("template");
+  template.innerHTML = highlightedHtml.trim();
+  const highlightedPre = template.content.querySelector("pre");
+  if (!highlightedPre) return;
+
+  highlightedPre.setAttribute("data-editor-code-block", "true");
+  container.replaceChildren(highlightedPre);
 }
 
 // Widget for rendering inline math
@@ -173,19 +265,8 @@ class DetailsWidget extends WidgetType {
 
     const summary = document.createElement("summary");
     summary.className = "font-bold cursor-pointer";
-
-    // Process inline math in summary
-    let processedSummary = this.summary;
-    processedSummary = processedSummary.replace(/\$([^$\n]+)\$/g, (_, math) => {
-      const tempSpan = document.createElement("span");
-      try {
-        katex.render(math, tempSpan, { displayMode: false, throwOnError: false });
-        return tempSpan.innerHTML;
-      } catch {
-        return `<code>${math}</code>`;
-      }
-    });
-    summary.innerHTML = processedSummary;
+    // Match summary formatting with other editor widgets (inline code, links, emphasis, math).
+    summary.innerHTML = formatInlineMarkdown(this.summary);
     details.appendChild(summary);
 
     const content = document.createElement("div");
@@ -422,31 +503,19 @@ class CodeBlockWidget extends WidgetType {
   }
 
   toDOM() {
+    const container = document.createElement("div");
+    container.className = "editor-code-block";
+
     const pre = document.createElement("pre");
-
     const code = document.createElement("code");
-    code.className = this.language ? `hljs language-${this.language}` : "hljs";
-
-    // Use highlight.js for syntax highlighting
-    if (this.language && hljs.getLanguage(this.language)) {
-      try {
-        code.innerHTML = hljs.highlight(this.code, { language: this.language }).value;
-      } catch {
-        code.textContent = this.code;
-      }
-    } else if (this.language) {
-      // Try auto-detection if language not recognized
-      try {
-        code.innerHTML = hljs.highlightAuto(this.code).value;
-      } catch {
-        code.textContent = this.code;
-      }
-    } else {
-      code.textContent = this.code;
-    }
+    code.textContent = this.code;
 
     pre.appendChild(code);
-    return pre;
+    container.appendChild(pre);
+
+    void hydrateShikiBlock(container, this.code, this.language);
+
+    return container;
   }
 
   ignoreEvent() {
@@ -1046,7 +1115,7 @@ function findCodeBlocks(
   const results: { from: number; to: number; code: string; language: string; cursorOnBlock: boolean }[] = [];
 
   // Match ```language\ncode\n``` - fenced code blocks
-  const regex = /```(\w*)\n([\s\S]*?)\n```/g;
+  const regex = /```([^\s`]*)[^\n]*\n([\s\S]*?)\n```/g;
   let match;
   while ((match = regex.exec(text)) !== null) {
     const from = match.index;
@@ -1290,6 +1359,7 @@ function buildDecorations(state: EditorState): DecorationSet {
   for (const block of codeBlocks) {
     decorations.push(
       Decoration.replace({
+        block: true,
         widget: new CodeBlockWidget(block.code, block.language),
       }).range(block.from, block.to)
     );

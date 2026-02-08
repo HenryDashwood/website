@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Tokenisation",
   description: "Overview of tokenisation for language models",
   other: {
-    slug: "AI/Tokenisation",
+    slug: "AI/tokenisation",
     created: "2026-02-07",
     lastUpdated: "2026-02-07",
     tags: ["AI"],

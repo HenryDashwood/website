@@ -1,11 +1,12 @@
 import createMDX from "@next/mdx";
-import { createRequire } from "module";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const require = createRequire(import.meta.url);
+const rehypePrettyCodeOptions = {
+  theme: "slack-ochin",
+  defaultLang: {
+    block: "plaintext",
+    inline: "plaintext",
+  },
+  keepBackground: false,
+};
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -51,7 +52,7 @@ const withMDX = createMDX({
   // Add markdown plugins here, as strings for Turbopack compatibility
   options: {
     remarkPlugins: ["remark-gfm", "remark-math"],
-    rehypePlugins: ["rehype-katex", "rehype-highlight"],
+    rehypePlugins: ["rehype-katex", ["rehype-pretty-code", rehypePrettyCodeOptions]],
   },
 });
 

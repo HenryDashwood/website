@@ -63,7 +63,7 @@ print(token_ids)
 [0, 1, 3, 2]
 ```
 
-If we try to tokenise text with a word not in our vocabulary, we'd get a KeyError. So we need our first example of a special token, "<UNK>".
+If we try to tokenise text with a word not in our vocabulary, we'd get a KeyError. So we need our first example of a special token, `<UNK>`.
 
 ```python
 vocab['<UNK>'] = len(vocab)

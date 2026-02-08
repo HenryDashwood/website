@@ -1,3 +1,4 @@
+import CodeFigure from "@/components/CodeFigure";
 import LocalImage, { LocalImageGrid, LocalImageSideBySide } from "@/components/LocalImage";
 import TableWrapper from "@/components/TableWrapper";
 import type { MDXComponents } from "mdx/types";
@@ -8,6 +9,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     LocalImage,
     LocalImageSideBySide,
     LocalImageGrid,
+    figure: CodeFigure,
     table: TableWrapper,
   };
 }

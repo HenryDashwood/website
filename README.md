@@ -34,11 +34,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Helpful Links
-
-- https://bun.sh/guides/ecosystem/nextjs
-- https://www.solanky.dev/blog/solving-commonjs-vs-es-modules-issues-nextjs-mdx-integration
-- https://www.klastic.me/articles/workaround-for-nextjs-14-image-component-bug-in-mdx-files
-
-https://website-cms.herokuapp.com/api/posts?filters[slug][$eq]=on-zero&populate[0]=tags

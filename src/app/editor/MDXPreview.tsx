@@ -3,15 +3,17 @@
 import { compile, run } from "@mdx-js/mdx";
 import { ErrorInfo, Component as ReactComponent, ReactNode, useCallback, useEffect, useState } from "react";
 import * as runtime from "react/jsx-runtime";
-import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
+import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
+import CodeFigure from "@/components/CodeFigure";
 // Import blog components for preview
 import LaborMarketDiagram from "@/components/blog_components/LaborMarketDiagram";
 import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
 import PowerLawViz from "@/components/blog_components/PowerLawViz";
+import { rehypePrettyCodeOptions } from "@/lib/rehypePrettyCode";
 
 // Error boundary to catch render errors from undefined components
 interface ErrorBoundaryProps {
@@ -197,6 +199,7 @@ const knownComponents = {
   LocalImage: PreviewLocalImage,
   LocalImageGrid: PreviewLocalImageGrid,
   LocalImageSideBySide: PreviewLocalImageSideBySide,
+  figure: CodeFigure,
   table: PreviewTableWrapper,
   // Blog components
   LaborMarketDiagram,
@@ -261,7 +264,7 @@ export default function MDXPreview({ content, className = "" }: MDXPreviewProps)
       const compiled = await compile(contentWithoutImports, {
         outputFormat: "function-body",
         remarkPlugins: [remarkGfm, remarkMath],
-        rehypePlugins: [rehypeKatex, rehypeHighlight],
+        rehypePlugins: [rehypeKatex, [rehypePrettyCode, rehypePrettyCodeOptions]],
       });
 
       const { default: MDXContent } = await run(
