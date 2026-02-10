@@ -7,7 +7,7 @@ import { EditorState, Range, RangeSetBuilder, StateField } from "@codemirror/sta
 import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/view";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import katex from "katex";
-import { ComponentType, useCallback, useEffect, useRef } from "react";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { createHighlighter } from "shiki/bundle/web";
 
@@ -47,6 +47,13 @@ interface LiveEditorProps {
   metadata?: PostMetadata;
   postKey?: string; // Used to force remount when switching posts
   onReady?: (actions: EditorActions) => void; // Callback to provide undo/redo methods to parent
+}
+
+interface EditorSurfaceProps {
+  postKey?: string;
+  content: string;
+  onChange: (value: string) => void;
+  editorRef: React.RefObject<ReactCodeMirrorRef | null>;
 }
 
 const languageAliases: Record<string, string> = {
@@ -1841,6 +1848,34 @@ function formatDate(dateString: string): string {
   });
 }
 
+function EditorSurface({ postKey, content, onChange, editorRef }: EditorSurfaceProps) {
+  const [isEditorReady, setIsEditorReady] = useState(false);
+
+  return (
+    <div className="relative h-full">
+      {!isEditorReady && <div className="bg-background pointer-events-none absolute inset-0 z-10 animate-pulse" />}
+      <CodeMirror
+        key={postKey}
+        ref={editorRef}
+        value={content}
+        onChange={onChange}
+        onCreateEditor={() => {
+          requestAnimationFrame(() => setIsEditorReady(true));
+        }}
+        extensions={[markdown({ codeLanguages: languages }), livePreviewField, editorTheme, EditorView.lineWrapping]}
+        className={`h-full transition-opacity duration-150 ${isEditorReady ? "opacity-100" : "opacity-0"}`}
+        basicSetup={{
+          lineNumbers: false,
+          foldGutter: false,
+          highlightActiveLine: false,
+          highlightSelectionMatches: false,
+          closeBrackets: false,
+        }}
+      />
+    </div>
+  );
+}
+
 export default function LiveEditor({ content, onChange, metadata, postKey, onReady }: LiveEditorProps) {
   const editorRef = useRef<ReactCodeMirrorRef>(null);
 
@@ -1940,20 +1975,12 @@ export default function LiveEditor({ content, onChange, metadata, postKey, onRea
         </div>
       )}
 
-      <CodeMirror
-        key={postKey}
-        ref={editorRef}
-        value={content}
+      <EditorSurface
+        key={postKey || "__editor-default"}
+        postKey={postKey}
+        content={content}
         onChange={handleChange}
-        extensions={[markdown({ codeLanguages: languages }), livePreviewField, editorTheme, EditorView.lineWrapping]}
-        className="h-full"
-        basicSetup={{
-          lineNumbers: false,
-          foldGutter: false,
-          highlightActiveLine: false,
-          highlightSelectionMatches: false,
-          closeBrackets: false,
-        }}
+        editorRef={editorRef}
       />
     </div>
   );
