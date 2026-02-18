@@ -103,15 +103,31 @@ Instead of having separate tokens for every word, BPE constructs an efficient se
 
 [Implementation from scratch at this link](https://github.com/HenryDashwood/ai-notes/blob/master/tokenisation/byte_pair_encoding_from_scratch.ipynb)
 
-## Converting tokens to embeddings
+```python
+class BPETokeniser:
+    def __init__(self, vocab_size: int):
+        self.special_tokens = ["<UNK>", "<PAD>", "<BOS>", "<EOS>"]
+        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.merges: dict[tuple[int, int], int] = {}
+        self.vocab_size = vocab_size
 
-How embedding layers function as a lookup operation, retrieving vectors corresponding to token IDs.
+    def train(self, text: str):
+        tokens = get_tokens(text)
+        for i in range(256, self.vocab_size):
+            pair_counts = get_pair_counts(tokens)
+            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+            tokens = merge_pair(tokens, most_common_pair, i)
+            self.merges[most_common_pair] = i
+            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
 
-## Positional embeddings
+    def encode(self, text: str) -> list[int]:
+        token_bytes: bytes = text.encode(encoding="utf-8")
+        tokens: list[int] = list(map(int, token_bytes))
+        for pair, idx in self.merges.items():
+            tokens = merge_pair(tokens, pair, idx)
+        return tokens
 
-- Absolute positional embeddings
-  - OpenAI style absolute embeddings that are optimised during training
-
-- Relative positional embeddings
-
-- Rotatary positional embeddings
+    def decode(self, tokens: list[int]) -> str:
+        token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
+        return token_bytes.decode("utf-8", errors="replace")
+```
