@@ -379,13 +379,13 @@ function Nav({ researchTree = [] }: NavProps) {
             </Link>
 
             <Link
-              href="https://gen-ai-notes.henrydashwood.com"
+              href="https://henrydashwood.github.io/ai-notes"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-2 rounded-lg px-3 py-2 break-normal whitespace-normal transition-all hover:bg-black/5 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Generative AI Notes
+              AI Notes
               <svg className="h-3 w-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
