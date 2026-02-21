@@ -104,32 +104,52 @@ Instead of having separate tokens for every word, BPE constructs an efficient se
 [Implementation from scratch at this link](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb)
 
 ```python
-class BPE:
+lass BPE:
     def __init__(self, vocab_size: int):
-        self.special_tokens = ["<UNK>", "<PAD>", "<BOS>", "<EOS>"]
-        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.vocab: dict[int, bytes] = {}
         self.merges: dict[tuple[int, int], int] = {}
         self.vocab_size = vocab_size
+        self.split_pattern = r"""'(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
+        self.special_tokens = ["<eot>", "<eod>", "<eos>", "<pad>", "<unk>", "<mask>", "<cls>", "<sep>"]
 
-    def encode(self, text: str) -> list[int]:
+    def encode(self, text: str) -> list[list[int]]:
+        text_chunks = re.findall(self.split_pattern, text)
+        encoded_tokens = []
+        for tc in text_chunks:
+            encoded_tokens.append(self._encode_single(tc))
+        return encoded_tokens
+
+    def decode(self, tokens: list[list[int]]) -> str:
+        decoded_tokens = [self._decode_single(tc) for tc in tokens]
+        decoded_text = "".join(decoded_tokens)
+        return decoded_text
+
+    def train(self, text: str):
+        self.vocab = {i: bytes([i]) for i in range(256)}
+        text_chunks = re.findall(self.split_pattern, text)
+        tokenised_chunks = [self.get_tokens(ch) for ch in text_chunks]
+        for i in range(256, self.vocab_size - len(self.special_tokens)):
+            pair_counts = {}
+            for tc in tokenised_chunks:
+                for pair, count in self.get_pair_counts(tc).items():
+                    pair_counts[pair] = pair_counts.get(pair, 0) + count
+            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+            tokenised_chunks = [self.merge_pair(tc, most_common_pair, i) for tc in tokenised_chunks]
+            self.merges[most_common_pair] = i
+            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
+        for i, st in enumerate(self.special_tokens):
+            self.vocab[self.vocab_size - len(self.special_tokens) + i] = st.encode("utf-8")
+
+    def _encode_single(self, text: str) -> list[int]:
         token_bytes: bytes = text.encode(encoding="utf-8")
         tokens: list[int] = list(map(int, token_bytes))
         for pair, idx in self.merges.items():
             tokens = self.merge_pair(tokens, pair, idx)
         return tokens
 
-    def decode(self, tokens: list[int]) -> str:
+    def _decode_single(self, tokens: list[int]) -> str:
         token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
         return token_bytes.decode("utf-8", errors="replace")
-
-    def train(self, text: str):
-        tokens = self.get_tokens(text)
-        for i in range(256, self.vocab_size):
-            pair_counts = self.get_pair_counts(tokens)
-            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
-            tokens = self.merge_pair(tokens, most_common_pair, i)
-            self.merges[most_common_pair] = i
-            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
 
     def get_tokens(self, text: str) -> list[int]:
         tokens: bytes = text.encode(encoding="utf-8")
