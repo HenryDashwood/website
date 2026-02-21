@@ -104,7 +104,7 @@ Instead of having separate tokens for every word, BPE constructs an efficient se
 [Implementation from scratch at this link](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb)
 
 ```python
-lass BPE:
+class BPE:
     def __init__(self, vocab_size: int):
         self.vocab: dict[int, bytes] = {}
         self.merges: dict[tuple[int, int], int] = {}
@@ -141,8 +141,7 @@ lass BPE:
             self.vocab[self.vocab_size - len(self.special_tokens) + i] = st.encode("utf-8")
 
     def _encode_single(self, text: str) -> list[int]:
-        token_bytes: bytes = text.encode(encoding="utf-8")
-        tokens: list[int] = list(map(int, token_bytes))
+        tokens = self.get_tokens(text)
         for pair, idx in self.merges.items():
             tokens = self.merge_pair(tokens, pair, idx)
         return tokens
@@ -192,3 +191,88 @@ If we trained a BPE tokenizer like the one above, it might decide to merge `d+o+
 If we "pre-tokenise" the text using a regex that splits on character categories (e.g. word characters, whitespace, punctuation), and don't allow the tokeniser to merge across these category boundaries, we can avoid this problem. Something like `dog+.` can never be fused into a single token.
 
 We make an exception for the space character. This can merge with other word characters. This is because spaces are so common we get enough benefits from compressing the text that it outweights some word fragmentation.
+
+## SentencePiece
+
+(Full implementation [here](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/sentencepiece.ipynb))
+
+### Dummy whitespace tokens
+
+In our [byte_pair_encoding_from_scratch.ipynb](./byte_pair_encoding_from_scratch.ipynb) we used a regex to split text into chunks. Merges can can never take place across those hard world boundaries.
+
+SentencePiece runs on the entire input as a single character stream and lets merges happen freely across any adjacent characters.
+
+It replaces every space character with the special `\u2581` (▁) character (which resembles an underscore but is much rarer so it won't collide with real underscores).
+
+Because ▁ can merge with any other character, word boundary information is carried inside the token itself. We end up with merges like `▁` + `h` -> `▁he`.
+
+We prepend ▁ to the start of an input as well. This helps the model avoid encoding a word differently just because it happened to appear at the start of the input.
+
+It's pretty easy to implement this in python. We can take our NaiveBPE implementation and just tweak the `get_tokens` and `decode` methods.
+
+We add these two lines to the start of the `get_tokens` method:
+
+```python
+text = f" {text}"
+text = text.replace(" ", self.space_token)
+```
+
+And this line to the end of the `decode` method:
+
+```python
+text = text.replace(self.space_token, " ").strip()
+```
+
+```python
+class SentencePieceBPE:
+    def __init__(self, vocab_size: int):
+        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.merges: dict[tuple[int, int], int] = {}
+        self.vocab_size = vocab_size
+        self.space_token = "\u2581"
+
+    def encode(self, text: str) -> list[int]:
+        tokens = self.get_tokens(text)
+        for pair, idx in self.merges.items():
+            tokens = self.merge_pair(tokens, pair, idx)
+        return tokens
+
+    def decode(self, tokens: list[int]) -> str:
+        token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
+        text = token_bytes.decode("utf-8", errors="replace")
+        text = text.replace(self.space_token, " ").strip()
+        return text
+
+    def train(self, text: str):
+        tokens = self.get_tokens(text)
+        for i in range(256, self.vocab_size):
+            pair_counts = self.get_pair_counts(tokens)
+            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+            tokens = self.merge_pair(tokens, most_common_pair, i)
+            self.merges[most_common_pair] = i
+            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
+
+    def get_tokens(self, text: str) -> list[int]:
+        text = f" {text}"
+        text = text.replace(" ", self.space_token)
+        tokens: bytes = text.encode(encoding="utf-8")
+        return list(map(int, tokens))
+
+    def get_pair_counts(self, tokens: list[int]) -> dict[tuple[int, int], int]:
+        counts: dict[tuple[int, int], int] = {}
+        for pair in zip(tokens, tokens[1:]):
+            counts[pair] = counts.get(pair, 0) + 1
+        return counts
+
+    def merge_pair(self, tokens: list[int], pair: tuple[int, int], idx: int) -> list[int]:
+        new_tokens = []
+        i = 0
+        while i < len(tokens):
+            if i < len(tokens) - 1 and (tokens[i], tokens[i + 1]) == pair:
+                new_tokens.append(idx)
+                i += 2
+            else:
+                new_tokens.append(tokens[i])
+                i += 1
+        return new_tokens
+```
