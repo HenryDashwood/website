@@ -198,7 +198,7 @@ We make an exception for the space character. This can merge with other word cha
 
 ### Dummy whitespace tokens
 
-In our [byte_pair_encoding_from_scratch.ipynb](./byte_pair_encoding_from_scratch.ipynb) we used a regex to split text into chunks. Merges can can never take place across those hard world boundaries.
+In my [byte pair encoding from scratch](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb) notebook I used a regex to split text into chunks. Merges can can never take place across those hard world boundaries.
 
 SentencePiece runs on the entire input as a single character stream and lets merges happen freely across any adjacent characters.
 
