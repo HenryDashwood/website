@@ -194,21 +194,21 @@ We make an exception for the space character. This can merge with other word cha
 
 ## SentencePiece
 
-(Full implementation [here](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/sentencepiece.ipynb))
+(Implementation [here](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/sentencepiece.ipynb))
 
 ### Dummy whitespace tokens
 
-In my [byte pair encoding from scratch](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb) notebook I used a regex to split text into chunks. Merges can can never take place across those hard world boundaries.
+In my [byte pair encoding from scratch](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb) notebook, I used a regex to split text into chunks. Merges can never take place across those hard world boundaries.
 
 SentencePiece runs on the entire input as a single character stream and lets merges happen freely across any adjacent characters.
 
-It replaces every space character with the special `\u2581` (▁) character (which resembles an underscore but is much rarer so it won't collide with real underscores).
+It replaces every space character with the special `\u2581` (▁) character (which resembles an underscore but is much rarer, so it won't collide with real underscores).
 
 Because ▁ can merge with any other character, word boundary information is carried inside the token itself. We end up with merges like `▁` + `h` -> `▁he`.
 
 We prepend ▁ to the start of an input as well. This helps the model avoid encoding a word differently just because it happened to appear at the start of the input.
 
-It's pretty easy to implement this in python. We can take our NaiveBPE implementation and just tweak the `get_tokens` and `decode` methods.
+It's pretty easy to implement this in Python. We can take our NaiveBPE implementation and just tweak the `get_tokens` and `decode` methods.
 
 We add these two lines to the start of the `get_tokens` method:
 
@@ -223,56 +223,22 @@ And this line to the end of the `decode` method:
 text = text.replace(self.space_token, " ").strip()
 ```
 
-```python
-class SentencePieceBPE:
-    def __init__(self, vocab_size: int):
-        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
-        self.merges: dict[tuple[int, int], int] = {}
-        self.vocab_size = vocab_size
-        self.space_token = "\u2581"
+### Byte Fallback
 
-    def encode(self, text: str) -> list[int]:
-        tokens = self.get_tokens(text)
-        for pair, idx in self.merges.items():
-            tokens = self.merge_pair(tokens, pair, idx)
-        return tokens
+Rather than emitting `unk` for out-of-vocabulary characters, unknown characters are encoded as their individual UTF-8 bytes, represented as special tokens `0x00` through `0xFF`. This makes the encoding lossless.
 
-    def decode(self, tokens: list[int]) -> str:
-        token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
-        text = token_bytes.decode("utf-8", errors="replace")
-        text = text.replace(self.space_token, " ").strip()
-        return text
+### Character coverage
 
-    def train(self, text: str):
-        tokens = self.get_tokens(text)
-        for i in range(256, self.vocab_size):
-            pair_counts = self.get_pair_counts(tokens)
-            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
-            tokens = self.merge_pair(tokens, most_common_pair, i)
-            self.merges[most_common_pair] = i
-            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
+This parameter (SentencePiece defaults to 0.9995) sets the minimum fraction of characters in the training corpus that must be representable. Rare characters beyond the threshold are either dropped or handled via byte fallback. This prevents rare Unicode characters from wasting vocabulary slots.
 
-    def get_tokens(self, text: str) -> list[int]:
-        text = f" {text}"
-        text = text.replace(" ", self.space_token)
-        tokens: bytes = text.encode(encoding="utf-8")
-        return list(map(int, tokens))
+### Unicode Normalisation
 
-    def get_pair_counts(self, tokens: list[int]) -> dict[tuple[int, int], int]:
-        counts: dict[tuple[int, int], int] = {}
-        for pair in zip(tokens, tokens[1:]):
-            counts[pair] = counts.get(pair, 0) + 1
-        return counts
+Applying NFKC normalisation to the input before training and encoding means that visually equivalent characters are treated as identical.
 
-    def merge_pair(self, tokens: list[int], pair: tuple[int, int], idx: int) -> list[int]:
-        new_tokens = []
-        i = 0
-        while i < len(tokens):
-            if i < len(tokens) - 1 and (tokens[i], tokens[i + 1]) == pair:
-                new_tokens.append(idx)
-                i += 2
-            else:
-                new_tokens.append(tokens[i])
-                i += 1
-        return new_tokens
-```
+### Subword regularisation / stochastic segmentation
+
+At training time, instead of always using the single best tokenisation, we can sample from multiple valid segmentations according to their probabilities. This acts as data augmentation and makes the model more robust to different tokenisations of the same text.
+
+### Unigram language model
+
+In addition to BPE, SentencePiece also supports a Unigram language model. This starts with a large candidate vocabulary and prunes it using an EM procedure that maximises the likelihood of the training data under a unigram language model. It's more principled probabilistically. T5 and XLNet use it.
