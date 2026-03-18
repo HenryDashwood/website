@@ -42,3 +42,23 @@ And visually it looks like this ([from here](https://sebastianraschka.com/blog/2
   width={800}
   height={600}
 />
+## From first principles
+
+How do we go from a standard linear layer, which transforms each token independently, to a mechanism that lets a token build a representation from the rest of the sequence?
+
+We'll use a toy example around the word `bank`, which can mean different things in different contexts:
+
+- `river bank mud`
+- `money bank loan`
+
+### Why a linear layer is not enough
+
+Suppose `x` is a sequence of token embeddings with shape `(n_tokens, d_in)`.
+
+A standard linear layer applies the same transformation to each row:
+
+```python
+y = x @ W
+```
+
+That can change the features of each token, but it does not let tokens communicate. If the input row for `bank` is the same in two different sentences, then the output row for `bank` will also be the same.
