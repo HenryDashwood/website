@@ -294,6 +294,18 @@ function Nav({ researchTree = [] }: NavProps) {
         {/* Navigation Links */}
         <div className="flex flex-col gap-1 sm:gap-0.5">
           <Link
+            href="/about"
+            onClick={() => setIsOpen(false)}
+            className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+              isActive("/posts")
+                ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
+                : "hover:bg-black/5 hover:underline"
+            }`}
+          >
+            About Me
+          </Link>
+
+          <Link
             href="/posts"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
