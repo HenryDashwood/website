@@ -135,7 +135,7 @@ function ResearchTreeNavNode({
         <button
           onClick={() => node.slug && onSelectItem(node.slug)}
           className={`flex-1 rounded-lg px-2 py-1.5 text-left text-sm break-normal whitespace-normal transition-all ${
-            isCurrentItem ? "border-l-4 border-amber-600 bg-amber-100 font-medium" : "hover:bg-black/5"
+            isCurrentItem ? "bg-amber-100 font-medium" : "hover:bg-black/5"
           }`}
           style={{
             paddingLeft: hasChildren ? "4px" : `${12 + depth * 12}px`,
@@ -379,7 +379,7 @@ export default function EditorSidebar({
                     onClick={() => handleSelectItem(post.slug, "posts")}
                     className={`rounded-md px-3 py-1.5 text-left text-sm transition-all ${
                       selectedSlug === post.slug && contentType === "posts"
-                        ? "border-l-4 border-amber-600 bg-amber-100 font-medium"
+                        ? "bg-amber-100 font-medium"
                         : "hover:bg-stone-100"
                     }`}
                     title={post.description || post.title}

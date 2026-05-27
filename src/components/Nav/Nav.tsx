@@ -120,7 +120,7 @@ function ResearchTreeNavNode({
           href={fullPath}
           onClick={onLinkClick}
           className={`flex-1 rounded-lg px-2 py-2 text-sm break-normal whitespace-normal transition-all ${
-            isCurrentPage ? "border-l-4 border-black/30 bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+            isCurrentPage ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
           }`}
           style={{
             paddingLeft: hasChildren ? "4px" : `${12 + depth * 12}px`,
@@ -297,9 +297,7 @@ function Nav({ researchTree = [] }: NavProps) {
             href="/about"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/posts")
-                ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
-                : "hover:bg-black/5 hover:underline"
+              isActive("/posts") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
             }`}
           >
             About Me
@@ -309,9 +307,7 @@ function Nav({ researchTree = [] }: NavProps) {
             href="/posts"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/posts")
-                ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
-                : "hover:bg-black/5 hover:underline"
+              isActive("/posts") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
             }`}
           >
             Blog Posts
@@ -323,9 +319,7 @@ function Nav({ researchTree = [] }: NavProps) {
               href={`/posts/${path}`}
               onClick={() => setIsOpen(false)}
               className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-                isActive(`/posts/${path}`)
-                  ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
-                  : "hover:bg-black/5 hover:underline"
+                isActive(`/posts/${path}`) ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
               }`}
             >
               {name}
@@ -342,9 +336,7 @@ function Nav({ researchTree = [] }: NavProps) {
                 href="/research"
                 onClick={() => setIsOpen(false)}
                 className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-                  isActive("/research")
-                    ? "-ml-1 border-l-4 border-black/30 bg-black/10 font-bold"
-                    : "hover:bg-black/5 hover:underline"
+                  isActive("/research") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
                 }`}
               >
                 Research
