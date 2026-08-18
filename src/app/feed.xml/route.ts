@@ -9,6 +9,9 @@ const feedOptions = {
   description: "The RSS feed of henrydashwood.com",
   feed_url: `${siteUrl}/feed.xml`,
   site_url: siteUrl,
+  // Readers that show a feed as a show need artwork, and fall back to a
+  // placeholder without it. Square, because that is the shape they all assume.
+  image_url: `${siteUrl}/api/og?shape=square&title=Henry+Dashwood`,
   language: "en-uk",
 };
 
