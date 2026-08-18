@@ -21,6 +21,7 @@
     "@mdxeditor/editor": "^3.52.3",
     "@next/mdx": "^16.1.6",
     "@tailwindcss/typography": "^0.5.19",
+    "@types/hast": "^3.0.4",
     "@types/mdx": "^2.0.13",
     "@types/rss": "^0.0.32",
     "@types/sanitize-html": "^2.16.0",
@@ -30,7 +31,6 @@
     "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",
     "katex": "^0.16.28",
-    "marked": "^16.4.2",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -44,9 +44,14 @@
     "remark-directive": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
+    "remark-mdx": "^3.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.1",
     "rss": "^1.2.2",
     "sanitize-html": "^2.17.0",
-    "shiki": "^3.15.0"
+    "shiki": "^3.15.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

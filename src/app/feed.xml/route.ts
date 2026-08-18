@@ -1,13 +1,14 @@
+import { MdxToFeedHtml } from "@/lib/feedHtml";
 import { GetPosts } from "@/lib/posts";
-import { marked } from "marked";
 import RSS from "rss";
-import sanitizeHtml from "sanitize-html";
+
+const siteUrl = (process.env.WEBSITE_URL || "").replace(/\/$/, "");
 
 const feedOptions = {
   title: "Henry Dashwood",
   description: "The RSS feed of henrydashwood.com",
-  feed_url: `${process.env.WEBSITE_URL}/feed.xml`,
-  site_url: process.env.WEBSITE_URL || "",
+  feed_url: `${siteUrl}/feed.xml`,
+  site_url: siteUrl,
   language: "en-uk",
 };
 
@@ -17,26 +18,15 @@ export async function GET() {
   const posts = await GetPosts(true);
 
   for (const post of posts) {
-    if (!post.metadata.other) return;
+    if (!post.metadata.other) continue;
 
-    let htmlDescription = post.content ? await marked(post.content) : "";
-    htmlDescription = htmlDescription.replace(/<Image([^>]*)>/gi, "<img$1/>");
-    htmlDescription = htmlDescription.replace(/<image([^>]*)>/gi, "<img$1/>");
-
-    htmlDescription = sanitizeHtml(htmlDescription, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-      allowedAttributes: {
-        ...sanitizeHtml.defaults.allowedAttributes,
-        img: ["src", "alt", "title", "width", "height"],
-      },
-    });
-
-    htmlDescription = htmlDescription.replace(/\s+/g, " ").trim();
+    const postUrl = `${siteUrl}/posts/${post.metadata.other.slug}`;
+    const htmlDescription = post.content ? await MdxToFeedHtml(post.content, { siteUrl, postUrl }) : "";
 
     feed.item({
       title: String(post.metadata.title),
       description: htmlDescription,
-      url: `${process.env.WEBSITE_URL}/posts/${post.metadata.other.slug}`,
+      url: postUrl,
       date: String(post.metadata.other.published),
       custom_elements: [{ "content:encoded": { _cdata: htmlDescription } }],
     });
