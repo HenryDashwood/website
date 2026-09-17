@@ -137,10 +137,7 @@ function EditorContent() {
         setResearch(researchData);
         setResearchTree(treeData);
 
-        if (
-          !expectedSlug ||
-          researchData.some((item: ResearchInfo) => item.slug === expectedSlug)
-        ) {
+        if (!expectedSlug || researchData.some((item: ResearchInfo) => item.slug === expectedSlug)) {
           return;
         }
 

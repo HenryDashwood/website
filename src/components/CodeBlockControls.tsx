@@ -54,10 +54,7 @@ export default function CodeBlockControls({ figureRef }: CodeBlockControlsProps)
       <span className="sr-only">{copied ? "Copied" : "Copy code"}</span>
       {copied ? (
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M9 16.2 4.8 12l1.4-1.4L9 13.4l8.8-8.8L19.2 6z"
-          />
+          <path fill="currentColor" d="M9 16.2 4.8 12l1.4-1.4L9 13.4l8.8-8.8L19.2 6z" />
         </svg>
       ) : (
         <svg viewBox="0 0 24 24" aria-hidden="true">
