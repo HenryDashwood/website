@@ -1,5 +1,6 @@
-import ResearchPage from "@/components/ResearchPage";
 import type { Metadata } from "next";
+
+import ResearchPage from "@/components/ResearchPage";
 
 export const metadata: Metadata = {
   title: "How transformer-based language models got longer context windows",

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
 import { GetPosts } from "@/lib/posts";
-import Link from "next/link";
 
 export const revalidate = 3600;
 

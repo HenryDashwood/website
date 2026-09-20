@@ -2,20 +2,18 @@
 
 This file provides guidance to coding agents when working with code in this repository.
 
-# Linting
+# Linting and formatting
 
-````bash
+Linting uses [oxlint](https://oxc.rs/docs/guide/usage/linter) (config in `.oxlintrc.json`) and formatting uses [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (config in `.oxfmtrc.json`). Neither ESLint nor Prettier is used.
+
+```bash
+# Lint (with autofix)
 bun run lint
 
 # Format code
-
-```bash
 bun run format
-````
 
 # Check formatting
-
-```bash
 bun run format:check
 ```
 

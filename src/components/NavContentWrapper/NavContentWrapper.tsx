@@ -1,7 +1,8 @@
+import React from "react";
+
 import Content from "@/components/Content";
 import Nav from "@/components/Nav";
 import { GetResearchTree } from "@/lib/research";
-import React from "react";
 
 const NavContentWrapper = async ({ children }: { children: React.ReactNode }) => {
   const researchTree = await GetResearchTree();

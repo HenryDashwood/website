@@ -1,5 +1,6 @@
-import PostPage from "@/components/PostPage";
 import { Metadata } from "next";
+
+import PostPage from "@/components/PostPage";
 
 export const metadata: Metadata = {
   title: "California: 1769-1848",

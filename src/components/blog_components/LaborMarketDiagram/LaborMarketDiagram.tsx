@@ -35,7 +35,6 @@ export default function LaborMarketDiagram() {
 
   // Base parameters for curves
   const baseVBar = 10; // Reservation utility level
-  const baseAlpha = 0.7; // Labour share in production
 
   // Generate iso-utility curve points (worker indifference)
   // W = V_bar * P^beta / Z

@@ -61,12 +61,12 @@ body {
 }
 
 h1 {
-  @apply border-nav-background mt-4 mb-4 border-b-2 text-4xl;
+  @apply mt-4 mb-4 border-b-2 border-nav-background text-4xl;
   font-family: var(--font-arizona-flare);
 }
 
 h2 {
-  @apply border-nav-background mt-4 mb-4 border-b-2 text-3xl;
+  @apply mt-4 mb-4 border-b-2 border-nav-background text-3xl;
   font-family: var(--font-arizona-flare);
 }
 

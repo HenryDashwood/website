@@ -1,7 +1,8 @@
-import ResearchPage from "@/components/ResearchPage";
-import { GetAllResearch, GetResearchByPath } from "@/lib/research";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+import ResearchPage from "@/components/ResearchPage";
+import { GetAllResearch, GetResearchByPath } from "@/lib/research";
 
 export const revalidate = 3600;
 

@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
 import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
 import { GetResearchTree, ResearchTreeNode } from "@/lib/research";
-import type { Metadata } from "next";
-import Link from "next/link";
+
 import Changelog from "./changelog.mdx";
 
 export const revalidate = 3600;
@@ -38,7 +40,7 @@ function TreeNode({ node, depth = 0 }: { node: ResearchTreeNode; depth?: number 
               {displayName}
             </Link>
             {node.lastUpdated && (
-              <div className="font-mallory-book text-text-muted text-sm">
+              <div className="font-mallory-book text-sm text-text-muted">
                 Updated: <Date dateString={node.lastUpdated} />
               </div>
             )}
@@ -83,7 +85,7 @@ async function ResearchList() {
   return (
     <NavContentWrapper>
       <h1>Research</h1>
-      <p className="text-text-muted mb-6">Ongoing research projects and notes that evolve over time.</p>
+      <p className="mb-6 text-text-muted">Ongoing research projects and notes that evolve over time.</p>
       <div className="space-y-2">
         {tree.map((node) => (
           <TreeNode key={node.name} node={node} />

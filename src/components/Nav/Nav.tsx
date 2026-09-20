@@ -1,9 +1,10 @@
 "use client";
 
-import { ResearchTreeNode } from "@/lib/research";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+
+import { ResearchTreeNode } from "@/lib/research";
 
 const navLinks = [
   {
@@ -167,6 +168,8 @@ function Nav({ researchTree = [] }: NavProps) {
       setIsOpen(false);
     }, 0);
     return () => clearTimeout(timer);
+    // pathname is intentionally a dependency so the effect re-runs on navigation.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [pathname]);
 
   // Prevent body scroll when menu is open on mobile
@@ -246,7 +249,7 @@ function Nav({ researchTree = [] }: NavProps) {
       {/* Mobile: Hamburger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-nav-background fixed top-4 left-4 z-50 flex flex-col gap-1.5 rounded-lg p-2.5 shadow-lg transition-all hover:bg-black/10 sm:hidden"
+        className="fixed top-4 left-4 z-50 flex flex-col gap-1.5 rounded-lg bg-nav-background p-2.5 shadow-lg transition-all hover:bg-black/10 sm:hidden"
         aria-label="Toggle menu"
         aria-expanded={isOpen}
       >
@@ -270,7 +273,7 @@ function Nav({ researchTree = [] }: NavProps) {
 
       {/* Navigation Content */}
       <nav
-        className={`bg-nav-background font-mallory-book fixed top-0 left-0 z-40 h-full w-64 overflow-y-auto p-6 pt-20 shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:max-h-screen sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
+        className={`fixed top-0 left-0 z-40 h-full w-64 overflow-y-auto bg-nav-background p-6 pt-20 font-mallory-book shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:max-h-screen sm:min-h-screen sm:w-50 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
       >
         {/* Mobile: Home link */}
         <div className="mb-6 border-b border-black/10 pb-6 sm:hidden">

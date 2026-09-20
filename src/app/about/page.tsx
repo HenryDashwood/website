@@ -1,5 +1,7 @@
-import NavContentWrapper from "@/components/NavContentWrapper";
 import { Metadata } from "next";
+
+import NavContentWrapper from "@/components/NavContentWrapper";
+
 import AboutContent from "./post.mdx";
 
 export const metadata: Metadata = {

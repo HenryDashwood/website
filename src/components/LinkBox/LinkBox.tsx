@@ -1,8 +1,9 @@
-import { GetPost } from "@/lib/posts";
-import { GetAllResearch } from "@/lib/research";
 import { readdirSync, statSync } from "fs";
 import { Metadata } from "next";
 import path from "path";
+
+import { GetPost } from "@/lib/posts";
+import { GetAllResearch } from "@/lib/research";
 
 interface LinkItem {
   metadata: Metadata;
@@ -55,7 +56,7 @@ async function LinkBox({ tag }: { tag: string }) {
   );
 
   return (
-    <div className="border-nav-background m-[2.5%] rounded-lg border-2 p-4">
+    <div className="m-[2.5%] rounded-lg border-2 border-nav-background p-4">
       <h2>{tag}</h2>
       <ul className="pl-4">
         {filteredItems.length > 0 ? (

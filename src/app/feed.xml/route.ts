@@ -1,6 +1,7 @@
+import RSS from "rss";
+
 import { MdxToFeedHtml } from "@/lib/feedHtml";
 import { GetPosts } from "@/lib/posts";
-import RSS from "rss";
 
 const siteUrl = (process.env.WEBSITE_URL || "").replace(/\/$/, "");
 

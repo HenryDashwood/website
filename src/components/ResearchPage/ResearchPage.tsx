@@ -1,6 +1,7 @@
+import { Metadata } from "next";
+
 import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
-import { Metadata } from "next";
 
 interface ResearchPageProps {
   metadata: Metadata;
@@ -22,7 +23,7 @@ export default async function ResearchPage({ metadata }: ResearchPageProps) {
     <NavContentWrapper>
       <h1>{String(metadata.title)}</h1>
 
-      <div className="font-mallory-book text-text-muted mb-6 text-sm">
+      <div className="mb-6 font-mallory-book text-sm text-text-muted">
         {lastUpdated && (
           <div className="flex items-center gap-2">
             <span>Last updated:</span>
@@ -40,7 +41,7 @@ export default async function ResearchPage({ metadata }: ResearchPageProps) {
       <Markdown />
 
       {tags && (
-        <div className="font-mallory-book text-text-muted mt-8 border-t pt-4">
+        <div className="mt-8 border-t pt-4 font-mallory-book text-text-muted">
           <p>Tags: {tags.split(",").join(", ")}</p>
         </div>
       )}

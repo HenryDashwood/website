@@ -26,7 +26,7 @@ export default function PowerLawViz() {
 
   const [W0, setW0] = useState("70");
   const [eta, setEta] = useState("0.05");
-  const [showRent, setShowRent] = useState(false);
+  const [showRent] = useState(false);
   const [P0, setP0] = useState("22");
   const [epsilon, setEpsilon] = useState("0.8");
 

@@ -165,15 +165,15 @@ export async function GetResearchTree(): Promise<ResearchTreeNode[]> {
     }
   }
 
-  // Sort children alphabetically at each level
-  const sortTree = (nodes: ResearchTreeNode[]) => {
-    nodes.sort((a, b) => a.name.localeCompare(b.name));
-    for (const node of nodes) {
-      sortTree(node.children);
-    }
-  };
-
   sortTree(root);
 
   return root;
+}
+
+/** Sort children alphabetically at each level */
+function sortTree(nodes: ResearchTreeNode[]): void {
+  nodes.sort((a, b) => a.name.localeCompare(b.name));
+  for (const node of nodes) {
+    sortTree(node.children);
+  }
 }
