@@ -226,17 +226,12 @@ figure[data-rehype-pretty-code-figure]:focus-within .copy-code-button {
 }
 
 /* Always keep code backgrounds transparent; Shiki still provides token colors. */
-:is(.prose-content, .cm-content) :is(pre.shiki, pre[data-theme], pre[data-editor-code-block]) {
+.prose-content :is(pre.shiki, pre[data-theme]) {
   background-color: transparent !important;
 }
 
-:is(.prose-content, .cm-content) :is(pre.shiki, pre[data-theme], pre[data-editor-code-block]) span {
+.prose-content :is(pre.shiki, pre[data-theme]) span {
   background-color: transparent !important;
-}
-
-/* Keep edit-mode rendered widget spacing tight to match raw markdown state. */
-.cm-content pre[data-editor-code-block] {
-  margin: 0 !important;
 }
 
 code {
