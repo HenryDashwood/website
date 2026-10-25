@@ -12,7 +12,7 @@
  * run KaTeX, and the readers that do understand formulas look for dollar signs.
  */
 
-import type { Element, ElementContent, Root as HastRoot, Properties } from "hast";
+import type { Element, ElementContent, Properties, Root as HastRoot } from "hast";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";

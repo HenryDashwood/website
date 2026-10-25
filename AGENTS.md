@@ -4,7 +4,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 # Linting and formatting
 
-Linting uses [oxlint](https://oxc.rs/docs/guide/usage/linter) (config in `.oxlintrc.json`) and formatting uses [oxfmt](https://oxc.rs/docs/guide/usage/formatter) (config in `.oxfmtrc.json`). Neither ESLint nor Prettier is used.
+Linting uses [oxlint](https://oxc.rs/docs/guide/usage/linter) (config in `.oxlintrc.json`) and formatting uses Bun's built-in [`bun fmt`](https://bun.com/docs/format) (config in the `[fmt]` section of `bunfig.toml`). Neither ESLint nor Prettier is used.
 
 ```bash
 # Lint (with autofix)
@@ -19,7 +19,7 @@ bun run format:check
 
 ## Architecture Overview
 
-This is a Next.js 14 personal website built with the App Router, TypeScript, and MDX for blog posts. The project uses Bun as the package manager and runtime.
+This is a Next.js 16 personal website built with the App Router, TypeScript, and MDX for blog posts. The project uses Bun as the package manager and runtime.
 
 ### Content Management System
 
@@ -59,7 +59,7 @@ MDX is configured in `next.config.mjs` with the following plugins:
 - `remark-gfm` - GitHub Flavored Markdown
 - `remark-math` - Maths notation support
 - `rehype-katex` - KaTeX math rendering (requires importing `katex/dist/katex.min.css` in layout)
-- `rehype-highlight` - Code syntax highlighting with highlight.js
+- `rehype-pretty-code` - Code syntax highlighting with Shiki
 
 ### Styling
 

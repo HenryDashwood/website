@@ -139,6 +139,7 @@ make sqlc
 
 ```ts
 import { Pool } from "pg";
+
 import * as db from "@/src/db/generated"; // whatever your out path is
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 

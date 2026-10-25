@@ -1,7 +1,26 @@
 {
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
-  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.defaultFormatter": "jkillian.custom-local-formatters",
+  "customLocalFormatters.formatters": [
+    {
+      "command": "bun fmt --stdin-filepath ${file}",
+      "languages": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "json",
+        "jsonc",
+        "css",
+        "tailwindcss",
+        "markdown",
+        "mdx",
+        "yaml",
+        "html"
+      ]
+    }
+  ],
   "editor.quickSuggestions": {
     "strings": "on"
   },
@@ -10,7 +29,7 @@
     "*.sql": "postgres"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
     "editor.codeActionsOnSave": {
       "source.fixAll.oxc": "explicit"
     }

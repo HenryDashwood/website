@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "oxc.oxc-vscode",
+    "jkillian.custom-local-formatters",
     "github.vscode-github-actions",
     "renesaarsoo.sql-formatter-vsc",
     "ckolkman.vscode-postgres",
