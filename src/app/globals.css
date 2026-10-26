@@ -24,14 +24,11 @@
   --color-text-muted: #666666;
 
   /* Chart/visualization colors */
-  --color-chart-gray-light: #e5e7eb;
-  --color-chart-gray-medium: #9ca3af;
-  --color-chart-gray-dark: #6b7280;
-  --color-chart-gray-darker: #374151;
-  --color-chart-blue: #3b82f6;
-  --color-chart-purple: #a855f7;
-  --color-chart-green: #059669;
-  --color-chart-red: #ef4444;
+  --color-chart-ink: #2d2a24;
+  --color-chart-muted: #6b6458;
+  --color-chart-hairline: #bdb09a;
+  --color-chart-series-1: #2c5d8a;
+  --color-chart-series-2: #a5481a;
 
   /* Fonts */
   --font-martina-plantijn: var(--font-martina-plantijn);
@@ -390,7 +387,59 @@ details[open] {
   margin-right: auto;
 }
 
-/* Full-width visualizations that break out of content container */
-.migration-stability-viz {
-  max-width: none !important;
+/* Blog visualisations: SVG text and slim range sliders */
+.viz-axis {
+  font-family: var(--font-mallory-book), sans-serif;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--color-chart-muted);
+}
+
+.viz-label {
+  font-family: var(--font-mallory-book), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.viz-range {
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.viz-range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--color-chart-hairline);
+}
+
+.viz-range::-moz-range-track {
+  height: 1px;
+  background: var(--color-chart-hairline);
+}
+
+.viz-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5.5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--thumb, var(--color-chart-ink));
+}
+
+.viz-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--thumb, var(--color-chart-ink));
+}
+
+.viz-range:focus-visible {
+  outline: 2px solid var(--color-chart-series-1);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
