@@ -1,0 +1,43 @@
+import ScalingLawViz from "@/components/blog_components/ScalingLawViz";
+
+There's a long debate in AI about the relative importance of architectural choices vs raw computing power.
+
+- _"Every time I fire a linguist, the performance of the speech recognizer goes up."_ - Frederick Jelinek, leader of the Continuous Speech Recognition Group at IBM
+- https://www.cs.utexas.edu/~eunsol/courses/data/bitter_lesson.pdf
+- https://kevinroose.substack.com/api/v1/file/7087c3ff-0f96-4e38-9e7e-1d0be092d61a.pdf
+
+This idea can be expressed as a scaling law:
+
+$$
+L(C) \approx E + \frac{A}{C^\alpha}
+$$
+
+In this equation:
+
+- $C$ is the amount of computing power we have for training in terms of floating point operations.
+- $L$ is our loss on on a held out dataset.
+- $L(C)$ is the lowest test loss we can reach with a training budget of $C$. Because it's expressed in terms of FLOPs the size of the model and the amount of data we can train on have to be traded off against each other.
+- $E$ is the loss a model approaches as its compute goes to infinity. In theory it is the same for every architecture (assuming they have access to the same information e.g. same context length). We can think of it like entropy or the unpredicatability that would remain even if you knew the distribution of a dataset perfectly.
+- $A / C^\alpha$ is the reducible loss: how much loss is still left to remove at a given compute budget.
+- $A$ is how much reducible loss we start with. A larger $A$ means more loss left to remove at every compute budget. If two architectures have the same $\alpha$ but different $A$, the worse one always needs a fixed multiple of the other's compute to reach the same loss, $(A_X / A_Y)^{1/\alpha}$. With $\alpha = 0.15$, an architecture with twice the $A$ needs about 100 times the compute, at every scale.
+- $\alpha$ is how fast extra compute pays off. Each time we double $C$, the reducible loss is multiplied by $2^{-\alpha}$. With $\alpha = 0.15$, each doubling removes about 10% of the loss that's left.
+
+<ScalingLawViz />
+
+The strong form of the Bitter Lesson / Big Blog of Compute hypothesis is that for any reasonable architecture the only parameter that varies significantly is $A$. Reasonable in this context means anything that provides things stable gradients, parallelism and no information bottlenecks.
+
+## Emperical evidence
+
+### CNNs vs Vision transformers
+
+### RNNs vs transformers
+
+
+
+
+
+------
+
+Todo:
+
+- Can we go wackier?
