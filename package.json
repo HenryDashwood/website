@@ -10,7 +10,9 @@
     "format": "bun fmt",
     "format:check": "bun fmt --check",
     "new:post": "bun run scripts/new-post.ts",
-    "new:research": "bun run scripts/new-research.ts"
+    "new:research": "bun run scripts/new-research.ts",
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
+    "stamp:research": "bun run scripts/stamp-research.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
