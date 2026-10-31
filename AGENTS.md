@@ -118,3 +118,24 @@ To create a new post:
 4. Ensure `metadata.other` includes: `slug`, `published` (YYYY-MM-DD format), and `tags` array
 
 Posts automatically appear in the posts list and RSS feed once created.
+
+## Working with Research notes
+
+Research notes are evolving notes, distinct from blog posts. They live in `src/app/research/<topic>/.../<note>/content.mdx`, one file per note, served by `src/app/research/[...slug]/page.tsx`. Metadata is exported from the MDX file itself:
+
+```js
+export const metadata = {
+  title: "Flash Attention",
+  description: "",
+  created: "2026-01-27",
+  lastUpdated: "2026-01-27", // stamped automatically by the pre-commit hook
+  status: "growing", // optional: seedling | growing | settled
+  tags: ["AI"],
+  log: [{ date: "2026-01-27", note: "First notes" }], // optional, shown on the note and the index
+};
+```
+
+- `bun run new:research <path> [title]` scaffolds a note.
+- Every folder that contains notes gets a topic page at its URL, titled from the folder name.
+- `src/lib/research.ts` builds the notes, topic tree, backlinks (from `/research/...` links in MDX) and headings.
+- `.githooks/pre-commit` runs `scripts/stamp-research.ts`, which sets `lastUpdated` on staged notes. `bun install` enables it via the `prepare` script (`git config core.hooksPath .githooks`). Use `git commit --no-verify` to skip it.
