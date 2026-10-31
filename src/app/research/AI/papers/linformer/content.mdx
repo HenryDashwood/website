@@ -1,3 +1,11 @@
+export const metadata = {
+  title: "Linformer",
+  description: "",
+  created: "2026-01-26",
+  lastUpdated: "2026-01-26",
+  tags: ["AI"],
+};
+
 [Linformer](https://arxiv.org/pdf/2006.04768) (2020) is built on the observation that the self-attention matrix is "low-rank" and so contains a lot of redundancy. The authors introduce two learned projection matrices $E$ and $F$. These matrices project the Key and Value inputs along the sequence length dimension, rather than the feature dimension, reducing them from the typical $n \times d$ to $k \times d$, where $k$ is a much smaller fixed-size number. The Query matrix (Q) remains its original size $n \times d$ to ensure the output sequence maintains the correct length. The attention calculation ends up being:
 
 $$

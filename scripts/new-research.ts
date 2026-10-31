@@ -39,37 +39,26 @@ if (existsSync(researchDir)) {
 mkdirSync(researchDir, { recursive: true });
 mkdirSync(imagesDir, { recursive: true });
 
-// Generate page.tsx content
-const pageContent = `import ResearchPage from "@/components/ResearchPage";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "${title}",
+// Metadata lives in the MDX file itself. Optional fields: status ("seedling" | "growing" | "settled")
+// and log ([{ date: "YYYY-MM-DD", note: "What changed" }]).
+const mdxContent = `export const metadata = {
+  title: ${JSON.stringify(title)},
   description: "",
-  other: {
-    slug: "${slug}",
-    created: "${today}",
-    lastUpdated: "${today}",
-    tags: [],
-  },
+  created: "${today}",
+  lastUpdated: "${today}",
+  status: "seedling",
+  tags: [],
+  log: [{ date: "${today}", note: "Started this note" }],
 };
 
-export default function Page() {
-  return <ResearchPage metadata={metadata} />;
-}
 `;
 
-// Generate content.mdx content
-const mdxContent = "";
-
 // Write files
-writeFileSync(path.join(researchDir, "page.tsx"), pageContent);
 writeFileSync(path.join(researchDir, "content.mdx"), mdxContent);
 
 console.log(`✓ Created research page: ${slug}`);
-console.log(`  - ${researchDir}/page.tsx`);
 console.log(`  - ${researchDir}/content.mdx`);
 console.log(`  - ${imagesDir}/ (for images)`);
 console.log("");
-console.log(`Edit the files to add your content and update the metadata.`);
+console.log(`Edit content.mdx to add your content. lastUpdated is stamped automatically when you commit.`);
 console.log(`Use /images/research/${slug}/<image> for image paths.`);

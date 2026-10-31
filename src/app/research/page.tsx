@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
-import { GetResearchTree, ResearchTreeNode } from "@/lib/research";
+import { getResearchRoot, ResearchTopic } from "@/lib/research";
 
 import Changelog from "./changelog.mdx";
 
@@ -21,42 +21,31 @@ export const metadata: Metadata = {
   },
 };
 
-function TreeNode({ node, depth = 0 }: { node: ResearchTreeNode; depth?: number }) {
-  const hasChildren = node.children.length > 0;
-  const isPage = node.slug !== null;
-  const displayName =
-    node.title ||
-    node.name
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
+function TopicTree({ topic, depth = 0 }: { topic: ResearchTopic; depth?: number }) {
   return (
     <div className={depth > 0 ? "ml-4 border-l border-gray-200 pl-4" : ""}>
-      <div className="py-2">
-        {isPage ? (
-          <div className="flex flex-col gap-1">
-            <Link href={`/research/${node.slug}`} className="font-medium hover:underline">
-              {displayName}
-            </Link>
-            {node.lastUpdated && (
-              <div className="font-mallory-book text-sm text-text-muted">
-                Updated: <Date dateString={node.lastUpdated} />
-              </div>
-            )}
-          </div>
-        ) : (
-          <span className="font-semibold text-gray-700">{displayName}</span>
-        )}
-      </div>
-
-      {hasChildren && (
-        <div>
-          {node.children.map((child) => (
-            <TreeNode key={child.name} node={child} depth={depth + 1} />
-          ))}
+      {depth > 0 && (
+        <div className="py-2">
+          <Link href={`/research/${topic.slug}`} className="font-semibold">
+            {topic.title}
+          </Link>
         </div>
       )}
+      {topic.topics.map((sub) => (
+        <TopicTree key={sub.slug} topic={sub} depth={depth + 1} />
+      ))}
+      {topic.notes.map((note) => (
+        <div key={note.slug} className={depth > 0 ? "ml-4 py-2" : "py-2"}>
+          <Link href={`/research/${note.slug}`} className="font-medium hover:underline">
+            {note.title}
+          </Link>
+          {note.lastUpdated && (
+            <div className="font-mallory-book text-sm text-text-muted">
+              Updated: <Date dateString={note.lastUpdated} />
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -71,9 +60,9 @@ function ChangelogSection() {
 }
 
 async function ResearchList() {
-  const tree = await GetResearchTree();
+  const root = await getResearchRoot();
 
-  if (tree.length === 0) {
+  if (root.noteCount === 0) {
     return (
       <NavContentWrapper>
         <h1>Research</h1>
@@ -87,9 +76,7 @@ async function ResearchList() {
       <h1>Research</h1>
       <p className="mb-6 text-text-muted">Ongoing research projects and notes that evolve over time.</p>
       <div className="space-y-2">
-        {tree.map((node) => (
-          <TreeNode key={node.name} node={node} />
-        ))}
+        <TopicTree topic={root} />
       </div>
       <ChangelogSection />
     </NavContentWrapper>

@@ -1,3 +1,11 @@
+export const metadata = {
+  title: "Longformer",
+  description: "",
+  created: "2026-01-26",
+  lastUpdated: "2026-01-26",
+  tags: ["AI"],
+};
+
 [Longformer](https://arxiv.org/pdf/2004.05150) (2020) used three different kinds of sparse attention to reduce complexity to $O(n)$.
 
 1. Sliding window attention: Instead of attending to all tokens, each token attends only to a fixed window of $w$ neighbours on each side. If you have multiple layers, it's still possible for information for propagate from further along the sequence. The receptive field ends up being $l \times w$. This is similar to how CNNs build up global context from their local convolutions.
