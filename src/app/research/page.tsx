@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import Date from "@/components/Date";
 import NavContentWrapper from "@/components/NavContentWrapper";
-import { getResearchRoot, ResearchTopic } from "@/lib/research";
-
-import Changelog from "./changelog.mdx";
+import ResearchNoteList from "@/components/ResearchNoteList";
+import { getAllNotes, getResearchRoot, ResearchTopic } from "@/lib/research";
 
 export const revalidate = 3600;
+
+const RECENT_COUNT = 6;
 
 export const metadata: Metadata = {
   title: "Research",
@@ -21,66 +21,82 @@ export const metadata: Metadata = {
   },
 };
 
-function TopicTree({ topic, depth = 0 }: { topic: ResearchTopic; depth?: number }) {
+function noteCount(n: number) {
+  return `${n} ${n === 1 ? "note" : "notes"}`;
+}
+
+function TopicBlock({ topic }: { topic: ResearchTopic }) {
   return (
-    <div className={depth > 0 ? "ml-4 border-l border-gray-200 pl-4" : ""}>
-      {depth > 0 && (
-        <div className="py-2">
-          <Link href={`/research/${topic.slug}`} className="font-semibold">
-            {topic.title}
-          </Link>
-        </div>
+    <section className="rounded-lg border border-black/10 p-4 sm:p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+        <h3 className="my-0">
+          <Link href={`/research/${topic.slug}`}>{topic.title}</Link>
+        </h3>
+        <span className="font-mallory-book text-sm text-text-muted">{noteCount(topic.noteCount)}</span>
+      </div>
+
+      {topic.topics.length > 0 && (
+        <ul className="mt-3 flex list-none! flex-wrap gap-2 pl-0!">
+          {topic.topics.map((sub) => (
+            <li key={sub.slug}>
+              <Link
+                href={`/research/${sub.slug}`}
+                className="inline-block rounded-full bg-nav-background/25 px-3 py-1 font-mallory-book text-sm text-foreground! hover:bg-nav-background/45 hover:no-underline!"
+              >
+                {sub.title} <span className="text-text-muted">{sub.noteCount}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
-      {topic.topics.map((sub) => (
-        <TopicTree key={sub.slug} topic={sub} depth={depth + 1} />
-      ))}
-      {topic.notes.map((note) => (
-        <div key={note.slug} className={depth > 0 ? "ml-4 py-2" : "py-2"}>
-          <Link href={`/research/${note.slug}`} className="font-medium hover:underline">
-            {note.title}
-          </Link>
-          {note.lastUpdated && (
-            <div className="font-mallory-book text-sm text-text-muted">
-              Updated: <Date dateString={note.lastUpdated} />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+
+      {topic.notes.length > 0 && (
+        <ul className="mt-3 mb-0 list-none! columns-1 pl-0! sm:columns-2">
+          {topic.notes.map((note) => (
+            <li key={note.slug} className="break-inside-avoid py-1">
+              <Link href={`/research/${note.slug}`}>{note.title}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
-function ChangelogSection() {
-  return (
-    <div className="mt-8">
-      <h2>Changelog</h2>
-      <Changelog />
-    </div>
-  );
-}
-
-async function ResearchList() {
-  const root = await getResearchRoot();
-
-  if (root.noteCount === 0) {
-    return (
-      <NavContentWrapper>
-        <h1>Research</h1>
-        <p className="text-text-muted">No research projects yet.</p>
-      </NavContentWrapper>
-    );
-  }
+async function ResearchIndex() {
+  const [root, notes] = await Promise.all([getResearchRoot(), getAllNotes()]);
 
   return (
     <NavContentWrapper>
       <h1>Research</h1>
-      <p className="mb-6 text-text-muted">Ongoing research projects and notes that evolve over time.</p>
-      <div className="space-y-2">
-        <TopicTree topic={root} />
-      </div>
-      <ChangelogSection />
+      <p className="mb-6 text-text-muted">
+        Ongoing research projects and notes that evolve over time. Unlike blog posts, these get edited and extended as
+        I learn more.
+      </p>
+
+      {notes.length === 0 ? (
+        <p className="text-text-muted">No research notes yet.</p>
+      ) : (
+        <>
+          <h2>Recently updated</h2>
+          <ResearchNoteList notes={notes.slice(0, RECENT_COUNT)} showTopic />
+
+          <h2 className="mt-10">Topics</h2>
+          <div className="flex flex-col gap-4">
+            {root.topics.map((topic) => (
+              <TopicBlock key={topic.slug} topic={topic} />
+            ))}
+            {root.notes.length > 0 && (
+              <section className="rounded-lg border border-black/10 p-4 sm:p-5">
+                <h3 className="my-0">Other notes</h3>
+                <ResearchNoteList notes={root.notes} />
+              </section>
+            )}
+          </div>
+        </>
+      )}
     </NavContentWrapper>
   );
 }
 
-export default ResearchList;
+export default ResearchIndex;
