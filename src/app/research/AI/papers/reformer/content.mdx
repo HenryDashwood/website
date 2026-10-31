@@ -1,3 +1,11 @@
+export const metadata = {
+  title: "Reformer",
+  description: "",
+  created: "2026-01-26",
+  lastUpdated: "2026-01-26",
+  tags: ["AI"],
+};
+
 [Reformer](https://arxiv.org/pdf/2001.04451) (2020) was able to reduce the number of attention operations from $O(n^2)$ to $O(n \log(n))$ by using a technique called locality-sensitive hashing (LSH). A hash function is applied in which a "sphere" is rotated around the vectors. If two vectors point in similar directions they will point towards the same section of the sphere a lot and end up with a similar hashes.
 
 <LocalImageSideBySide

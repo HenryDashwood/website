@@ -4,8 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { ResearchTreeNode } from "@/lib/research";
-
 const navLinks = [
   {
     name: "Weltanschauung",
@@ -21,138 +19,8 @@ const navLinks = [
   },
 ];
 
-interface NavProps {
-  researchTree?: ResearchTreeNode[];
-}
-
-interface ResearchTreeNavNodeProps {
-  node: ResearchTreeNode;
-  parentPath: string;
-  isActive: (path: string) => boolean;
-  expandedFolders: Set<string>;
-  toggleFolder: (path: string) => void;
-  onLinkClick: () => void;
-  depth?: number;
-}
-
-function ResearchTreeNavNode({
-  node,
-  parentPath,
-  isActive,
-  expandedFolders,
-  toggleFolder,
-  onLinkClick,
-  depth = 0,
-}: ResearchTreeNavNodeProps) {
-  const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name;
-  const hasChildren = node.children.length > 0;
-  const isPage = node.slug !== null;
-  const isExpanded = expandedFolders.has(currentPath);
-  const displayName =
-    node.title ||
-    node.name
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-
-  const fullPath = `/research/${node.slug || currentPath}`;
-  const isCurrentPage = isActive(fullPath);
-
-  // Folder with no page - just a container
-  if (!isPage && hasChildren) {
-    return (
-      <div className="flex flex-col">
-        <button
-          onClick={() => toggleFolder(currentPath)}
-          className="flex items-center gap-1 rounded-lg px-3 py-2 text-left text-sm transition-all hover:bg-black/5"
-          style={{ paddingLeft: `${12 + depth * 12}px` }}
-        >
-          <svg
-            className={`h-3 w-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="text-black/70">{displayName}</span>
-        </button>
-        {isExpanded && (
-          <div className="flex flex-col">
-            {node.children.map((child) => (
-              <ResearchTreeNavNode
-                key={child.name}
-                node={child}
-                parentPath={currentPath}
-                isActive={isActive}
-                expandedFolders={expandedFolders}
-                toggleFolder={toggleFolder}
-                onLinkClick={onLinkClick}
-                depth={depth + 1}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Page (may or may not have children)
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center">
-        {hasChildren && (
-          <button
-            onClick={() => toggleFolder(currentPath)}
-            className="shrink-0 p-1 transition-all hover:bg-black/5"
-            style={{ marginLeft: `${8 + depth * 12}px` }}
-          >
-            <svg
-              className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        )}
-        <Link
-          href={fullPath}
-          onClick={onLinkClick}
-          className={`flex-1 rounded-lg px-2 py-2 text-sm break-normal whitespace-normal transition-all ${
-            isCurrentPage ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
-          }`}
-          style={{
-            paddingLeft: hasChildren ? "4px" : `${12 + depth * 12}px`,
-          }}
-        >
-          {displayName}
-        </Link>
-      </div>
-      {hasChildren && isExpanded && (
-        <div className="flex flex-col">
-          {node.children.map((child) => (
-            <ResearchTreeNavNode
-              key={child.name}
-              node={child}
-              parentPath={currentPath}
-              isActive={isActive}
-              expandedFolders={expandedFolders}
-              toggleFolder={toggleFolder}
-              onLinkClick={onLinkClick}
-              depth={depth + 1}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Nav({ researchTree = [] }: NavProps) {
+function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const mountedRef = useRef(false);
   const pathname = usePathname();
 
@@ -197,44 +65,6 @@ function Nav({ researchTree = [] }: NavProps) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
-  // Auto-expand folders based on current path
-  useEffect(() => {
-    if (!pathname?.startsWith("/research/")) return;
-
-    const pathAfterResearch = pathname.replace("/research/", "");
-    const segments = pathAfterResearch.split("/").filter(Boolean);
-
-    // Expand all parent folders
-    const foldersToExpand = new Set<string>();
-    let currentPath = "";
-    for (const segment of segments) {
-      currentPath = currentPath ? `${currentPath}/${segment}` : segment;
-      foldersToExpand.add(currentPath);
-    }
-
-    // Use setTimeout to make state update asynchronous and avoid cascading renders
-    const timer = setTimeout(() => {
-      setExpandedFolders((prev) => {
-        const next = new Set(prev);
-        foldersToExpand.forEach((f) => next.add(f));
-        return next;
-      });
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [pathname]);
-
-  const toggleFolder = (folderPath: string) => {
-    setExpandedFolders((prev) => {
-      const next = new Set(prev);
-      if (next.has(folderPath)) {
-        next.delete(folderPath);
-      } else {
-        next.add(folderPath);
-      }
-      return next;
-    });
-  };
-
   const isActive = (path: string) => {
     if (!pathname) return false;
     if (path === "/") return pathname === "/";
@@ -242,6 +72,12 @@ function Nav({ researchTree = [] }: NavProps) {
     // Remove query strings and hashes for comparison
     const cleanPathname = pathname.split("?")[0].split("#")[0];
     return cleanPathname === path || cleanPathname === `${path}/`;
+  };
+
+  const isInSection = (path: string) => {
+    if (!pathname) return false;
+    const cleanPathname = pathname.split("?")[0].split("#")[0];
+    return cleanPathname === path || cleanPathname.startsWith(`${path}/`);
   };
 
   return (
@@ -300,7 +136,7 @@ function Nav({ researchTree = [] }: NavProps) {
             href="/about"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/posts") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+              isActive("/about") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
             }`}
           >
             About Me
@@ -330,35 +166,19 @@ function Nav({ researchTree = [] }: NavProps) {
           ))}
         </div>
 
-        {/* Research Section */}
-        {researchTree.length > 0 && (
-          <>
-            <div className="my-6 border-t border-black/10" />
-            <div className="flex flex-col gap-1 sm:gap-0.5">
-              <Link
-                href="/research"
-                onClick={() => setIsOpen(false)}
-                className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-                  isActive("/research") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
-                }`}
-              >
-                Research
-              </Link>
-
-              {researchTree.map((node) => (
-                <ResearchTreeNavNode
-                  key={node.name}
-                  node={node}
-                  parentPath=""
-                  isActive={isActive}
-                  expandedFolders={expandedFolders}
-                  toggleFolder={toggleFolder}
-                  onLinkClick={() => setIsOpen(false)}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        {/* Research */}
+        <div className="my-6 border-t border-black/10" />
+        <div className="flex flex-col gap-1 sm:gap-0.5">
+          <Link
+            href="/research"
+            onClick={() => setIsOpen(false)}
+            className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+              isInSection("/research") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+            }`}
+          >
+            Research
+          </Link>
+        </div>
 
         {/* Separator */}
         <div className="my-6 border-t border-black/10" />

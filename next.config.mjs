@@ -32,7 +32,7 @@ const withMDX = createMDX({
   // Add markdown plugins here, as strings for Turbopack compatibility
   options: {
     remarkPlugins: ["remark-gfm", "remark-math"],
-    rehypePlugins: ["rehype-katex", ["rehype-pretty-code", rehypePrettyCodeOptions]],
+    rehypePlugins: ["rehype-slug", "rehype-katex", ["rehype-pretty-code", rehypePrettyCodeOptions]],
   },
 });
 

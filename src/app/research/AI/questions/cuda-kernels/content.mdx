@@ -1,3 +1,11 @@
+export const metadata = {
+  title: "What is a CUDA kernel?",
+  description: "",
+  created: "2026-01-27",
+  lastUpdated: "2026-01-27",
+  tags: ["AI"],
+};
+
 A function written in C/C++ that runs on the GPU (Device) rather than the CPU (Host). It does not run just once. It is executed N times in parallel by N different CUDA threads. Threads distinguish themselves using built-in variables (like a unique ID), allowing them to calculate a specific part of a larger problem.
 
 To manage threads, CUDA organises them into a 3-tier hierarchy:

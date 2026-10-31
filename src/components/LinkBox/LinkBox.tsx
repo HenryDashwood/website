@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import path from "path";
 
 import { GetPost } from "@/lib/posts";
-import { GetAllResearch } from "@/lib/research";
+import { getAllNotes } from "@/lib/research";
 
 interface LinkItem {
   metadata: Metadata;
@@ -34,10 +34,10 @@ async function GetPostsWithType(): Promise<LinkItem[]> {
 }
 
 async function GetResearchWithType(): Promise<LinkItem[]> {
-  const research = await GetAllResearch(false);
+  const notes = await getAllNotes();
 
-  return research.map((item) => ({
-    metadata: item.metadata,
+  return notes.map((note) => ({
+    metadata: { title: note.title, other: { slug: note.slug, tags: note.tags } },
     type: "research" as const,
   }));
 }

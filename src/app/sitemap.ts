@@ -1,9 +1,9 @@
 import { GetPosts } from "@/lib/posts";
-import { GetAllResearch } from "@/lib/research";
+import { getAllNotes, getAllTopics } from "@/lib/research";
 
 export default async function sitemap() {
   const posts = await GetPosts(true);
-  const research = await GetAllResearch(false);
+  const [notes, topics] = await Promise.all([getAllNotes(), getAllTopics()]);
 
   const links = [
     {
@@ -18,14 +18,10 @@ export default async function sitemap() {
         lastModified: post.metadata.other.published,
       };
     }),
-    ...research.map((item) => {
-      return {
-        url: `${process.env.WEBSITE_URL}/research/${item.slug}`,
-        lastModified: item.metadata.other?.lastUpdated
-          ? new Date(String(item.metadata.other.lastUpdated))
-          : new Date(),
-      };
-    }),
+    ...[...notes, ...topics].map((item) => ({
+      url: `${process.env.WEBSITE_URL}/research/${item.slug}`,
+      lastModified: item.lastUpdated ? new Date(item.lastUpdated) : new Date(),
+    })),
   ];
   return links;
 }
