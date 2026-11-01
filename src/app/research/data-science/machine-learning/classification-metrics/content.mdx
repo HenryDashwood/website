@@ -1,0 +1,138 @@
+export const metadata = {
+  title: "Classification Metrics",
+  description: "Accuracy, precision, recall, ROC AUC, Gini and precision-recall curves",
+  created: "2023-02-18",
+  lastUpdated: "2026-11-01",
+  status: "growing",
+  tags: ["Machine Learning"],
+  log: [
+    {
+      date: "2026-11-01",
+      note: "Migrated from data-science-notes; corrected the Gini derivation and the description of average precision",
+    },
+  ],
+};
+
+The running example is a random forest predicting survival on the Titanic, scored on a held-out test set. `test_preds` holds its predicted probabilities of survival.
+
+## Accuracy
+
+Accuracy needs a threshold above which a predicted probability counts as a positive. Different thresholds give different accuracies, and the one that maximises accuracy is not necessarily the one you want:
+
+```python
+accuracy_score(y_test, test_preds > 0.1)  # 0.607
+accuracy_score(y_test, test_preds > 0.5)  # 0.787
+accuracy_score(y_test, test_preds > 0.9)  # 0.753
+```
+
+## Recall
+
+Recall is the fraction of the _actual_ positives that the model identified:
+
+$$
+\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+$$
+
+Lowering the threshold catches more of them: recall is 0.93 at 0.1, 0.72 at 0.5 and 0.38 at 0.9.
+
+## Precision
+
+Precision, also called positive predictive value, is the fraction of positive _predictions_ that were right:
+
+$$
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+$$
+
+It moves the other way: 0.49 at 0.1, 0.72 at 0.5, 0.94 at 0.9.
+
+## F1 score
+
+The F1 score is the harmonic mean of precision and recall, so it weights them equally. It is 1 for perfect precision and recall and 0 if either is zero. For multi-class or imbalanced problems, `average="macro"` averages the per-class scores equally, `"weighted"` weights them by class size, and `"micro"` pools all predictions (for single-label problems that equals accuracy).
+
+## Confusion matrix
+
+<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/confusion-matrix.png" alt="Confusion matrix at a 0.5 threshold" width={507} height={432} size="medium" />
+
+## ROC curve
+
+Varying the threshold trades the true positive rate (recall) against the false positive rate. The receiver operating characteristic (ROC) curve plots one against the other across all thresholds. The name comes from radar engineering in the Second World War, where it described how well receivers picked out aircraft from noise.
+
+<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/roc-curve.png" alt="ROC curve of the random forest against random guessing" width={578} height={436} size="medium" />
+
+With random guessing, every gain in true positive rate costs an equal rise in false positive rate: the diagonal. A perfect model goes straight to a 100% true positive rate at a 0% false positive rate. Ours gains true positives faster than false positives up to a point, after which the false positives come faster.
+
+We'd usually pick a threshold near the top-left corner, unless errors have unequal costs. If a false positive is more expensive than a false negative, we'd accept a lower true positive rate for a lower false positive rate. [Profit Curves](/research/data-science/decision-optimisation/profit-curves) makes that trade-off explicit.
+
+### ROC AUC
+
+To compare models rather than thresholds, we can measure the area under the ROC curve. 0.5 is random guessing and 1.0 is perfect; this model scores 0.847.
+
+AUC has a second interpretation: it is the probability that a randomly chosen positive row gets a higher predicted probability than a randomly chosen negative one (ties count half). Formally, over all pairs of rows,
+
+$$
+\text{AUC} = \frac{\sum_{i}\sum_{j} \mathbb{1}[y_i < y_j]\; I'(a_i, a_j)}{\sum_{i}\sum_{j} \mathbb{1}[y_i < y_j]}
+\qquad
+I'(a_i, a_j) =
+\begin{cases}
+    0 & a_i > a_j \\
+    0.5 & a_i = a_j \\
+    1 & a_i < a_j
+\end{cases}
+$$
+
+where $a_i$ is the predicted probability and $y_i$ the true label of row $i$.
+
+A consequence is that the AUC of a set can be larger than the AUC of every one of its subsets. Take two small datasets, each with one correctly and one incorrectly ordered (positive, negative) pair, so each has an AUC of 0.5:
+
+| pred | y |   | pred | y |
+| :--: | :-: | - | :--: | :-: |
+| 0.09 | 0 |   | 0.095 | 0 |
+| 0.5 | 1 |   | 0.41 | 1 |
+| 0.7 | 0 |   | 0.42 | 0 |
+
+Combined, there are two positives and four negatives, so eight pairs. The positive at 0.41 beats two negatives and the positive at 0.5 beats three, so the AUC is $5/8 = 0.625$. Pairs that were never compared within either subset are now compared, and they happen to be ordered correctly.
+
+## Gini and the CAP curve
+
+The **cumulative accuracy profile** (CAP) sorts rows by predicted probability, highest first, and plots the cumulative number of positives captured against the number of rows taken. A random model is a straight diagonal; a perfect model captures every positive first and then flattens.
+
+<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/cap-curve.png" alt="CAP curves for random, random forest and perfect models" width={443} height={351} size="medium" />
+
+The **accuracy ratio** compares the area between our model's curve and the random diagonal with the same area for the perfect model:
+
+$$
+\text{AR} = \frac{a - a_R}{a_P - a_R}
+$$
+
+Here that is $8843.5 / 12687.5 = 0.697$. The accuracy ratio equals the Gini coefficient, and both equal $2\,\text{AUC} - 1$. (On normalised axes, with $\pi$ the share of positives, the perfect model's area above the diagonal is $(1 - \pi)/2$, not ½, so the identity needs a little more work than it seems; [this derivation](https://www.listendata.com/2019/09/gini-cumulative-accuracy-profile-auc.html) goes through it.)
+
+```python
+2 * roc_auc_score(y_test, test_preds) - 1  # 0.694
+```
+
+The small gap between 0.697 and 0.694 comes from ties. A random forest gives many rows exactly the same probability, and sorting the CAP data by `(prediction, label)` in descending order puts tied positives ahead of tied negatives, which flatters the curve. `roc_auc_score` counts ties as half.
+
+## Precision-recall curve
+
+The precision-recall curve plots precision against recall across thresholds. Raising the threshold usually raises precision, because the model only says "positive" when it is confident, and lowers recall, because fewer true positives clear the bar. (Precision is not guaranteed to rise at every step.) High scores on both mean the model returns mostly correct positives and most of the positives there are, so we want the curve towards the top right.
+
+<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/pr-curve.png" alt="Precision-recall curve against the random baseline" width={575} height={436} size="medium" />
+
+A random model gives a horizontal line at the share of positives. That makes PR curves more informative than ROC curves on [imbalanced data](/research/data-science/machine-learning/imbalanced-data): a model can't look good just by predicting the majority class ([Saito and Rehmsmeier, 2015](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4349800/)).
+
+The usual summary is **average precision**: a step-wise sum of precision at each threshold, weighted by the increase in recall. It is not the trapezium rule; scikit-learn deliberately avoids interpolating between points, which can be over-optimistic.
+
+```python
+-np.sum(np.diff(recall) * np.array(precision)[:-1])  # 0.820
+average_precision_score(y_test, test_preds)          # 0.820
+```
+
+For curves that rank rows by predicted probability, see also [Gain, Lift and Deciles](/research/data-science/machine-learning/gain-lift-and-deciles).
+
+## Sources
+
+- [Can the ROC AUC of a total test set be larger than the AUC for any subset?](https://stats.stackexchange.com/questions/416901/can-the-roc-auc-of-a-total-test-set-be-larger-than-the-auc-for-any-subset-of-som)
+- [CAP analysis](https://www.kaggle.com/code/rohandawar/cap-cumulative-accuracy-profile-analysis-1)
+- [Gini, cumulative accuracy profile and AUC](https://www.listendata.com/2019/09/gini-cumulative-accuracy-profile-auc.html)
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/01_General_Concepts/01_metrics.ipynb)
