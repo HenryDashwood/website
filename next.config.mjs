@@ -101,6 +101,13 @@ const nextConfig = {
         `/posts/${slug}`,
         `/research/maths/${slug}`,
       ]),
+      // Blog posts that became research notes (2026-11-01).
+      ["/posts/trapezium-rule", "/research/maths/trapezium-rule"],
+      ["/posts/solving-second-degree-equations-deriving-the-quadratic-formula", "/research/maths/quadratic-formula"],
+      ["/posts/microeconomics-for-managers-chapter-2", "/research/economics/microeconomics-for-managers-chapter-2"],
+      ["/posts/bioinformatics", "/research/biology/bioinformatics"],
+      ["/posts/scrapy-notes", "/research/tools/scrapy"],
+      ["/posts/programming-cheatsheet", "/research/tools/programming-cheatsheet"],
     ];
     return moved.map(([source, destination]) => ({ source, destination, permanent: true }));
   },
