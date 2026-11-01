@@ -100,7 +100,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={`flex-1 rounded-md py-1.5 pr-2 leading-snug ${
-                    active ? "font-bold text-foreground!" : "hover:underline!"
+                    active ? "font-bold underline!" : "hover:underline!"
                   }`}
                   style={hasChildren ? { paddingLeft: "4px" } : { paddingLeft: `${8 + depth * INDENT + 18}px` }}
                 >
