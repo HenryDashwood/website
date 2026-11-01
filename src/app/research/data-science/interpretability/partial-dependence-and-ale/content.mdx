@@ -28,7 +28,13 @@ PartialDependenceDisplay.from_estimator(
 
 On the Titanic random forest:
 
-<LocalImage src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-pdp.png" alt="Partial dependence of survival on each Titanic feature" width={1011} height={1011} size="xlarge" />
+<LocalImage
+  src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-pdp.png"
+  alt="Partial dependence of survival on each Titanic feature"
+  width={1011}
+  height={1011}
+  size="xlarge"
+/>
 
 The weakness is step 2.1. It assumes the feature is independent of the others. If it isn't, setting it to every value in every row creates combinations that are unlikely or impossible, such as a third-class passenger paying a first-class fare, and the average includes the model's predictions on those made-up rows.
 
@@ -40,7 +46,13 @@ ALE is also cheaper to compute than PDP. Molnar's [_Interpretable Machine Learni
 
 Using [PyALE](https://github.com/DanaJomar/PyALE) on the same data (with incomplete rows dropped):
 
-<LocalImage src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-ale.png" alt="ALE plots for each Titanic feature" width={1990} height={1189} size="full" />
+<LocalImage
+  src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-ale.png"
+  alt="ALE plots for each Titanic feature"
+  width={1990}
+  height={1189}
+  size="full"
+/>
 
 Sex and class tell the same story in both. Fare does not: the PDP has survival rising with fare, while the ALE effect falls after the cheapest fares. Fare is strongly tied to class, which is exactly the situation where PDP's independence assumption breaks. The two models were also fitted on slightly different rows, though, so that is a lead to follow up rather than a conclusion.
 

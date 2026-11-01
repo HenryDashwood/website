@@ -179,51 +179,6 @@ function Nav() {
             Research
           </Link>
         </div>
-
-        {/* Separator */}
-        <div className="my-6 border-t border-black/10" />
-
-        {/* External Links Section */}
-        <div className="mt-auto">
-          <p className="mb-3 px-3 text-xs font-semibold tracking-wider text-black/60 uppercase">External Sites</p>
-          <div className="flex flex-col gap-0.5">
-            <Link
-              href="https://data-science-notes.henrydashwood.com"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 break-normal whitespace-normal transition-all hover:bg-black/5 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Data Science Notes
-              <svg className="h-3 w-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </Link>
-
-            <Link
-              href="https://henrydashwood.github.io/ai-notes"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 break-normal whitespace-normal transition-all hover:bg-black/5 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              AI Notes
-              <svg className="h-3 w-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </Link>
-          </div>
-        </div>
       </nav>
     </>
   );

@@ -28,11 +28,11 @@ For each conjecture, count the ways it could produce that sequence: the number o
 
 | Conjecture | Ways to produce B W B | Plausibility |
 | :--------: | :-------------------: | :----------: |
-|    WWWW    |   0 × 4 × 0 = 0       |      0       |
-|    BWWW    |   1 × 3 × 1 = 3       |     0.15     |
-|    BBWW    |   2 × 2 × 2 = 8       |     0.40     |
-|    BBBW    |   3 × 1 × 3 = 9       |     0.45     |
-|    BBBB    |   4 × 0 × 4 = 0       |      0       |
+|    WWWW    |     0 × 4 × 0 = 0     |      0       |
+|    BWWW    |     1 × 3 × 1 = 3     |     0.15     |
+|    BBWW    |     2 × 2 × 2 = 8     |     0.40     |
+|    BBBW    |     3 × 1 × 3 = 9     |     0.45     |
+|    BBBB    |     4 × 0 × 4 = 0     |      0       |
 
 The plausibilities are just the counts normalised to sum to 1. The rules for Bayesian updating:
 
@@ -44,13 +44,13 @@ The plausibilities are just the counts normalised to sum to 1. The rules for Bay
 
 Now we draw another B. The new draw is independent of the earlier ones, so we can take the previous counts as our **prior** and multiply each by the number of ways that conjecture produces the new observation:
 
-| Conjecture | Ways to produce B | Previous count | New count   | New plausibility |
-| :--------: | :---------------: | :------------: | :---------: | :--------------: |
-|    WWWW    |         0         |       0        | 0 × 0 = 0   |        0         |
-|    BWWW    |         1         |       3        | 3 × 1 = 3   |       0.07       |
-|    BBWW    |         2         |       8        | 8 × 2 = 16  |       0.35       |
-|    BBBW    |         3         |       9        | 9 × 3 = 27  |       0.59       |
-|    BBBB    |         4         |       0        | 0 × 4 = 0   |        0         |
+| Conjecture | Ways to produce B | Previous count | New count  | New plausibility |
+| :--------: | :---------------: | :------------: | :--------: | :--------------: |
+|    WWWW    |         0         |       0        | 0 × 0 = 0  |        0         |
+|    BWWW    |         1         |       3        | 3 × 1 = 3  |       0.07       |
+|    BBWW    |         2         |       8        | 8 × 2 = 16 |       0.35       |
+|    BBBW    |         3         |       9        | 9 × 3 = 27 |       0.59       |
+|    BBBB    |         4         |       0        | 0 × 4 = 0  |        0         |
 
 $$
 \text{plausibility of } p \text{ after } D_\text{new} = \frac{\text{ways } p \text{ can produce } D_\text{new} \times \text{prior plausibility of } p}{\text{sum of products}}
@@ -102,7 +102,13 @@ def posterior_grid_approx(grid_points: int = 5, success: int = 6, tosses: int = 
     return p_grid, posterior
 ```
 
-<LocalImage src="/images/research/data-science/statistics/bayesian-data-analysis/grid-approximation.png" alt="Posterior for the proportion of water with 5 and 20 grid points" width={1001} height={470} size="full" />
+<LocalImage
+  src="/images/research/data-science/statistics/bayesian-data-analysis/grid-approximation.png"
+  alt="Posterior for the proportion of water with 5 and 20 grid points"
+  width={1001}
+  height={470}
+  size="full"
+/>
 
 Five grid points give a crude sketch; twenty already show the shape, peaking a little below 0.7.
 

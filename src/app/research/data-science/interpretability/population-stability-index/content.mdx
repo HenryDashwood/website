@@ -61,11 +61,11 @@ On the predictions, PSI is 0.053 with fixed bins and 0.056 with quantile bins.
 
 The usual rule of thumb:
 
-| PSI | Interpretation |
-| --- | --- |
-| below 0.1 | no significant change |
-| 0.1 to 0.2 | moderate change |
-| 0.2 or more | significant change |
+| PSI         | Interpretation        |
+| ----------- | --------------------- |
+| below 0.1   | no significant change |
+| 0.1 to 0.2  | moderate change       |
+| 0.2 or more | significant change    |
 
 So the model's predictions look stable between the two periods.
 
@@ -73,11 +73,22 @@ So the model's predictions look stable between the two periods.
 
 Plotting the bin proportions side by side shows where the distributions differ (quantile bins, with the validation set as the reference):
 
-<LocalImage src="/images/research/data-science/interpretability/population-stability-index/quantile-bins.png" alt="Reference and target proportions in each quantile bin" width={615} height={329} />
+<LocalImage
+  src="/images/research/data-science/interpretability/population-stability-index/quantile-bins.png"
+  alt="Reference and target proportions in each quantile bin"
+  width={615}
+  height={329}
+/>
 
 A kernel density estimate shows the same without binning, though, as the [Seaborn docs](https://seaborn.pydata.org/generated/seaborn.kdeplot.html) warn, it can distort distributions that are bounded or not smooth:
 
-<LocalImage src="/images/research/data-science/interpretability/population-stability-index/kde.png" alt="KDE of training and validation predictions" width={386} height={278} size="medium" />
+<LocalImage
+  src="/images/research/data-science/interpretability/population-stability-index/kde.png"
+  alt="KDE of training and validation predictions"
+  width={386}
+  height={278}
+  size="medium"
+/>
 
 ## Characteristic stability index
 
@@ -87,13 +98,13 @@ The same calculation applied to a single input feature, instead of the model's o
 csi = {col: psi(train_xs[col].values, valid_xs[col].values, 10, "quantile") for col in train_xs.columns}
 ```
 
-| Feature | CSI |
-| --- | --- |
+| Feature     | CSI  |
+| ----------- | ---- |
 | saleElapsed | 6.16 |
-| SalesID | 5.59 |
-| datasource | 5.39 |
-| saleYear | 5.10 |
-| saleMonth | 4.98 |
+| SalesID     | 5.59 |
+| datasource  | 5.39 |
+| saleYear    | 5.10 |
+| saleMonth   | 4.98 |
 
 Some of these are obvious given a split by date: anything derived from the sale date is bound to shift. Others, like `datasource`, deserve a closer look, and plotting each feature's KDE for the two periods helps.
 

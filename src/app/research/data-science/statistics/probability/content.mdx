@@ -106,8 +106,18 @@ $$
 
 <LocalImageSideBySide
   images={[
-    { src: "/images/research/data-science/statistics/probability/uniform-pdf.png", alt: "Uniform PDF on [0, 5]", width: 630, height: 470 },
-    { src: "/images/research/data-science/statistics/probability/uniform-cdf.png", alt: "Uniform CDF on [0, 5]", width: 630, height: 470 },
+    {
+      src: "/images/research/data-science/statistics/probability/uniform-pdf.png",
+      alt: "Uniform PDF on [0, 5]",
+      width: 630,
+      height: 470,
+    },
+    {
+      src: "/images/research/data-science/statistics/probability/uniform-cdf.png",
+      alt: "Uniform CDF on [0, 5]",
+      width: 630,
+      height: 470,
+    },
   ]}
 />
 
@@ -135,8 +145,18 @@ def normal_cdf(x: float, mu: float = 0, sigma: float = 1) -> float:
 
 <LocalImageSideBySide
   images={[
-    { src: "/images/research/data-science/statistics/probability/normal-pdfs.png", alt: "Normal PDFs for several values of mu and sigma", width: 630, height: 470 },
-    { src: "/images/research/data-science/statistics/probability/normal-cdfs.png", alt: "Normal CDFs for several values of mu and sigma", width: 630, height: 470 },
+    {
+      src: "/images/research/data-science/statistics/probability/normal-pdfs.png",
+      alt: "Normal PDFs for several values of mu and sigma",
+      width: 630,
+      height: 470,
+    },
+    {
+      src: "/images/research/data-science/statistics/probability/normal-cdfs.png",
+      alt: "Normal CDFs for several values of mu and sigma",
+      width: 630,
+      height: 470,
+    },
   ]}
 />
 
@@ -170,7 +190,12 @@ $$
 
 A $\text{Binomial}(n, p)$ variable is the sum of $n$ independent $\text{Bernoulli}(p)$ variables, each 1 with probability $p$. A Bernoulli has mean $p$ and standard deviation $\sqrt{p(1-p)}$, so for large $n$ the binomial is approximately normal with $\mu = np$ and $\sigma = \sqrt{np(1-p)}$. Here are 10,000 draws from $\text{Binomial}(100, 0.75)$ against that normal curve:
 
-<LocalImage src="/images/research/data-science/statistics/probability/binomial-vs-normal.png" alt="Histogram of Binomial(100, 0.75) samples against the normal approximation" width={630} height={470} />
+<LocalImage
+  src="/images/research/data-science/statistics/probability/binomial-vs-normal.png"
+  alt="Histogram of Binomial(100, 0.75) samples against the normal approximation"
+  width={630}
+  height={470}
+/>
 
 So to estimate the probability that a fair coin gives more than 60 heads in 100 flips, we can use $N(50, 5)$ instead of the binomial CDF. This is the basis of the tests in [Hypothesis Testing](/research/data-science/statistics/hypothesis-testing).
 

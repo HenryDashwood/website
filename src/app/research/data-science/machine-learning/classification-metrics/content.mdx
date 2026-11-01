@@ -51,13 +51,25 @@ The F1 score is the harmonic mean of precision and recall, so it weights them eq
 
 ## Confusion matrix
 
-<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/confusion-matrix.png" alt="Confusion matrix at a 0.5 threshold" width={507} height={432} size="medium" />
+<LocalImage
+  src="/images/research/data-science/machine-learning/classification-metrics/confusion-matrix.png"
+  alt="Confusion matrix at a 0.5 threshold"
+  width={507}
+  height={432}
+  size="medium"
+/>
 
 ## ROC curve
 
 Varying the threshold trades the true positive rate (recall) against the false positive rate. The receiver operating characteristic (ROC) curve plots one against the other across all thresholds. The name comes from radar engineering in the Second World War, where it described how well receivers picked out aircraft from noise.
 
-<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/roc-curve.png" alt="ROC curve of the random forest against random guessing" width={578} height={436} size="medium" />
+<LocalImage
+  src="/images/research/data-science/machine-learning/classification-metrics/roc-curve.png"
+  alt="ROC curve of the random forest against random guessing"
+  width={578}
+  height={436}
+  size="medium"
+/>
 
 With random guessing, every gain in true positive rate costs an equal rise in false positive rate: the diagonal. A perfect model goes straight to a 100% true positive rate at a 0% false positive rate. Ours gains true positives faster than false positives up to a point, after which the false positives come faster.
 
@@ -84,11 +96,11 @@ where $a_i$ is the predicted probability and $y_i$ the true label of row $i$.
 
 A consequence is that the AUC of a set can be larger than the AUC of every one of its subsets. Take two small datasets, each with one correctly and one incorrectly ordered (positive, negative) pair, so each has an AUC of 0.5:
 
-| pred | y |   | pred | y |
-| :--: | :-: | - | :--: | :-: |
-| 0.09 | 0 |   | 0.095 | 0 |
-| 0.5 | 1 |   | 0.41 | 1 |
-| 0.7 | 0 |   | 0.42 | 0 |
+| pred |  y  |     | pred  |  y  |
+| :--: | :-: | --- | :---: | :-: |
+| 0.09 |  0  |     | 0.095 |  0  |
+| 0.5  |  1  |     | 0.41  |  1  |
+| 0.7  |  0  |     | 0.42  |  0  |
 
 Combined, there are two positives and four negatives, so eight pairs. The positive at 0.41 beats two negatives and the positive at 0.5 beats three, so the AUC is $5/8 = 0.625$. Pairs that were never compared within either subset are now compared, and they happen to be ordered correctly.
 
@@ -96,7 +108,13 @@ Combined, there are two positives and four negatives, so eight pairs. The positi
 
 The **cumulative accuracy profile** (CAP) sorts rows by predicted probability, highest first, and plots the cumulative number of positives captured against the number of rows taken. A random model is a straight diagonal; a perfect model captures every positive first and then flattens.
 
-<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/cap-curve.png" alt="CAP curves for random, random forest and perfect models" width={443} height={351} size="medium" />
+<LocalImage
+  src="/images/research/data-science/machine-learning/classification-metrics/cap-curve.png"
+  alt="CAP curves for random, random forest and perfect models"
+  width={443}
+  height={351}
+  size="medium"
+/>
 
 The **accuracy ratio** compares the area between our model's curve and the random diagonal with the same area for the perfect model:
 
@@ -116,7 +134,13 @@ The small gap between 0.697 and 0.694 comes from ties. A random forest gives man
 
 The precision-recall curve plots precision against recall across thresholds. Raising the threshold usually raises precision, because the model only says "positive" when it is confident, and lowers recall, because fewer true positives clear the bar. (Precision is not guaranteed to rise at every step.) High scores on both mean the model returns mostly correct positives and most of the positives there are, so we want the curve towards the top right.
 
-<LocalImage src="/images/research/data-science/machine-learning/classification-metrics/pr-curve.png" alt="Precision-recall curve against the random baseline" width={575} height={436} size="medium" />
+<LocalImage
+  src="/images/research/data-science/machine-learning/classification-metrics/pr-curve.png"
+  alt="Precision-recall curve against the random baseline"
+  width={575}
+  height={436}
+  size="medium"
+/>
 
 A random model gives a horizontal line at the share of positives. That makes PR curves more informative than ROC curves on [imbalanced data](/research/data-science/machine-learning/imbalanced-data): a model can't look good just by predicting the majority class ([Saito and Rehmsmeier, 2015](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4349800/)).
 

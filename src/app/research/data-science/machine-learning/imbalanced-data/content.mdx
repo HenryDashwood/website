@@ -24,7 +24,13 @@ The test set has 9,289 negatives and 100 positives.
 
 A default random forest scores 99% accuracy, which means almost nothing: predicting "no" for everyone would score 98.9%. It finds 15 of the 100 positives.
 
-<LocalImage src="/images/research/data-science/machine-learning/imbalanced-data/baseline.png" alt="Confusion matrix and ROC curve for the baseline random forest" width={999} height={530} size="full" />
+<LocalImage
+  src="/images/research/data-science/machine-learning/imbalanced-data/baseline.png"
+  alt="Confusion matrix and ROC curve for the baseline random forest"
+  width={999}
+  height={530}
+  size="full"
+/>
 
 This is where accuracy misleads and precision, recall and the precision-recall curve earn their keep (see [Classification Metrics](/research/data-science/machine-learning/classification-metrics)).
 
@@ -62,13 +68,13 @@ Instead of changing the data, we can make mistakes on the minority class cost mo
 
 At a 0.5 threshold, on the 100 test positives:
 
-| Method | ROC AUC | Precision | Recall |
-| --- | :-: | :-: | :-: |
-| Baseline | 0.69 | 0.71 | 0.15 |
-| SMOTE | 0.74 | 0.05 | 0.22 |
-| Borderline-SMOTE | 0.74 | 0.16 | 0.14 |
-| `class_weight="balanced"` | 0.70 | 0.67 | 0.12 |
-| `class_weight="balanced_subsample"` | 0.71 | 0.65 | 0.13 |
+| Method                              | ROC AUC | Precision | Recall |
+| ----------------------------------- | :-----: | :-------: | :----: |
+| Baseline                            |  0.69   |   0.71    |  0.15  |
+| SMOTE                               |  0.74   |   0.05    |  0.22  |
+| Borderline-SMOTE                    |  0.74   |   0.16    |  0.14  |
+| `class_weight="balanced"`           |  0.70   |   0.67    |  0.12  |
+| `class_weight="balanced_subsample"` |  0.71   |   0.65    |  0.13  |
 
 Nothing helps much. SMOTE improves the ranking (AUC) slightly but, at the default threshold, buys a little recall with a collapse in precision. Class weights barely move a random forest, whose fully grown trees fit the minority points anyway. With a dataset this imbalanced, choosing the threshold deliberately matters as much as the resampling.
 

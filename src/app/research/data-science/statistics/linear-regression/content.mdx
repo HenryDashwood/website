@@ -94,11 +94,23 @@ def get_alpha(x: np.ndarray, y: np.ndarray) -> float:
 
 On ten random points this gives $\alpha = 1.18$, $\beta = 0.94$, identical to scikit-learn's `LinearRegression`:
 
-<LocalImage src="/images/research/data-science/statistics/linear-regression/random-data.png" alt="Least squares line through ten random points" width={531} height={491} size="medium" />
+<LocalImage
+  src="/images/research/data-science/statistics/linear-regression/random-data.png"
+  alt="Least squares line through ten random points"
+  width={531}
+  height={491}
+  size="medium"
+/>
 
 And on price against horsepower from the [UCI automobile dataset](https://archive.ics.uci.edu/dataset/10/automobile):
 
-<LocalImage src="/images/research/data-science/statistics/linear-regression/horsepower-price.png" alt="Least squares line of car price against horsepower" width={558} height={491} size="medium" />
+<LocalImage
+  src="/images/research/data-science/statistics/linear-regression/horsepower-price.png"
+  alt="Least squares line of car price against horsepower"
+  width={558}
+  height={491}
+  size="medium"
+/>
 
 [Gradient Descent](/research/data-science/maths/gradient-descent) fits the same line numerically instead of in closed form.
 

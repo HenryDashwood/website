@@ -32,7 +32,13 @@ def gradient_descent(learning_rate: float, iterations: int, initial_point: tuple
     return np.array(history)
 ```
 
-<LocalImage src="/images/research/data-science/maths/gradient-descent/descent-3d.png" alt="Gradient descent path down the surface of x squared plus y squared" width={467} height={478} size="medium" />
+<LocalImage
+  src="/images/research/data-science/maths/gradient-descent/descent-3d.png"
+  alt="Gradient descent path down the surface of x squared plus y squared"
+  width={467}
+  height={478}
+  size="medium"
+/>
 
 This bowl has a single, global minimum. Real loss surfaces can have local minima where descent gets stuck; random restarts and momentum are two common remedies.
 
@@ -46,7 +52,13 @@ $$
 
 as $h \to 0$. The difference quotient is the slope of the secant through $(x, f(x))$ and $(x + h, f(x + h))$; as $h$ shrinks the secant approaches the tangent, whose slope is the derivative. With $h = 0.5$ the approximation to $f'(x) = 2x$ is already close:
 
-<LocalImage src="/images/research/data-science/maths/gradient-descent/difference-quotient.png" alt="x squared, its derivative and a difference quotient approximation" width={498} height={470} size="medium" />
+<LocalImage
+  src="/images/research/data-science/maths/gradient-descent/difference-quotient.png"
+  alt="x squared, its derivative and a difference quotient approximation"
+  width={498}
+  height={470}
+  size="medium"
+/>
 
 A function of several variables has one partial derivative per input: how $f$ changes when only that input changes, the others held fixed. (See the [partial derivatives](/posts/partial-derivatives) post.) Estimated numerically:
 
@@ -59,7 +71,13 @@ def partial_derivative(f, point, var_idx, h):
 
 A quiver plot draws the gradient as an arrow at each point. For $f(x, y) = x^2 + y^2$ every arrow points directly away from the minimum at the origin, and the arrows get longer further out, because the function is steeper there:
 
-<LocalImage src="/images/research/data-science/maths/gradient-descent/quiver.png" alt="Quiver plot of the gradient of x squared plus y squared" width={494} height={470} size="medium" />
+<LocalImage
+  src="/images/research/data-science/maths/gradient-descent/quiver.png"
+  alt="Quiver plot of the gradient of x squared plus y squared"
+  width={494}
+  height={470}
+  size="medium"
+/>
 
 ## Choosing the step size
 
