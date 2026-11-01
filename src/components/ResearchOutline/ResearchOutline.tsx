@@ -30,12 +30,6 @@ function OutlineNodes({ nodes, depth }: { nodes: ResearchNavNode[]; depth: numbe
                 <span className="font-mallory-book text-sm text-text-muted">
                   {node.count} {node.count === 1 ? "note" : "notes"}
                 </span>
-                <Link
-                  href={`/research/${node.slug}`}
-                  className="font-mallory-book text-xs text-text-muted! hover:text-foreground!"
-                >
-                  open →
-                </Link>
               </summary>
               <OutlineNodes nodes={node.children} depth={depth + 1} />
             </details>

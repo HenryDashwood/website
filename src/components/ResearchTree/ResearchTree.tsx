@@ -70,7 +70,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
         return (
           <li key={node.slug} role="treeitem" aria-expanded={hasChildren ? open : undefined}>
             {node.kind === "folder" ? (
-              <div className="group flex items-center">
+              <div className="flex items-center">
                 <button
                   type="button"
                   onClick={() => toggle(node.slug)}
@@ -81,17 +81,6 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                   <span className="flex-1">{node.title}</span>
                   <span className="text-xs font-normal text-text-muted">{node.count}</span>
                 </button>
-                <Link
-                  href={`/research/${node.slug}`}
-                  onClick={onNavigate}
-                  aria-label={`Open the ${node.title} page`}
-                  title={`Open the ${node.title} page`}
-                  className={`ml-0.5 rounded-md px-1.5 py-1 text-xs text-text-muted! opacity-0 group-hover:opacity-100 hover:bg-black/5 hover:no-underline! focus:opacity-100 ${
-                    active ? "opacity-100" : ""
-                  }`}
-                >
-                  →
-                </Link>
               </div>
             ) : (
               <div className="flex items-start">
@@ -229,7 +218,7 @@ export default function ResearchTree({ tree }: { tree: ResearchNavNode[] }) {
     <aside
       ref={asideRef}
       aria-label="Research notes"
-      className="hidden shrink-0 border-r border-black/10 bg-nav-background/10 px-3 pt-6 pb-10 lg:sticky lg:top-0 lg:block lg:h-screen lg:w-68 lg:overflow-y-auto"
+      className="hidden shrink-0 px-3 pt-6 pb-10 lg:sticky lg:top-0 lg:block lg:h-screen lg:w-68 lg:overflow-y-auto"
     >
       <Link
         href="/research"
@@ -262,14 +251,14 @@ export function ResearchBrowse({ tree, count }: { tree: ResearchNavNode[]; count
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="flex w-full items-center gap-2 rounded-lg border border-black/15 bg-nav-background/15 px-3 py-2 text-left font-mallory-book text-sm"
+        className="flex w-full items-center gap-2 rounded-lg border border-black/15 px-3 py-2 text-left font-mallory-book text-sm"
       >
         <Chevron open={open} />
         <span className="flex-1">Browse notes</span>
         <span className="text-text-muted">{count}</span>
       </button>
       {open && (
-        <div className="mt-2 max-h-[70vh] overflow-y-auto rounded-lg border border-black/10 bg-nav-background/10 p-3">
+        <div className="mt-2 max-h-[70vh] overflow-y-auto p-1">
           <TreePanel tree={tree} onNavigate={() => setOpen(false)} />
         </div>
       )}
