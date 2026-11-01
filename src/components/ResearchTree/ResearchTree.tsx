@@ -74,7 +74,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                 <button
                   type="button"
                   onClick={() => toggle(node.slug)}
-                  className="flex flex-1 items-center gap-1.5 rounded-md py-1.5 pr-2 text-left font-semibold text-foreground hover:bg-black/5"
+                  className="flex flex-1 items-center gap-1.5 rounded-md py-1.5 pr-2 text-left font-semibold text-foreground"
                   style={pad}
                 >
                   <Chevron open={open} />
@@ -89,7 +89,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                     type="button"
                     onClick={() => toggle(node.slug)}
                     aria-label={open ? `Collapse ${node.title}` : `Expand ${node.title}`}
-                    className="mt-1 shrink-0 rounded-md p-1 text-foreground hover:bg-black/5"
+                    className="mt-1 shrink-0 rounded-md p-1 text-foreground"
                     style={{ marginLeft: `${4 + depth * INDENT}px` }}
                   >
                     <Chevron open={open} />
@@ -99,8 +99,8 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                   href={`/research/${node.slug}`}
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
-                  className={`flex-1 rounded-md py-1.5 pr-2 leading-snug hover:no-underline! ${
-                    active ? "bg-nav-background/40 font-bold text-foreground!" : "hover:bg-black/5"
+                  className={`flex-1 rounded-md py-1.5 pr-2 leading-snug ${
+                    active ? "font-bold text-foreground!" : "hover:underline!"
                   }`}
                   style={hasChildren ? { paddingLeft: "4px" } : { paddingLeft: `${8 + depth * INDENT + 18}px` }}
                 >

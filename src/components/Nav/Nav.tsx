@@ -136,7 +136,7 @@ function Nav() {
             href="/about"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/about") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+              isActive("/about") ? "font-bold text-foreground!" : "hover:underline"
             }`}
           >
             About Me
@@ -146,7 +146,7 @@ function Nav() {
             href="/posts"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/posts") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+              isActive("/posts") ? "font-bold text-foreground!" : "hover:underline"
             }`}
           >
             Blog Posts
@@ -158,7 +158,7 @@ function Nav() {
               href={`/posts/${path}`}
               onClick={() => setIsOpen(false)}
               className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-                isActive(`/posts/${path}`) ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+                isActive(`/posts/${path}`) ? "font-bold text-foreground!" : "hover:underline"
               }`}
             >
               {name}
@@ -173,7 +173,7 @@ function Nav() {
             href="/research"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isInSection("/research") ? "bg-black/10 font-bold" : "hover:bg-black/5 hover:underline"
+              isInSection("/research") ? "font-bold text-foreground!" : "hover:underline"
             }`}
           >
             Research
