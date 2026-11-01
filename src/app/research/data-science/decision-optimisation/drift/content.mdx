@@ -8,7 +8,7 @@ export const metadata = {
   log: [
     {
       date: "2026-11-01",
-      note: "Migrated from data-science-notes; fixed the SHAP adjustment, which mixed log-odds with probabilities and adjusted the wrong column",
+      note: "Migrated from data-science-notes; fixed the SHAP adjustment and reran the backtest without leaky features",
     },
   ],
 };
@@ -54,26 +54,29 @@ Before filtering gaps away, it is worth asking whether they carry signal (a prod
 Train one model per week and validate each on the following week. If every model does about as well, there is little sign of drift. If performance varies a lot, the validation score of a model trained on everything is a poor guide to how it will do in future.
 
 ```python
-for training_week in weeks[:-1]:
+data = data.sort_values("Semana").reset_index(drop=True)
+for training_week in weeks[1:-1]:  # week 3 has no previous week to lag from
     val_week = training_week + 1
     train_index = data[data["Semana"] == training_week].index
     val_index = data[data["Semana"] == val_week].index
-    model, val_loss = train(dataset(train_index), dataset(val_index))
-    metrics.append({"training_data_week": training_week, "validation_loss": val_loss})
+    for seed in [0, 1, 2]:
+        model, val_loss = train(dataset(train_index), dataset(val_index), seed=seed)
+        metrics.append({"training_week": training_week, "seed": seed, "val_mse": val_loss})
 ```
+
+The features are last week's demand, units sold and returns for each store and client, so the model only sees what it would know when ordering. Three seeds per week show how much of any difference is just training noise, and forecasting last week's demand gives a baseline.
 
 <LocalImage
   src="/images/research/data-science/decision-optimisation/drift/backtest-loss.png"
-  alt="Validation loss by training week: about 7.5 for week 3, under 1 for every later week"
-  width={368}
-  height={366}
+  alt="Validation MSE by training week: the model sits between 26 and 31 with overlapping error bars, and the last-week baseline between 16 and 20"
+  width={500}
+  height={400}
   size="small"
 />
 
-The model trained on week 3 does far worse on week 4 than any other pair. That is the kind of thing to investigate, with two cautions:
+No week stands out. The model's validation MSE moves between 26 and 31, which is about the size of the variation between seeds (a standard deviation of up to 6.4 for week 5). So this backtest finds no sign of drift in the relationship, even though average demand fell steadily. The model is also 7 to 12 MSE worse than the naive baseline in every week, which is the more useful finding.
 
-- Each bar is a single training run of a small neural network, and such runs are noisy (the same architecture's validation loss jumped from 7 to 82 between two epochs in the dynamic decisions note). Repeat with several seeds before calling a spike drift.
-- The model uses the same week's units sold as a feature, which nearly gives away the target. A backtest with lagged features would be a fairer test of how stable the relationship is.
+This replaces the original backtest, which showed one week (training on week 3) with far higher loss than the others. That result was not drift. The model used the same week's units sold as a feature, which nearly gives away the target, and the code indexed the sorted arrays with the unsorted DataFrame's index labels, so training and validation rows were mismatched. Each bar was also a single training run.
 
 ## Responding to covariate shift
 

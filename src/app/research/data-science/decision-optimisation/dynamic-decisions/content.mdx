@@ -8,7 +8,7 @@ export const metadata = {
   log: [
     {
       date: "2026-11-01",
-      note: "Migrated from data-science-notes; corrected the reading of the results and flagged the leaky features",
+      note: "Migrated from data-science-notes; retrained without the leaky same-week features and reran the rule comparison",
     },
   ],
 };
@@ -38,9 +38,21 @@ The [Grupo Bimbo inventory demand](https://www.kaggle.com/competitions/grupo-bim
 
 Most ID combinations do not appear every week (the median appears in 2 of 7). In a real project you would find out why: missing data, products launched or retired, or genuinely zero sales. Here we keep only combinations present in all 7 weeks, which leaves 17.6 million rows.
 
-Weeks 3 and 4 train a demand model, and weeks 5 to 9 are used to compare decision rules. The model is a small PyTorch network with an embedding for each ID column, as in the [PyTorch note](/research/AI/pytorch).
+The model is a small PyTorch network with an embedding for each ID column, as in the [PyTorch note](/research/AI/pytorch). Week 4 trains it, and weeks 5 to 9 are used to compare decision rules.
 
-> **Caution.** The original model scores an R² of 0.996, but that is too good to trust. Its numeric features are `Venta_uni_hoy` and `Venta_hoy`, the units sold and sales value **in the same week** as the demand being predicted. Adjusted demand is essentially units sold minus returns, so the model is mostly reading the answer off its inputs. You do not know this week's sales when you place this week's order. A real forecast should use lagged features (last week's sales and demand, for instance), and it will be much less accurate, which makes the buffer in the rules below matter more.
+### Fixing a leak
+
+The original notebook fed the model `Venta_uni_hoy` and `Venta_hoy`, the units sold and sales value **in the same week** as the demand being predicted. Adjusted demand is essentially units sold minus returns, so the model was reading the answer off its inputs, and scored an R² of 0.994. You do not know this week's sales when you place this week's order.
+
+The version here uses only what is known before ordering: **last week's** demand, units sold and units returned for the same ID combination. Week 3 has no previous week, so training moves to week 4 (a 500,000-row sample, split 80/20 as before). The result:
+
+| Model                                  | Validation R² | Validation MSE |
+| -------------------------------------- | ------------- | -------------- |
+| Original, with same-week sales (leaky) | 0.994         | 7.5            |
+| Lagged features only                   | 0.786         | 293.9          |
+| No model: forecast last week's demand  | 0.795         | 281.3          |
+
+Without the leak, the network does no better than simply repeating last week's demand. That is worth knowing before building anything more elaborate, and it is a reminder to always compare against a naive baseline. The large MSE comes from a few combinations with very high demand.
 
 Because the decisions do not change what customers want to buy, the predictions can be computed up front, before the simulation runs. (One caveat: recorded demand may be capped by what the shop had in stock, which would make it partly a consequence of past decisions.)
 
@@ -95,7 +107,7 @@ def objective_function(df):
     )
 ```
 
-Three rules:
+Four rules:
 
 ```python
 def predicted_need(state):
@@ -104,33 +116,38 @@ def predicted_need(state):
 def predicted_need_plus_one(state):
     return predicted_need(state) + 1
 
+def predicted_need_plus_two(state):
+    return predicted_need(state) + 2
+
 def predicted_demand(state):
     return np.ceil(state["predicted_demand"])
 ```
 
-The original `predicted_need` had no `max(0, ...)`, so whenever old stock exceeded the forecast it placed a negative order. That has to be clipped at zero.
+The original `predicted_need` had no `max(0, ...)`, so whenever old stock exceeded the forecast it placed a negative order. Predictions are also clipped at zero.
 
-The rules are compared on store 1110 (store 24049 is held back to test the winner). Objective values are computed from the totals:
+The rules are compared on store 1110, with store 24049 held back to test the winner:
 
 | Rule                      | Shortages (count) | Total shortage | Sold    | Old stock | Spoiled | Objective |
 | ------------------------- | ----------------- | -------------- | ------- | --------- | ------- | --------- |
-| `predicted_need`          | 6,068             | 16,361         | 326,756 | 1,355     | 105     | 276,943   |
-| `predicted_need_plus_one` | 3,160             | 10,293         | 332,824 | 7,794     | 274     | 297,911   |
-| `predicted_demand`        | 5,960             | 16,179         | 326,938 | 2,913     | 343     | 276,773   |
+| `predicted_need`          | 5,477             | 65,178         | 277,939 | 66,806    | 15,205  | 41,400    |
+| `predicted_need_plus_one` | 4,672             | 59,437         | 283,680 | 72,942    | 16,809  | 60,494    |
+| `predicted_need_plus_two` | 3,993             | 54,504         | 288,613 | 79,693    | 18,726  | 75,892    |
+| `predicted_demand`        | 4,347             | 50,371         | 292,746 | 125,839   | 37,428  | 60,000    |
 
 <LocalImage
   src="/images/research/data-science/decision-optimisation/dynamic-decisions/rule-comparison.png"
-  alt="Bar charts comparing the three rules on objective, old stock, spoilage, shortages, sales and orders"
-  width={1589}
-  height={989}
+  alt="Bar charts comparing the four rules on objective, old stock, spoilage, shortages, sales and orders"
+  width={1600}
+  height={1000}
 />
 
 What this shows:
 
-- **`predicted_demand`** ignores what is carried over. It spoils the most stock (343 units), because carried-over stock is no longer counted against the next order, and it barely reduces shortages. It scores slightly below `predicted_need`.
-- **`predicted_need_plus_one`** carries the most old stock (7,794 units, not `predicted_demand` as the original notebook said), but cuts the number of shortages roughly in half. Since the objective weights a shortage six times as heavily as old stock, it wins clearly, by about 7.5%, rather than "slightly".
+- **An honest forecast changes the picture.** With the leaky model, shortages and spoilage were tiny and every rule scored about 277,000 to 298,000. With a realistic forecast, shortages are 3 to 6 times higher, spoilage is 60 to 145 times higher, and the objective falls by 78 to 85%.
+- **`predicted_demand`** ignores what is carried over, so it orders the most, carries the most old stock and spoils twice as much as any other rule. It has the fewest units short, but it still loses to the buffered rules.
+- **Buffers pay.** Each extra unit of buffer cuts shortages, and because the objective weights a unit short six times as heavily as a unit of old stock, the objective keeps rising up to `predicted_need_plus_two`. With a forecast this noisy, the buffer is doing a lot of the work.
 
-Whether those weights are right depends on the business. Once you trust the simulation, the rule's parameters (the size of the buffer, say) can be tuned with any hyperparameter search tool, then checked on the held-back store.
+On the held-back store, `predicted_need_plus_two` also beats `predicted_need` (5,363 against −16,882), though the objective there is barely positive. Whether the weights in the objective are right depends on the business. Once you trust the simulation, the size of the buffer can be tuned with any hyperparameter search tool, then checked on the held-back store.
 
 Next: [drift](/research/data-science/decision-optimisation/drift), and what happens when the patterns in the simulation stop holding.
 
