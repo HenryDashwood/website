@@ -2,8 +2,10 @@ export const metadata = {
   title: "Self Attention",
   description: "",
   created: "2026-01-26",
-  lastUpdated: "2026-03-18",
-  tags: [],
+  lastUpdated: "2026-11-01",
+  status: "growing",
+  tags: ["AI"],
+  log: [{ date: "2026-11-01", note: "Finished the first-principles walkthrough, merged in from ai-notes" }],
 };
 
 The three big papers that led to the original form of self-attention were:
@@ -50,13 +52,14 @@ And visually it looks like this ([from here](https://sebastianraschka.com/blog/2
   width={800}
   height={600}
 />
+
 ## From first principles
 
 How do we go from a standard linear layer, which transforms each token independently, to a mechanism that lets a token build a representation from the rest of the sequence?
 
 We'll use a toy example around the word `bank`, which can mean different things in different contexts:
 
-- `river bank mud`
+- `stream bank mud`
 - `money bank loan`
 
 ### Why a linear layer is not enough
@@ -70,3 +73,177 @@ y = x @ W
 ```
 
 That can change the features of each token, but it does not let tokens communicate. If the input row for `bank` is the same in two different sentences, then the output row for `bank` will also be the same.
+
+```python
+import math
+
+import torch
+import torch.nn as nn
+
+torch.set_printoptions(precision=3, sci_mode=False)
+
+stream_tokens = ["stream", "bank", "mud"]
+finance_tokens = ["money", "bank", "loan"]
+
+
+def embed(tokens):
+    vocab = {
+        "stream": torch.tensor([1.2, 0.0, 0.0, 0.3]),
+        "mud": torch.tensor([0.9, 0.0, 0.0, 0.9]),
+        "money": torch.tensor([0.0, 1.4, 0.0, 0.1]),
+        "loan": torch.tensor([0.0, 1.1, 0.0, 0.6]),
+        "bank": torch.tensor([0.8, 0.8, 0.2, 0.0]),
+    }
+    return torch.stack([vocab[token] for token in tokens])
+```
+
+Each token has a 4-dimensional embedding, and the row for `bank` is identical in both sentences:
+
+```python
+embed(stream_tokens)
+```
+
+```
+tensor([[1.200, 0.000, 0.000, 0.300],
+        [0.800, 0.800, 0.200, 0.000],
+        [0.900, 0.000, 0.000, 0.900]])
+```
+
+```python
+embed(finance_tokens)
+```
+
+```
+tensor([[0.000, 1.400, 0.000, 0.100],
+        [0.800, 0.800, 0.200, 0.000],
+        [0.000, 1.100, 0.000, 0.600]])
+```
+
+Pass both through the same linear layer and the `bank` row comes out the same too:
+
+```python
+W = torch.tensor(
+    [
+        [1.0, 0.2, 0.0],
+        [0.1, 1.1, 0.0],
+        [0.5, 0.5, 1.0],
+        [0.0, 0.3, 0.8],
+    ]
+)
+embed(stream_tokens) @ W   # bank row: [0.980, 1.140, 0.200]
+embed(finance_tokens) @ W  # bank row: [0.980, 1.140, 0.200]
+```
+
+CNNs work on images because locality matters and convolutions bake that assumption into the architecture. In text, the word worth looking at changes from sentence to sentence, so we need a _content-based_ way for tokens to interact.
+
+### Letting tokens look at each other
+
+If `bank` is going to mean different things in different contexts, its new representation has to depend on the other tokens in the sentence. The smallest useful version of that idea is:
+
+1. Compare `bank` with every token in the sequence.
+2. Turn those comparisons into weights.
+3. Take a weighted combination of the token vectors.
+
+A dot product gives a quick similarity score. It grows when two vectors point in a similar direction, but also when they are longer, so it is not a pure measure of direction (that would be cosine similarity).
+
+```python
+stream_embeddings = embed(stream_tokens)
+stream_embeddings @ stream_embeddings.T
+```
+
+```
+tensor([[1.530, 0.960, 1.350],
+        [0.960, 1.320, 0.720],
+        [1.350, 0.720, 1.620]])
+```
+
+Softmax turns those arbitrary scores into positive weights that sum to 1, so each token can take a weighted average over the sequence:
+
+```python
+stream_weights = torch.softmax(stream_embeddings @ stream_embeddings.T, dim=-1)
+stream_weights @ stream_embeddings
+```
+
+```
+tensor([[1.001, 0.188, 0.047, 0.438],
+        [0.949, 0.356, 0.089, 0.313],
+        [0.987, 0.150, 0.037, 0.520]])
+```
+
+```python
+finance_embeddings = embed(finance_tokens)
+finance_weights = torch.softmax(finance_embeddings @ finance_embeddings.T, dim=-1)
+finance_weights @ finance_embeddings
+```
+
+```
+tensor([[0.161, 1.181, 0.040, 0.243],
+        [0.325, 1.078, 0.081, 0.190],
+        [0.158, 1.163, 0.040, 0.278]])
+```
+
+The `bank` row (the middle one) now leans towards the first feature in the stream sentence and the second feature in the finance sentence. Its representation depends on its context.
+
+### Queries, keys and values
+
+Using the raw embeddings for everything is good for intuition but restrictive. A learned attention layer should be able to decide separately:
+
+- what features a token uses when it is _looking for_ context: its **query**
+- what features a token exposes when it is being _matched against_: its **key**
+- what information it _passes along_ once it is attended to: its **value**
+
+So attention learns three projections:
+
+```python
+W_query = torch.tensor([[1.0, 0.0], [0.0, 1.0], [0.2, 0.2], [0.0, 0.0]])
+W_key = torch.tensor([[1.0, 0.0], [0.0, 1.0], [0.0, 0.0], [0.1, 0.1]])
+W_value = torch.tensor([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, 0.5]])
+
+queries = stream_embeddings @ W_query
+keys = stream_embeddings @ W_key
+values = stream_embeddings @ W_value
+
+scores = queries @ keys.T / math.sqrt(keys.shape[-1])
+torch.softmax(scores, dim=-1) @ values
+```
+
+```
+tensor([[0.992, 0.221, 0.261],
+        [0.957, 0.314, 0.256],
+        [0.986, 0.232, 0.263]])
+```
+
+The one new detail is dividing by $\sqrt{d_k}$. Dot products of random vectors grow with their dimension, and large scores push softmax towards a one-hot output with vanishing gradients. Scaling keeps the scores in a sensible range.
+
+### As a module
+
+The recipe, compacted:
+
+1. Project `x` into queries, keys and values.
+2. Score queries against keys.
+3. Normalise with softmax.
+4. Take a weighted sum of the values.
+
+```python
+class SelfAttention(nn.Module):
+    def __init__(self, d_in, d_out):
+        super().__init__()
+        self.W_query = nn.Parameter(torch.rand(d_in, d_out))
+        self.W_key = nn.Parameter(torch.rand(d_in, d_out))
+        self.W_value = nn.Parameter(torch.rand(d_in, d_out))
+
+    def forward(self, x):
+        queries = x @ self.W_query
+        keys = x @ self.W_key
+        values = x @ self.W_value
+
+        attn_scores = queries @ keys.T
+        attn_weights = torch.softmax(attn_scores / math.sqrt(keys.shape[-1]), dim=-1)
+        return attn_weights @ values
+```
+
+A linear layer applies the same transformation to each token and has no way to exchange information across positions. Self-attention still reuses the same learned parameters at every position, but each token's output changes from one sequence to the next, because the weights are computed from token-to-token interactions inside the sequence.
+
+For decoding, where a token must not see the tokens after it, see [Causal Attention](/research/AI/attention/causal-attention).
+
+[Original notebook](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/attention/00-simple-self-attention.ipynb)

@@ -1,0 +1,41 @@
+export const metadata = {
+  title: "PyTorch",
+  description: "Tensors, autograd and the computational graph",
+  created: "2026-02-28",
+  lastUpdated: "2026-11-01",
+  status: "seedling",
+  tags: ["AI"],
+  log: [{ date: "2026-11-01", note: "Migrated from ai-notes" }],
+};
+
+PyTorch tensors are like NumPy arrays with two extensions:
+
+1. **GPU placement**: tensors can be moved to a GPU for accelerated computation.
+2. **Autograd**: tensors take part in a computational graph that makes backpropagation possible.
+
+## The computational graph
+
+- PyTorch builds the graph dynamically as the code runs ("define-by-run"). TensorFlow 1 made you declare the graph up front and then execute it; TensorFlow 2 also runs eagerly by default, and builds a static graph only when you ask for one with `tf.function`.
+- Each operation on a tracked tensor adds a node to the graph, recording how the output was derived from its inputs.
+- This is what makes `.backward()` possible: PyTorch walks the graph in reverse to compute gradients.
+
+```python
+import torch
+
+x = torch.tensor(3.0, requires_grad=True)
+y = x**2 + 2 * x
+y.backward()
+x.grad  # tensor(8.), since dy/dx = 2x + 2
+```
+
+## `requires_grad`
+
+- Graph tracking is opt-in: a tensor only takes part if `requires_grad=True`.
+- Learnable parameters in a model (`nn.Parameter`) have it set automatically.
+
+## `torch.no_grad()`
+
+- At inference time we don't need gradients, so wrapping code in `with torch.no_grad():` turns graph tracking off.
+- That saves both memory and computation.
+
+[Original notebook](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/pytorch/00_basics.ipynb)
