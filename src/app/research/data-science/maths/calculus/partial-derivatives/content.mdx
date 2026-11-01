@@ -1,3 +1,13 @@
+export const metadata = {
+  title: "Partial Derivatives",
+  description: "Rates of change of a function of several variables, one input at a time",
+  created: "2023-04-27",
+  lastUpdated: "2026-11-01",
+  status: "settled",
+  tags: ["Mathematics"],
+  log: [{ date: "2026-11-01", note: "Moved from the blog to Research" }],
+};
+
 Your heating bill depends on the average temperature outside. If all other factors remain constant, then the heating bill will increase when the temperature drops. Let's denote the average temperature by $t$ and define a function $h:\mathbb{R}\to\mathbb{R}$ where $h(t)$ is the heating bill as a function of $t$.
 
 We can then interpret the ordinary derivative as indicating how much the heating bill will change as you change the temperature:
@@ -11,7 +21,7 @@ If we plot $h$ as a function of $t$ then $\frac{dh}{dt}(a)$ gives the slope of t
 ### Example
 
 <LocalImage
-  src="/images/partial-derivatives/tangent-line.png"
+  src="/images/research/data-science/maths/calculus/partial-derivatives/tangent-line.png"
   alt="Diagram of the tangent curve"
   priority={true}
   size="medium"
@@ -82,7 +92,11 @@ The partial derivative $\frac{\partial h}{\partial i}$ indicates how much effect
 
 In the graph of $h(t,i)$, the partial derivatives can be viewed as the slopes of the graphs in the $t$ direction and in the $i$ direction.
 
-<LocalImage src="/images/partial-derivatives/tangent-plane.png" alt="Diagram of the tangent plane" size="medium" />
+<LocalImage
+  src="/images/research/data-science/maths/calculus/partial-derivatives/tangent-plane.png"
+  alt="Diagram of the tangent plane"
+  size="medium"
+/>
 
 ## Examples of calculating partial derivatives
 
@@ -181,3 +195,5 @@ $$
 
 - [Introduction to partial derivatives](https://mathinsight.org/partial_derivative_introduction)
 - [https://mathinsight.org/partial_derivative_examples](https://mathinsight.org/partial_derivative_examples)
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/Calculus/10_partial_derivatives.ipynb)

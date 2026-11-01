@@ -13,6 +13,14 @@ const nextConfig = {
   // Configure `pageExtensions`` to include MDX files
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   // Optionally, add any other Next.js config below
+  // Calculus posts moved to Research notes
+  async redirects() {
+    return ["chain-rule", "product-rule", "quotient-rule", "partial-derivatives"].map((slug) => ({
+      source: `/posts/${slug}`,
+      destination: `/research/data-science/maths/calculus/${slug}`,
+      permanent: true,
+    }));
+  },
   images: {
     remotePatterns: [
       {

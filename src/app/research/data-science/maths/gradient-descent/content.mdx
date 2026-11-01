@@ -60,7 +60,7 @@ as $h \to 0$. The difference quotient is the slope of the secant through $(x, f(
   size="medium"
 />
 
-A function of several variables has one partial derivative per input: how $f$ changes when only that input changes, the others held fixed. (See the [partial derivatives](/posts/partial-derivatives) post.) Estimated numerically:
+A function of several variables has one partial derivative per input: how $f$ changes when only that input changes, the others held fixed. (See the [partial derivatives](/research/data-science/maths/calculus/partial-derivatives) note.) Estimated numerically:
 
 ```python
 def partial_derivative(f, point, var_idx, h):
@@ -101,7 +101,7 @@ $$
 \text{MSE}(m, b) = \frac{1}{n}\sum_{i=1}^n \left(y_i - (mx_i + b)\right)^2
 $$
 
-Write $e_i = y_i - (mx_i + b)$ for the error on point $i$. By the [chain rule](/posts/chain-rule), the outer square differentiates to $2e_i$, and $e_i$ differentiates to $-x_i$ with respect to $m$ and to $-1$ with respect to $b$ (everything else is a constant, whose derivative is zero). So
+Write $e_i = y_i - (mx_i + b)$ for the error on point $i$. By the [chain rule](/research/data-science/maths/calculus/chain-rule), the outer square differentiates to $2e_i$, and $e_i$ differentiates to $-x_i$ with respect to $m$ and to $-1$ with respect to $b$ (everything else is a constant, whose derivative is zero). So
 
 $$
 \frac{\partial\,\text{MSE}}{\partial m} = -\frac{2}{n}\sum_{i=1}^n x_i \left(y_i - (mx_i + b)\right)
