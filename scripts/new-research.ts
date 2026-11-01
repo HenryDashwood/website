@@ -39,14 +39,13 @@ if (existsSync(researchDir)) {
 mkdirSync(researchDir, { recursive: true });
 mkdirSync(imagesDir, { recursive: true });
 
-// Metadata lives in the MDX file itself. Optional fields: status ("seedling" | "growing" | "settled")
-// and log ([{ date: "YYYY-MM-DD", note: "What changed" }]).
+// Metadata lives in the MDX file itself. Optional field: log
+// ([{ date: "YYYY-MM-DD", note: "What changed" }]).
 const mdxContent = `export const metadata = {
   title: ${JSON.stringify(title)},
   description: "",
   created: "${today}",
   lastUpdated: "${today}",
-  status: "seedling",
   tags: [],
   log: [{ date: "${today}", note: "Started this note" }],
 };

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import ResearchPage from "@/components/ResearchPage";
 import ResearchTopicPage from "@/components/ResearchTopicPage";
-import { getAllNotes, getAllTopics, getNote, getTopic } from "@/lib/research";
+import { getAllNotes, getAllTopics, getNavNode, getNote } from "@/lib/research";
 
 export const revalidate = 3600;
 export const dynamicParams = false;
@@ -23,8 +23,8 @@ async function resolve(slug: string[]) {
   const slugPath = slug.map(decodeURIComponent).join("/");
   const note = await getNote(slugPath);
   if (note) return { note, topic: null };
-  const topic = await getTopic(slugPath);
-  if (topic) return { note: null, topic };
+  const topic = await getNavNode(slugPath);
+  if (topic && topic.kind === "folder") return { note: null, topic };
   return null;
 }
 
@@ -48,5 +48,5 @@ export default async function Page({ params }: PageProps) {
   const resolved = await resolve(slug);
   if (!resolved) notFound();
 
-  return resolved.note ? <ResearchPage note={resolved.note} /> : <ResearchTopicPage topic={resolved.topic!} />;
+  return resolved.note ? <ResearchPage note={resolved.note} /> : <ResearchTopicPage node={resolved.topic!} />;
 }

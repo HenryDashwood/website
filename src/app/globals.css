@@ -380,6 +380,34 @@ details[open] {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Research outlines use <details> for collapsible folders without the boxed callout style above */
+.research-outline details,
+.research-outline details[open] {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+  cursor: auto;
+}
+
+.research-outline details summary {
+  font-weight: inherit;
+  cursor: pointer;
+}
+
+.research-outline details summary::-webkit-details-marker {
+  display: none;
+}
+
+.research-outline details summary::before {
+  width: 0.75rem;
+  margin-right: 0.25rem;
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
 /* Prose content wrapper - constrains regular content but allows breakouts */
 .prose-content > * {
   max-width: 800px;
