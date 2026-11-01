@@ -120,9 +120,9 @@ Also for $f(x,y) = y^3x^2$. Calculate $\frac{\partial f}{\partial y}(1,2)$
 
 $$
 \begin{aligned}
-\frac{\partial f}{\partial x}(x,y) &= 2y^3x \\
-\frac{\partial f}{\partial x}(1,2) &= 2 \times 2^3 \times 1 \\
-&= 16
+\frac{\partial f}{\partial y}(x,y) &= 3x^2y^2 \\
+\frac{\partial f}{\partial y}(1,2) &= 3 \times 1^2 \times 2^2 \\
+&= 12
 \end{aligned}
 $$
 
@@ -155,20 +155,27 @@ $$
 Given
 
 $$
-p(y_1, y_2, y_3) = 9(\frac{y_1, y_2, y_3}{y_1 + y_2 + y_3})
+p(y_1, y_2, y_3) = \frac{9y_1y_2y_3}{y_1 + y_2 + y_3}
 $$
 
 calculate $\frac{\partial p}{\partial y_3}(y_1, y_2, y_3)$ at the point $(y_1, y_2, y_3) = (1, -2, 4)$
 
 **Solution**:
 
-In calculating partial derivatives, we can use all the rules for ordinary derivatives. We can calculate $\frac{\partial p}{\partial y_3}$ using the quotient rule:
+In calculating partial derivatives, we can use all the rules for ordinary derivatives. Treating $y_1$ and $y_2$ as constants, the numerator is $9y_1y_2 \cdot y_3$ (derivative $9y_1y_2$) and the denominator is $y_1 + y_2 + y_3$ (derivative $1$). The quotient rule gives:
 
 $$
-\frac{\partial p}{\partial y_3}(y_1, y_2, y_3) = 9(\frac{(y_1 + y_2 + y_3)}{(y_1 + y_2 + y_3)^2})
+\begin{aligned}
+\frac{\partial p}{\partial y_3}(y_1, y_2, y_3) &= \frac{9y_1y_2(y_1 + y_2 + y_3) - 9y_1y_2y_3}{(y_1 + y_2 + y_3)^2} \\
+&= \frac{9y_1y_2(y_1 + y_2)}{(y_1 + y_2 + y_3)^2}
+\end{aligned}
 $$
 
-TODO: finish this example
+At $(1, -2, 4)$:
+
+$$
+\frac{\partial p}{\partial y_3}(1, -2, 4) = \frac{9 \times 1 \times (-2) \times (1 - 2)}{(1 - 2 + 4)^2} = \frac{18}{9} = 2
+$$
 
 ## References
 
