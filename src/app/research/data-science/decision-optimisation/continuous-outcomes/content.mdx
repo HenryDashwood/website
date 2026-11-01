@@ -1,0 +1,104 @@
+export const metadata = {
+  title: "Continuous Outcomes",
+  description: "Turning demand forecasts into stocking decisions: loss functions, custom losses and quantile forests",
+  created: "2023-08-12",
+  lastUpdated: "2026-11-01",
+  status: "growing",
+  tags: ["Machine Learning", "Decision Optimisation"],
+  log: [
+    {
+      date: "2026-11-01",
+      note: "Migrated from data-science-notes, absorbing the loss functions notebook; corrected the utility formula, the L1 comparison and how to read quantile predictions",
+    },
+  ],
+};
+
+[Profit Curves](/research/data-science/decision-optimisation/profit-curves) handles yes/no decisions. Many decisions are quantities instead: how many loaves to stock.
+
+## The problem
+
+The data comes from the [Grupo Bimbo Inventory Demand](https://www.kaggle.com/competitions/grupo-bimbo-inventory-demand) Kaggle competition: nine weeks of bakery sales to stores in Mexico. The target, `Demanda_uni_equil`, is a product's demand at a store in a week, defined as that week's sales minus the next week's returns (unsold, expired stock).
+
+A small PyTorch model with an embedding for each ID column (store, channel, route, client, product) predicts demand. We stock the prediction rounded up, and score the decisions with business metrics as well as the usual ones. The key one is a **utility** that treats running out as three times worse than over-ordering:
+
+$$
+\text{Utility} = -3 \times \text{units understocked} - \text{units overstocked}
+$$
+
+```python
+def utility(stock, demand):
+    under = np.clip(demand - stock, 0, None).sum()
+    over = np.clip(stock - demand, 0, None).sum()
+    return -3 * under - over
+```
+
+## Results
+
+| Rule                             | Understocked (share of rows) | Units under | Overstocked (share of rows) | Units over |      Utility |
+| -------------------------------- | :--------------------------: | ----------: | :-------------------------: | ---------: | -----------: |
+| MSE model                        |             28%              |      72,458 |             63%             |    104,514 |     −321,888 |
+| MSE model × 1.5                  |             14%              |      32,762 |             80%             |    226,306 |     −324,592 |
+| MAE model                        |             34%              |      81,489 |             50%             |     71,728 |     −316,195 |
+| MAE model × 1.5                  |             16%              |      37,625 |             76%             |    184,350 |     −297,225 |
+| Custom loss                      |             14%              |      34,970 |             79%             |    188,466 | **−293,376** |
+| Quantile forest, 90th percentile |              8%              |      35,904 |             88%             |    395,286 |     −502,998 |
+
+### Stocking 50% more
+
+The MSE model understocks 28% of the time. Stocking 50% above its predictions halves that to 14%, but overstocking rises from 63% to 80% of rows and the overstocked units more than double. Utility barely moves, so a better model would help more than a blunter rule.
+
+### L1 loss
+
+The MSE model minimises mean squared error, which pulls its predictions towards the _mean_ of demand given the inputs. Training with mean absolute error (L1 loss) pulls them towards the _median_ instead.
+
+Why? For a constant prediction $c$, the derivative of $\sum_i (y_i - c)^2$ is $-2\sum_i (y_i - c)$, which is zero when $c$ is the mean. The derivative of $\sum_i |y_i - c|$ is the number of $y_i$ below $c$ minus the number above it, which is zero when $c$ is the median.
+
+Demand is right-skewed, so the median sits below the mean. The MAE model therefore understocks more often (34% against 28%) but overstocks much less (50% against 63%), and its utility is slightly better. The training losses of the two models can't be compared directly, since one is squared and one isn't, but the business metrics can.
+
+### Optimising the utility directly
+
+If the utility is what we care about, we can train on it:
+
+```python
+class CustomLoss(nn.Module):
+    def forward(self, outputs, actual):
+        diff = outputs - actual
+        return torch.where(outputs > actual, diff, -3 * diff).mean()
+```
+
+This gives the best utility of any rule. It is also a quantile (pinball) loss in disguise: penalising under-prediction three times as much as over-prediction makes the optimal prediction the 3 / (3 + 1) = 75th percentile of demand. The hard part is no longer the modelling, but knowing whether the utility was the right thing to optimise.
+
+## Predicting full distributions
+
+Point predictions are limiting when making decisions, especially dynamic ones, where this week's order affects next week's stock (see [Dynamic Decisions](/research/data-science/decision-optimisation/dynamic-decisions)). A predicted distribution lets us choose the risk we take. Deep learning and Bayesian libraries such as PyMC can produce one; here we use a **quantile regression forest** from Zillow's [quantile-forest](https://zillow.github.io/quantile-forest/user_guide.html) library.
+
+A normal random forest predicts the mean of the training targets in the leaf a row lands in, averaged over the trees. A quantile regression forest instead keeps all the training targets: it pools the targets from the row's leaf in _every_ tree, weighting each target by one over the size of its leaf, and reads quantiles off that combined distribution. The API is the same as scikit-learn's:
+
+```python
+qrf = RandomForestQuantileRegressor(n_estimators=100, min_samples_leaf=50, random_state=0)
+qrf.fit(X_train, y_train)
+
+quantiles = [i / 100 for i in range(5, 100, 5)]  # 5th, 10th, ..., 95th
+sample_preds = qrf.predict(X_val, quantiles=quantiles)  # shape (n_rows, 19)
+```
+
+One row's prediction might be
+
+```
+[1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 9]
+```
+
+Read it as quantiles, not as 19 equally likely outcomes. The first value says there is about a 5% chance demand is 1 or less; the 10th to 20th percentiles are 2; the median is 3; there is about a 10% chance demand exceeds 7 (the 90th percentile) and about 5% that it exceeds 9.
+
+To be understocked only about 10% of the time, stock the 90th percentile, the second-last value. If a distribution has a long tail, for example jumping from 5 at the 80th percentile to 50 at the 90th, we may not want to bet on that, so cap the order at three times the mean of the quantiles:
+
+```python
+def rarely_run_out_rule(prediction):
+    return math.ceil(min(prediction[-2], 3 * np.mean(prediction)))
+```
+
+The cap binds on under 1% of rows. The rule does what it says, understocking 8% of the time, but at a huge cost in overstock, so its utility is the worst of all. Lower percentiles or tighter caps would tune it.
+
+Adapted from Dan Becker's [Machine Learning for Business Decision Optimization](https://www.wandb.courses/courses/decision-optimization) course.
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/08_Decision_Optimisation/02_decision_opt_continuous_outcomes.ipynb) · [Loss functions notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/01_General_Concepts/02_loss_functions.ipynb)

@@ -1,0 +1,59 @@
+export const metadata = {
+  title: "Partial Dependence and ALE",
+  description: "Two ways to see how a feature moves a model's predictions, and when they disagree",
+  created: "2023-05-11",
+  lastUpdated: "2026-11-01",
+  status: "seedling",
+  tags: ["Machine Learning"],
+  log: [{ date: "2026-11-01", note: "Merged the partial dependence and ALE notebooks from data-science-notes" }],
+};
+
+## Partial dependence plots
+
+A partial dependence plot (PDP) shows the marginal effect of one or two features on a model's predictions:
+
+1. Pick the feature of interest.
+2. For each value of it on a grid:
+   1. Set that feature to the value in _every_ row of the dataset, leaving the other features as they are.
+   2. Predict on the modified dataset and average the predictions.
+3. Plot the grid values against those averages.
+
+A PDP shows whether the relationship is linear, monotonic or something more complex. Applied to a linear regression, it is always a straight line. For a classifier that outputs probabilities, it shows the probability of one class; with several classes, draw one line or plot per class.
+
+```python
+PartialDependenceDisplay.from_estimator(
+    rf, X_train, features=X_train.columns, kind="average", categorical_features=categorical_columns
+)
+```
+
+On the Titanic random forest:
+
+<LocalImage
+  src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-pdp.png"
+  alt="Partial dependence of survival on each Titanic feature"
+  width={1011}
+  height={1011}
+  size="xlarge"
+/>
+
+The weakness is step 2.1. It assumes the feature is independent of the others. If it isn't, setting it to every value in every row creates combinations that are unlikely or impossible, such as a third-class passenger paying a first-class fare, and the average includes the model's predictions on those made-up rows.
+
+## Accumulated local effects
+
+Accumulated local effects (ALE) plots avoid that. Instead of overwriting the feature everywhere, ALE splits its range into intervals and, within each interval, only uses the rows whose value already falls there. For those rows it computes how much the prediction changes when the feature moves from the interval's lower edge to its upper edge, averages those changes, and accumulates them across intervals. Because each row is only moved a short distance, the predictions stay close to the real data. The result is centred so the average effect is zero.
+
+ALE is also cheaper to compute than PDP. Molnar's [_Interpretable Machine Learning_](https://christophm.github.io/interpretable-ml-book/ale.html) is the best introduction.
+
+Using [PyALE](https://github.com/DanaJomar/PyALE) on the same data (with incomplete rows dropped):
+
+<LocalImage
+  src="/images/research/data-science/interpretability/partial-dependence-and-ale/titanic-ale.png"
+  alt="ALE plots for each Titanic feature"
+  width={1990}
+  height={1189}
+  size="full"
+/>
+
+Sex and class tell the same story in both. Fare does not: the PDP has survival rising with fare, while the ALE effect falls after the cheapest fares. Fare is strongly tied to class, which is exactly the situation where PDP's independence assumption breaks. The two models were also fitted on slightly different rows, though, so that is a lead to follow up rather than a conclusion.
+
+[Original PDP notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/05_Interpretability/03_partial_dependence.ipynb) · [Original ALE notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/05_Interpretability/04_ALE_plots.ipynb)

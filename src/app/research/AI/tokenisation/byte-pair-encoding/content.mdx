@@ -1,0 +1,246 @@
+export const metadata = {
+  title: "Byte Pair Encoding",
+  description: "Building a byte-level BPE tokeniser from scratch",
+  created: "2026-02-07",
+  lastUpdated: "2026-11-01",
+  status: "growing",
+  tags: ["AI"],
+  log: [{ date: "2026-11-01", note: "Merged in the from-scratch walkthrough from ai-notes" }],
+};
+
+Instead of having separate tokens for every word, byte pair encoding (BPE) builds an efficient set of subword units. Part of [Tokenisation](/research/AI/tokenisation/overview).
+
+1. Start with individual bytes as tokens.
+2. Find the most frequent pair of adjacent tokens.
+3. Merge that pair into a new token.
+4. Repeat until the vocabulary reaches the size we want.
+
+The corpus throughout is a paragraph of lorem ipsum, 833 bytes long.
+
+## Training
+
+Encode the text as UTF-8 and treat each byte (0 to 255) as a token:
+
+```python
+tokens = list(text.encode("utf-8"))
+len(tokens)  # 833
+```
+
+Count every adjacent pair:
+
+```python
+pair_counts = {}
+for pair in zip(tokens, tokens[1:]):
+    pair_counts[pair] = pair_counts.get(pair, 0) + 1
+
+sorted(pair_counts.items(), key=lambda kv: kv[1], reverse=True)[:5]
+# [((113, 117), 32), ((116, 32), 31), ((111, 114), 29), ((109, 32), 26), ((97, 109), 24)]
+```
+
+The most common pair is `(113, 117)`, which is `qu`, seen 32 times. It becomes our first new token. Bytes already use ids 0 to 255, so the new token takes the next free id, **256**. (Adding the two ids together, which is tempting, gives 230: that is already the byte for `æ`.)
+
+```python
+def get_pair_counts(tokens: list[int]) -> dict[tuple[int, int], int]:
+    counts: dict[tuple[int, int], int] = {}
+    for pair in zip(tokens, tokens[1:]):
+        counts[pair] = counts.get(pair, 0) + 1
+    return counts
+
+
+def merge_pair(tokens: list[int], pair: tuple[int, int], idx: int) -> list[int]:
+    new_tokens = []
+    i = 0
+    while i < len(tokens):
+        if i < len(tokens) - 1 and (tokens[i], tokens[i + 1]) == pair:
+            new_tokens.append(idx)
+            i += 2
+        else:
+            new_tokens.append(tokens[i])
+            i += 1
+    return new_tokens
+```
+
+Merging `qu` everywhere shortens the sequence from 833 to 801 tokens, one fewer for each of the 32 merges, while the vocabulary grows by one. Repeating that in a loop is the whole training algorithm:
+
+```python
+VOCAB_SIZE = 260
+merges: dict[tuple[int, int], int] = {}
+tokens = list(text.encode("utf-8"))
+
+for i in range(256, VOCAB_SIZE):
+    pair_counts = get_pair_counts(tokens)
+    most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+    tokens = merge_pair(tokens, most_common_pair, i)
+    merges[most_common_pair] = i
+```
+
+```
+Merged (113, 117) into 256. Sequence length: 801
+Merged (116, 32) into 257. Sequence length: 770
+Merged (111, 114) into 258. Sequence length: 741
+Merged (109, 32) into 259. Sequence length: 715
+```
+
+The vocabulary is the 256 single bytes plus one entry per merge, each the concatenation of its two parts:
+
+```python
+vocab = {i: bytes([i]) for i in range(256)}
+for pair, idx in merges.items():
+    vocab[idx] = vocab[pair[0]] + vocab[pair[1]]
+# 256: b'qu', 257: b't ', 258: b'or', 259: b'm '
+```
+
+Merges must be replayed in the order they were learned, which is why `merges` is an ordered dict: token 259 might be built from token 256.
+
+## Encoding and decoding
+
+```python
+def encode(text: str) -> list[int]:
+    tokens = list(text.encode("utf-8"))
+    for pair, idx in merges.items():
+        tokens = merge_pair(tokens, pair, idx)
+    return tokens
+
+
+def decode(tokens: list[int]) -> str:
+    return b"".join(vocab[t] for t in tokens).decode("utf-8", errors="replace")
+
+
+encode("quorum")  # [256, 258, 117, 109]: qu, or, u, m
+assert decode(encode(text)) == text
+```
+
+`errors="replace"` matters because a sequence of tokens can end part-way through a multi-byte UTF-8 character.
+
+## Avoiding merges across word boundaries
+
+Notice that two of the four merges above, `t ` and `m `, glue the end of one word to the space before the next.
+
+Paraphrasing [the GPT-2 paper](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) here.
+
+Consider the word "dog". In a large corpus it appears in many contexts:
+
+- `dog`
+- `dog.`
+- `dog!`
+- `dog?`
+- `dog,`
+- ` dog`
+
+If we trained a BPE tokeniser like the naive one above, it might decide to merge `d+o+g+.` into a single token `dog.`, and separately `d+o+g+!` into `dog!`, etc. Each variant would eat up a slot in our fixed vocabulary budget. We'd be wasting indexes on what is essentially the same concept, and the model would have to learn that all these variants refer to almost the same thing.
+
+If we "pre-tokenise" the text using a regex that splits on character categories (e.g. word characters, whitespace, punctuation), and don't allow the tokeniser to merge across these category boundaries, we can avoid this problem. Something like `dog+.` can never be fused into a single token.
+
+We make an exception for the space character. This can merge with other word characters. This is because spaces are so common we get enough benefits from compressing the text that it outweighs some word fragmentation.
+
+We'll use the GPT-4 split pattern to pre-tokenise:
+
+```python
+import regex as re  # the third-party regex module, for \p{L} and possessive quantifiers
+
+GPT4_SPLIT_PATTERN = r"""'(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
+
+text_chunks = re.findall(GPT4_SPLIT_PATTERN, text)
+# ['Eius', ' eius', ' dolor', ' tempora', ' consectetur', ' sed', '.', ' Amet', ...]  (145 chunks)
+```
+
+Training now counts pairs within each chunk and sums them, so no pair ever straddles two chunks:
+
+```python
+tokenised_chunks = [list(ch.encode("utf-8")) for ch in text_chunks]
+merges = {}
+
+for i in range(256, VOCAB_SIZE):
+    pair_counts = {}
+    for tc in tokenised_chunks:
+        for pair, count in get_pair_counts(tc).items():
+            pair_counts[pair] = pair_counts.get(pair, 0) + count
+    most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+    tokenised_chunks = [merge_pair(tc, most_common_pair, i) for tc in tokenised_chunks]
+    merges[most_common_pair] = i
+# merges: qu, or, am, ol. Total tokens: 733
+```
+
+The merges are now all inside words, and we still get a good amount of compression: 733 tokens against 715 without the restriction. Encoding splits the text the same way and encodes each chunk independently; decoding joins the decoded chunks back together.
+
+## The full tokeniser
+
+The last addition is a set of special tokens. These mark things like the end of a document or a padded or masked position, which some training routines need. Some tokenisers go further: fastai's (used to train AWD-LSTM in ULMFiT) has tokens like `xxrep`, meaning "the next character is repeated n times".
+
+Here the special tokens take the last ids in the vocabulary, so merges stop that many slots early.
+
+```python
+class BPE:
+    def __init__(self, vocab_size: int):
+        self.vocab: dict[int, bytes] = {}
+        self.merges: dict[tuple[int, int], int] = {}
+        self.vocab_size = vocab_size
+        self.split_pattern = r"""'(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
+        self.special_tokens = ["<eot>", "<eod>", "<eos>", "<pad>", "<unk>", "<mask>", "<cls>", "<sep>"]
+
+    def encode(self, text: str) -> list[list[int]]:
+        text_chunks = re.findall(self.split_pattern, text)
+        encoded_tokens = []
+        for tc in text_chunks:
+            encoded_tokens.append(self._encode_single(tc))
+        return encoded_tokens
+
+    def decode(self, tokens: list[list[int]]) -> str:
+        decoded_tokens = [self._decode_single(tc) for tc in tokens]
+        decoded_text = "".join(decoded_tokens)
+        return decoded_text
+
+    def train(self, text: str):
+        self.vocab = {i: bytes([i]) for i in range(256)}
+        text_chunks = re.findall(self.split_pattern, text)
+        tokenised_chunks = [self.get_tokens(ch) for ch in text_chunks]
+        for i in range(256, self.vocab_size - len(self.special_tokens)):
+            pair_counts = {}
+            for tc in tokenised_chunks:
+                for pair, count in self.get_pair_counts(tc).items():
+                    pair_counts[pair] = pair_counts.get(pair, 0) + count
+            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+            tokenised_chunks = [self.merge_pair(tc, most_common_pair, i) for tc in tokenised_chunks]
+            self.merges[most_common_pair] = i
+            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
+        for i, st in enumerate(self.special_tokens):
+            self.vocab[self.vocab_size - len(self.special_tokens) + i] = st.encode("utf-8")
+
+    def _encode_single(self, text: str) -> list[int]:
+        tokens = self.get_tokens(text)
+        for pair, idx in self.merges.items():
+            tokens = self.merge_pair(tokens, pair, idx)
+        return tokens
+
+    def _decode_single(self, tokens: list[int]) -> str:
+        token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
+        return token_bytes.decode("utf-8", errors="replace")
+
+    def get_tokens(self, text: str) -> list[int]:
+        tokens: bytes = text.encode(encoding="utf-8")
+        return list(map(int, tokens))
+
+    def get_pair_counts(self, tokens: list[int]) -> dict[tuple[int, int], int]:
+        counts: dict[tuple[int, int], int] = {}
+        for pair in zip(tokens, tokens[1:]):
+            counts[pair] = counts.get(pair, 0) + 1
+        return counts
+
+    def merge_pair(self, tokens: list[int], pair: tuple[int, int], idx: int) -> list[int]:
+        new_tokens = []
+        i = 0
+        while i < len(tokens):
+            if i < len(tokens) - 1 and (tokens[i], tokens[i + 1]) == pair:
+                new_tokens.append(idx)
+                i += 2
+            else:
+                new_tokens.append(tokens[i])
+                i += 1
+        return new_tokens
+```
+
+## A debugging note
+
+If the decoded text comes out garbled ("dm t" for "dolor"), check that encode and decode are using the same `merges` and `vocab`. Re-running the training cell with a different corpus, but not the cell that rebuilds `vocab`, produces exactly that: tokens from one vocabulary decoded with another.
+
+[Original notebook](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/byte_pair_encoding_from_scratch.ipynb)

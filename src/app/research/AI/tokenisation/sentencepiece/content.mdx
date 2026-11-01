@@ -1,0 +1,126 @@
+export const metadata = {
+  title: "SentencePiece",
+  description: "Whitespace as a symbol, byte fallback, and the other ideas SentencePiece adds to BPE",
+  created: "2026-02-21",
+  lastUpdated: "2026-11-01",
+  status: "growing",
+  tags: ["AI"],
+  log: [
+    {
+      date: "2026-11-01",
+      note: "Merged in the ai-notes implementation; corrected how SentencePiece treats word boundaries",
+    },
+  ],
+};
+
+[SentencePiece](https://github.com/google/sentencepiece) is a tokeniser library rather than a single algorithm: it can train either [BPE](/research/AI/tokenisation/byte-pair-encoding) or a Unigram model. What makes it distinctive is how it handles whitespace and everything around the core algorithm. Part of [Tokenisation](/research/AI/tokenisation/overview).
+
+## Whitespace as an ordinary symbol
+
+In the byte pair encoding note I used a GPT-style regex to split text into chunks before training. That regex is language-specific: it assumes words are separated by spaces, which is not true of Chinese or Japanese.
+
+SentencePiece needs no such pre-tokeniser. It treats the input as one raw stream of characters and replaces every space with `▁` (U+2581), which looks like an underscore but is rare enough not to collide with real ones. Because `▁` is just another symbol, word-boundary information is carried inside the tokens themselves, for example `▁` + `h` → `▁h`, and the original text can always be recovered exactly.
+
+It does still respect word boundaries by default. With `split_by_whitespace=true`, a piece may _start_ with `▁` but cannot contain one in the middle, so a single piece never spans two words. Turning that off allows multi-word pieces.
+
+We also prepend `▁` to the start of the input, so a word is encoded the same way whether or not it happens to come first.
+
+Turning the naive BPE from the previous note into this takes two lines at the start of `get_tokens`:
+
+```python
+text = f" {text}"
+text = text.replace(" ", self.space_token)
+```
+
+and one at the end of `decode`:
+
+```python
+text = text.replace(self.space_token, " ").strip()
+```
+
+The whole class:
+
+```python
+class SentencePieceBPE:
+    def __init__(self, vocab_size: int):
+        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.merges: dict[tuple[int, int], int] = {}
+        self.vocab_size = vocab_size
+        self.space_token = "\u2581"
+
+    def encode(self, text: str) -> list[int]:
+        tokens = self.get_tokens(text)
+        for pair, idx in self.merges.items():
+            tokens = self.merge_pair(tokens, pair, idx)
+        return tokens
+
+    def decode(self, tokens: list[int]) -> str:
+        token_bytes: bytes = b"".join(self.vocab[token] for token in tokens)
+        text = token_bytes.decode("utf-8", errors="replace")
+        text = text.replace(self.space_token, " ").strip()
+        return text
+
+    def train(self, text: str):
+        tokens = self.get_tokens(text)
+        for i in range(256, self.vocab_size):
+            pair_counts = self.get_pair_counts(tokens)
+            most_common_pair = max(pair_counts, key=lambda p: pair_counts[p])
+            tokens = self.merge_pair(tokens, most_common_pair, i)
+            self.merges[most_common_pair] = i
+            self.vocab[i] = self.vocab[most_common_pair[0]] + self.vocab[most_common_pair[1]]
+
+    def get_tokens(self, text: str) -> list[int]:
+        text = f" {text}"
+        text = text.replace(" ", self.space_token)
+        tokens: bytes = text.encode(encoding="utf-8")
+        return list(map(int, tokens))
+
+    def get_pair_counts(self, tokens: list[int]) -> dict[tuple[int, int], int]:
+        counts: dict[tuple[int, int], int] = {}
+        for pair in zip(tokens, tokens[1:]):
+            counts[pair] = counts.get(pair, 0) + 1
+        return counts
+
+    def merge_pair(self, tokens: list[int], pair: tuple[int, int], idx: int) -> list[int]:
+        new_tokens = []
+        i = 0
+        while i < len(tokens):
+            if i < len(tokens) - 1 and (tokens[i], tokens[i + 1]) == pair:
+                new_tokens.append(idx)
+                i += 2
+            else:
+                new_tokens.append(tokens[i])
+                i += 1
+        return new_tokens
+```
+
+```python
+sentencepiece_bpe = SentencePieceBPE(vocab_size=300)
+sentencepiece_bpe.train(lorem.text())
+sentencepiece_bpe.encode("hello world")  # [257, 104, 101, 108, 108, 111, 257, 119, 259, 108, 100]
+sentencepiece_bpe.decode([257, 104, 101, 108, 108, 111, 257, 119, 259, 108, 100])  # 'hello world'
+```
+
+One quirk of this toy version: it works on UTF-8 bytes, and `▁` is three bytes (`E2 96 81`). So the first two merges, 256 and 257, are spent rebuilding `▁` itself, which is why 257 appears before each word. The real library works on Unicode characters and only falls back to bytes when it has to.
+
+## Byte fallback
+
+Rather than emitting `<unk>` for characters outside the vocabulary, SentencePiece can encode them as their individual UTF-8 bytes, using 256 reserved tokens `<0x00>` to `<0xFF>`. This makes the encoding lossless.
+
+## Character coverage
+
+`character_coverage` (default 0.9995) sets the fraction of characters in the training corpus that the vocabulary must cover. The rarest characters beyond that threshold get no piece of their own and are mapped to `<unk>`, or to bytes if byte fallback is on. This stops rare Unicode characters wasting vocabulary slots.
+
+## Unicode normalisation
+
+By default the input is normalised with a variant of NFKC (`nmt_nfkc`) before training and encoding, so visually equivalent characters, such as full-width and half-width forms, are treated as identical.
+
+## Subword regularisation
+
+At training time, instead of always using the single best segmentation, we can sample from several valid segmentations according to their probabilities. This acts as data augmentation and makes the model more robust to different tokenisations of the same text.
+
+## Unigram language model
+
+As well as BPE, SentencePiece supports a Unigram language model. Instead of growing a vocabulary by merging, it starts with a large candidate vocabulary and prunes it, using an EM procedure that maximises the likelihood of the training data under a unigram model. It is the more principled of the two probabilistically, and it is what T5, ALBERT and XLNet use.
+
+[Original notebook](https://github.com/HenryDashwood/ai-notes/blob/master/nbs/tokenisation/sentencepiece.ipynb)
