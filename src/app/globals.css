@@ -253,6 +253,10 @@ pre code {
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
+  /* Glyphs (subscripts, fraction bars, tall brackets) can poke past KaTeX's box, and the scroll
+     container clips them. Move half the margin inside as padding so they have room. */
+  margin: 0.5em 0;
+  padding: 0.5em 0;
   scrollbar-width: thin;
   scrollbar-color: var(--color-nav-background) transparent;
 }
