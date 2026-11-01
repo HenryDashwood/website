@@ -12,7 +12,6 @@ import { cache } from "react";
  *     description: "",
  *     created: "2026-01-27",
  *     lastUpdated: "2026-01-27",
- *     status: "growing", // optional: seedling | growing | settled
  *     tags: ["AI"],
  *     log: [{ date: "2026-01-27", note: "First notes" }], // optional
  *   };
@@ -22,9 +21,6 @@ import { cache } from "react";
 
 export const RESEARCH_BASE_PATH = "src/app/research";
 const NOTE_FILE = "content.mdx";
-
-export const RESEARCH_STATUSES = ["seedling", "growing", "settled"] as const;
-export type ResearchStatus = (typeof RESEARCH_STATUSES)[number];
 
 export interface ResearchLogEntry {
   date: string;
@@ -36,7 +32,6 @@ export interface ResearchNoteMetadata {
   description?: string;
   created?: string;
   lastUpdated?: string;
-  status?: ResearchStatus;
   tags?: string[];
   log?: ResearchLogEntry[];
 }
@@ -48,7 +43,6 @@ export interface ResearchNote {
   description: string | null;
   created: string | null;
   lastUpdated: string | null;
-  status: ResearchStatus | null;
   tags: string[];
   /** Newest first */
   log: ResearchLogEntry[];
@@ -112,7 +106,6 @@ function optionalString(value: unknown): string | null {
 
 function toNote(segments: string[], metadata: Partial<ResearchNoteMetadata> | undefined): ResearchNote {
   const slug = segments.join("/");
-  const status = RESEARCH_STATUSES.find((s) => s === metadata?.status) ?? null;
   const log = Array.isArray(metadata?.log)
     ? [...metadata.log].filter((entry) => entry?.date && entry?.note).toSorted((a, b) => b.date.localeCompare(a.date))
     : [];
@@ -124,7 +117,6 @@ function toNote(segments: string[], metadata: Partial<ResearchNoteMetadata> | un
     description: optionalString(metadata?.description),
     created: optionalString(metadata?.created),
     lastUpdated: optionalString(metadata?.lastUpdated) ?? optionalString(metadata?.created),
-    status,
     tags: Array.isArray(metadata?.tags) ? metadata.tags.map(String) : [],
     log,
   };
@@ -230,10 +222,68 @@ export async function getChildNotes(slug: string): Promise<ResearchNote[]> {
   return notes.filter((n) => n.path.length === depth + 1 && n.slug.startsWith(`${slug}/`)).toSorted(byTitle);
 }
 
-/** The topic a note sits in (its parent folder), or the root for top-level notes. */
-export async function getParentTopic(note: ResearchNote): Promise<ResearchTopic | null> {
-  const parent = note.path.slice(0, -1).join("/");
-  return parent ? getTopic(parent) : getResearchRoot();
+export interface ResearchNavNode {
+  slug: string;
+  title: string;
+  /** A note has a page of its own; a folder is a topic made of the notes inside it */
+  kind: "note" | "folder";
+  /** Number of notes beneath this node */
+  count: number;
+  lastUpdated: string | null;
+  children: ResearchNavNode[];
+}
+
+function buildNav(prefix: string[], notes: ResearchNote[], bySlug: Map<string, ResearchNote>): ResearchNavNode[] {
+  const depth = prefix.length;
+  const under = notes.filter((n) => n.path.length > depth && prefix.every((s, i) => n.path[i] === s));
+  const names = [...new Set(under.map((n) => n.path[depth]))];
+
+  const nodes = names.map((name): ResearchNavNode => {
+    const nodePath = [...prefix, name];
+    const slug = nodePath.join("/");
+    const note = bySlug.get(slug);
+    const children = buildNav(nodePath, under, bySlug);
+    const below = under.filter((n) => n.path.length > nodePath.length && n.slug.startsWith(`${slug}/`));
+    return {
+      slug,
+      title: note?.title ?? humaniseSegment(name),
+      kind: note ? "note" : "folder",
+      count: below.length,
+      lastUpdated:
+        [note, ...below]
+          .map((n) => n?.lastUpdated ?? "")
+          .toSorted()
+          .at(-1) || null,
+      children,
+    };
+  });
+
+  // Folders first, then notes, each alphabetically
+  return nodes.toSorted(
+    (a, b) =>
+      Number(a.kind === "note") - Number(b.kind === "note") ||
+      a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+  );
+}
+
+/** The whole research hierarchy, for the tree navigation and outlines. */
+export const getResearchNav = cache(async (): Promise<ResearchNavNode[]> => {
+  const notes = await getAllNotes();
+  return buildNav([], notes, new Map(notes.map((n) => [n.slug, n])));
+});
+
+/** The nav subtree beneath a folder or note, or null if there is no such node. */
+export async function getNavNode(slug: string): Promise<ResearchNavNode | null> {
+  let nodes = await getResearchNav();
+  let found: ResearchNavNode | null = null;
+  const segments = slug.split("/").filter(Boolean);
+  for (let i = 0; i < segments.length; i++) {
+    const prefix = segments.slice(0, i + 1).join("/");
+    found = nodes.find((n) => n.slug === prefix) ?? null;
+    if (!found) return null;
+    nodes = found.children;
+  }
+  return found;
 }
 
 export function readNoteSource(slug: string): string {

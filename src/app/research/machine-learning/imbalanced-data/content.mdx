@@ -1,0 +1,80 @@
+export const metadata = {
+  title: "Imbalanced Data",
+  description: "SMOTE and class weights on a dataset with 1% positives",
+  created: "2023-04-08",
+  lastUpdated: "2026-11-01",
+  tags: ["Machine Learning"],
+  log: [{ date: "2026-11-01", note: "Migrated from data-science-notes; corrected the SMOTE variants" }],
+};
+
+The example uses the numeric columns of the [adult census](https://www.openml.org/d/1590) dataset, where the task is to predict whether someone earns more than 50K a year. To make the problem hard, we cut the positives down to 400 with `imblearn.datasets.make_imbalance`, so only about 1% of rows are positive.
+
+```python
+xs, y = fetch_openml(data_id=1590, as_frame=True, return_X_y=True, parser="auto")
+xs = xs.select_dtypes(include="number")
+y = y.cat.codes
+xs, y = make_imbalance(xs, y, sampling_strategy={1: 400}, random_state=1)
+xs_train, xs_test, y_train, y_test = train_test_split(xs, y, stratify=y, random_state=0)
+```
+
+The test set has 9,289 negatives and 100 positives.
+
+## Baseline
+
+A default random forest scores 99% accuracy, which means almost nothing: predicting "no" for everyone would score 98.9%. It finds 15 of the 100 positives.
+
+<LocalImage
+  src="/images/research/data-science/machine-learning/imbalanced-data/baseline.png"
+  alt="Confusion matrix and ROC curve for the baseline random forest"
+  width={999}
+  height={530}
+  size="full"
+/>
+
+This is where accuracy misleads and precision, recall and the precision-recall curve earn their keep (see [Classification Metrics](/research/machine-learning/classification-metrics)).
+
+## SMOTE
+
+SMOTE (Synthetic Minority Over-sampling Technique) generates new minority-class rows by interpolating between existing ones, rather than duplicating them:
+
+1. For each minority sample, find its `k` nearest neighbours within the minority class (`k_neighbors`, default 5).
+2. Pick one of them at random.
+3. Create a synthetic sample at a random point on the line between the two:
+   `synthetic = original + (neighbour - original) * random.uniform(0, 1)`
+4. Repeat until the minority class reaches the size you asked for (`sampling_strategy`; by default, the size of the majority class).
+
+The idea is to give the classifier a fuller picture of the minority region than copies would, though it can also blur the class boundary and create unrealistic rows. Variants:
+
+- **Borderline-SMOTE** only oversamples minority points near the boundary, those with many majority-class neighbours.
+- **SVM-SMOTE** fits an SVM and generates samples near its support vectors.
+- **K-Means SMOTE** clusters the whole dataset with k-means, then applies SMOTE inside the clusters with a high share of minority points, so synthetic rows land in dense minority regions.
+
+Apply SMOTE only to the training data. Resampling before the train-test split leaks synthetic copies of test rows into training and inflates the scores.
+
+```python
+X_train_resampled, y_train_resampled = SMOTE(random_state=42).fit_resample(xs_train, y_train)
+```
+
+## Class weights
+
+Instead of changing the data, we can make mistakes on the minority class cost more during training. `RandomForestClassifier` has a `class_weight` parameter:
+
+- `None` (default): all classes weigh the same.
+- `"balanced"`: each class is weighted by `n_samples / (n_classes * np.bincount(y))`, so rarer classes weigh more.
+- `"balanced_subsample"`: the same, but computed on each tree's bootstrap sample.
+
+## Results
+
+At a 0.5 threshold, on the 100 test positives:
+
+| Method                              | ROC AUC | Precision | Recall |
+| ----------------------------------- | :-----: | :-------: | :----: |
+| Baseline                            |  0.69   |   0.71    |  0.15  |
+| SMOTE                               |  0.74   |   0.05    |  0.22  |
+| Borderline-SMOTE                    |  0.74   |   0.16    |  0.14  |
+| `class_weight="balanced"`           |  0.70   |   0.67    |  0.12  |
+| `class_weight="balanced_subsample"` |  0.71   |   0.65    |  0.13  |
+
+Nothing helps much. SMOTE improves the ranking (AUC) slightly but, at the default threshold, buys a little recall with a collapse in precision. Class weights barely move a random forest, whose fully grown trees fit the minority points anyway. With a dataset this imbalanced, choosing the threshold deliberately matters as much as the resampling.
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/imbalanced_data.ipynb)

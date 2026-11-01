@@ -129,13 +129,13 @@ export const metadata = {
   description: "",
   created: "2026-01-27",
   lastUpdated: "2026-01-27", // stamped automatically by the pre-commit hook
-  status: "growing", // optional: seedling | growing | settled
   tags: ["AI"],
   log: [{ date: "2026-01-27", note: "First notes" }], // optional, shown on the note and the index
 };
 ```
 
 - `bun run new:research <path> [title]` scaffolds a note.
-- Every folder that contains notes gets a topic page at its URL, titled from the folder name.
+- Every folder that contains notes gets a topic page at its URL, titled from the folder name, showing its whole subtree as an outline.
+- `src/app/research/layout.tsx` renders the site nav, the collapsible research tree (`src/components/ResearchTree`, built from `getResearchNav()`), and the content. Research pages render content only, not `NavContentWrapper`.
 - `src/lib/research.ts` builds the notes, topic tree, backlinks (from `/research/...` links in MDX) and headings.
 - `.githooks/pre-commit` runs `scripts/stamp-research.ts`, which sets `lastUpdated` on staged notes. `bun install` enables it via the `prepare` script (`git config core.hooksPath .githooks`). Use `git commit --no-verify` to skip it.

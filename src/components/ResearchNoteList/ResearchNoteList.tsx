@@ -1,23 +1,7 @@
 import Link from "next/link";
 
 import Date from "@/components/Date";
-import { humaniseSegment, ResearchNote, ResearchStatus } from "@/lib/research";
-
-const STATUS_STYLES: Record<ResearchStatus, string> = {
-  seedling: "bg-emerald-100 text-emerald-900",
-  growing: "bg-amber-100 text-amber-900",
-  settled: "bg-sky-100 text-sky-900",
-};
-
-export function StatusLabel({ status }: { status: ResearchStatus }) {
-  return (
-    <span
-      className={`inline-block rounded-full px-2 py-0.5 font-mallory-book text-xs tracking-wide uppercase ${STATUS_STYLES[status]}`}
-    >
-      {status}
-    </span>
-  );
-}
+import { humaniseSegment, ResearchNote } from "@/lib/research";
 
 /** "AI / Questions" for a note's parent folders */
 export function TopicPath({ note }: { note: ResearchNote }) {
@@ -26,11 +10,10 @@ export function TopicPath({ note }: { note: ResearchNote }) {
   return <span>{parents.map(humaniseSegment).join(" / ")}</span>;
 }
 
-/** Status · Updated date · Started date */
+/** Updated date · Started date */
 export function NoteMeta({ note, showCreated = false }: { note: ResearchNote; showCreated?: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mallory-book text-sm text-text-muted">
-      {note.status && <StatusLabel status={note.status} />}
       {note.lastUpdated && (
         <span>
           Updated <Date dateString={note.lastUpdated} />
@@ -54,7 +37,7 @@ interface ResearchNoteListProps {
   showTopic?: boolean;
 }
 
-/** A list of notes with their date, status and either their latest log entry or description. */
+/** A list of notes with their date and either their latest log entry or description. */
 export default function ResearchNoteList({ notes, showTopic = false }: ResearchNoteListProps) {
   return (
     <ul className="m-0 list-none! divide-y divide-black/10 pl-0!">
@@ -72,9 +55,8 @@ export default function ResearchNoteList({ notes, showTopic = false }: ResearchN
                 </span>
               )}
             </div>
-            {(showTopic || note.status || summary) && (
+            {(showTopic || summary) && (
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mallory-book text-sm text-text-muted">
-                {note.status && <StatusLabel status={note.status} />}
                 {showTopic && <TopicPath note={note} />}
                 {showTopic && summary && note.path.length > 1 && <span aria-hidden="true">·</span>}
                 {summary && <span>{summary}</span>}

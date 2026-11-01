@@ -1,0 +1,116 @@
+export const metadata = {
+  title: "Bayesian Data Analysis",
+  description: "Counting the ways the data could happen, from Statistical Rethinking chapters 1 and 2",
+  created: "2023-01-18",
+  lastUpdated: "2026-11-01",
+  tags: ["Statistics"],
+  log: [
+    {
+      date: "2026-11-01",
+      note: "Merged the two copies from data-science-notes; corrected the updated plausibilities",
+    },
+  ],
+};
+
+Bayesian data analysis takes a question in the form of a model and uses logic to produce an answer in the form of probability distributions. At its simplest:
+
+- For each possible explanation of the data, count all the ways the data could happen.
+- Explanations with more ways to produce the data are more plausible.
+
+## Marbles in a bag
+
+A bag holds four marbles, each blue (B) or white (W), in unknown proportion. There are five possible bags, our **conjectures**: WWWW, BWWW, BBWW, BBBW and BBBB.
+
+We draw three marbles, with replacement, and see **B W B**. Which bag is it?
+
+For each conjecture, count the ways it could produce that sequence: the number of blue marbles, times the number of white, times the number of blue. (McElreath draws these counts as a "garden of forking paths", one ring per draw.)
+
+| Conjecture | Ways to produce B W B | Plausibility |
+| :--------: | :-------------------: | :----------: |
+|    WWWW    |     0 × 4 × 0 = 0     |      0       |
+|    BWWW    |     1 × 3 × 1 = 3     |     0.15     |
+|    BBWW    |     2 × 2 × 2 = 8     |     0.40     |
+|    BBBW    |     3 × 1 × 3 = 9     |     0.45     |
+|    BBBB    |     4 × 0 × 4 = 0     |      0       |
+
+The plausibilities are just the counts normalised to sum to 1. The rules for Bayesian updating:
+
+1. State a causal model for how observations arise, given each possible explanation.
+2. Count the ways the data could arise under each explanation.
+3. The relative plausibility of each explanation is its relative count.
+
+### Updating
+
+Now we draw another B. The new draw is independent of the earlier ones, so we can take the previous counts as our **prior** and multiply each by the number of ways that conjecture produces the new observation:
+
+| Conjecture | Ways to produce B | Previous count | New count  | New plausibility |
+| :--------: | :---------------: | :------------: | :--------: | :--------------: |
+|    WWWW    |         0         |       0        | 0 × 0 = 0  |        0         |
+|    BWWW    |         1         |       3        | 3 × 1 = 3  |       0.07       |
+|    BBWW    |         2         |       8        | 8 × 2 = 16 |       0.35       |
+|    BBBW    |         3         |       9        | 9 × 3 = 27 |       0.59       |
+|    BBBB    |         4         |       0        | 0 × 4 = 0  |        0         |
+
+$$
+\text{plausibility of } p \text{ after } D_\text{new} = \frac{\text{ways } p \text{ can produce } D_\text{new} \times \text{prior plausibility of } p}{\text{sum of products}}
+$$
+
+Each updated set of plausibilities becomes the prior for the next observation. The process also runs backwards: knowing the final plausibilities and that the last draw was B, we could divide that observation back out. So the order in which the data arrive doesn't matter, and presenting it all at once is just a shortcut for the same iterated process.
+
+Some consequences:
+
+1. There is no minimum sample size. With little data the posterior is flat and wide, but it is still a valid statement of what we know.
+2. The shape of the posterior embodies the sample size: more data makes it narrower and taller.
+3. Point estimates matter less, because the estimate _is_ the distribution. Summarise only at the end; summarising earlier throws away uncertainty.
+4. Intervals are fine as summaries, but there is nothing special about any particular width, such as 95%.
+
+## How much of the globe is water?
+
+We toss an inflatable globe nine times and record whether our right index finger lands on water (W) or land (L):
+
+$$
+W, L, W, W, W, L, W, L, W
+$$
+
+Six waters in nine tosses. If each toss lands on water with probability $p$, the counts are binomial:
+
+$$
+\Pr(W, L \mid p) = \frac{(W + L)!}{W!\,L!} p^W (1 - p)^L
+$$
+
+Written as a model, with a flat prior on $p$:
+
+$$
+\begin{aligned}
+W &\sim \text{Binomial}(N, p), \quad N = W + L \\
+p &\sim \text{Uniform}(0, 1)
+\end{aligned}
+$$
+
+### Grid approximation
+
+The simplest way to get the posterior is to evaluate prior × likelihood on a grid of candidate values of $p$, then normalise:
+
+```python
+def posterior_grid_approx(grid_points: int = 5, success: int = 6, tosses: int = 9):
+    p_grid = np.linspace(0, 1, grid_points)
+    prior = np.repeat(1, grid_points)  # uniform
+    likelihood = stats.binom.pmf(success, tosses, p_grid)
+    unstd_posterior = likelihood * prior
+    posterior = unstd_posterior / unstd_posterior.sum()
+    return p_grid, posterior
+```
+
+<LocalImage
+  src="/images/research/data-science/statistics/bayesian-data-analysis/grid-approximation.png"
+  alt="Posterior for the proportion of water with 5 and 20 grid points"
+  width={1001}
+  height={470}
+  size="full"
+/>
+
+Five grid points give a crude sketch; twenty already show the shape, peaking a little below 0.7.
+
+Adapted from Richard McElreath, [_Statistical Rethinking_](https://xcelab.net/rm/) (2nd edition), chapters 1 and 2.
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/Statistical%20Rethinking/chapter1.ipynb)

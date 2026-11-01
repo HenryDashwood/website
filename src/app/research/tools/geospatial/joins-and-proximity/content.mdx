@@ -1,0 +1,102 @@
+export const metadata = {
+  title: "Joins and Proximity",
+  description: "Geocoding, attribute and spatial joins, distances and buffers with GeoPandas",
+  created: "2023-08-28",
+  lastUpdated: "2026-11-01",
+  tags: ["Data Science", "Geospatial"],
+  log: [
+    {
+      date: "2026-11-01",
+      note: "Condensed from data-science-notes; updated to current GeoPandas (predicate, union_all)",
+    },
+  ],
+};
+
+Follows on from [GeoPandas and projections](/research/tools/geospatial/geopandas-and-projections).
+
+## Geocoding
+
+**Geocoding** turns a place name or address into a location. [geopy](https://geopy.readthedocs.io/) wraps several services; Nominatim uses OpenStreetMap data.
+
+```python
+from geopy.geocoders import Nominatim
+
+geolocator = Nominatim(user_agent="my_app_name")
+location = geolocator.geocode("Pyramid of Khufu")
+location.point.latitude, location.point.longitude  # (29.979, 31.134)
+location.address  # full address, in the local language
+```
+
+To geocode a column, wrap the call so a failed lookup gives missing values rather than an exception:
+
+```python
+def my_geocoder(name):
+    try:
+        point = geolocator.geocode(name).point
+        return pd.Series({"Latitude": point.latitude, "Longitude": point.longitude})
+    except Exception:
+        return pd.Series({"Latitude": np.nan, "Longitude": np.nan})
+
+universities[["Latitude", "Longitude"]] = universities["Name"].apply(my_geocoder)
+```
+
+Two practical notes. Nominatim's usage policy allows at most one request per second and requires a meaningful `user_agent`, so for more than a handful of lookups use geopy's `RateLimiter`. And check the results on a map: of 100 top European universities, 95 were geocoded, and a few of those landed outside Europe.
+
+## Attribute joins
+
+An **attribute join** matches rows on a shared column or index, like `pd.DataFrame.merge`. Call `merge` on the GeoDataFrame so the result stays a GeoDataFrame:
+
+```python
+europe = europe_boundaries.merge(europe_stats, on="NAME")
+```
+
+## Spatial joins
+
+A **spatial join** matches rows by the relationship between their geometries. Matching each university to the country it falls in:
+
+```python
+european_universities = gpd.sjoin(universities, europe, predicate="intersects")
+```
+
+Both frames must be in the same CRS. By default it is an inner join, so universities outside every European polygon (5 of the 95 here) and countries without a university are dropped; `how="left"` or `how="right"` keep one side. The relationship is set with `predicate` (`"intersects"`, `"within"`, `"contains"`, ...). The original notes used `op`, which was the argument's name before GeoPandas 0.10 and has since been removed.
+
+## Proximity analysis
+
+The example uses US EPA records of toxic chemical releases in Philadelphia and the city's air quality monitoring stations.
+
+### Distances
+
+Both layers must share a CRS, and you need to know its units. Here both are EPSG:2272 (Pennsylvania South state plane), [in US feet](https://epsg.io/2272).
+
+```python
+recent_release = releases.iloc[360]
+distances = stations.geometry.distance(recent_release.geometry)  # feet
+distances.mean()                     # about 33,516 ft
+stations.iloc[distances.idxmin()]    # nearest station, about 3,781 ft away
+```
+
+Never measure distance in EPSG:4326: the "distance" comes out in degrees, and a degree of longitude shrinks towards the poles.
+
+### Buffers
+
+To find everything within some radius of a point, draw a **buffer** around it:
+
+```python
+two_mile_buffer = stations.geometry.buffer(2 * 5280)  # 2 miles in feet
+```
+
+To test whether a release happened within 2 miles of _any_ station, merge the 12 circles into one (Multi)Polygon first, rather than testing each:
+
+```python
+coverage = two_mile_buffer.union_all()
+coverage.contains(releases.iloc[360].geometry)  # True
+coverage.contains(releases.iloc[358].geometry)  # False
+```
+
+`union_all()` replaces the `unary_union` attribute used in the original, which is deprecated since GeoPandas 1.0. For many points at once, `releases.within(coverage)` gives a boolean Series.
+
+To plot buffers in Folium, convert them back to latitude and longitude first: `folium.GeoJson(two_mile_buffer.to_crs(epsg=4326)).add_to(m)`.
+
+Condensed from Kaggle's [Geospatial Analysis](https://www.kaggle.com/learn/geospatial-analysis) course.
+
+[Original notebook](https://github.com/HenryDashwood/data-science-notes/blob/master/nbs/07_Geospatial/03_geocoding_and_joining.ipynb)
