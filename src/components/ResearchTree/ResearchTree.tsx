@@ -218,7 +218,7 @@ export default function ResearchTree({ tree }: { tree: ResearchNavNode[] }) {
     <aside
       ref={asideRef}
       aria-label="Research notes"
-      className="hidden shrink-0 px-3 pt-6 pb-10 lg:sticky lg:top-0 lg:block lg:h-screen lg:w-68 lg:overflow-y-auto"
+      className="hidden shrink-0 [scrollbar-width:none] px-3 pt-6 pb-10 lg:sticky lg:top-0 lg:block lg:h-screen lg:w-68 lg:overflow-y-auto [&::-webkit-scrollbar]:hidden"
     >
       <Link
         href="/research"
@@ -258,7 +258,7 @@ export function ResearchBrowse({ tree, count }: { tree: ResearchNavNode[]; count
         <span className="text-text-muted">{count}</span>
       </button>
       {open && (
-        <div className="mt-2 max-h-[70vh] overflow-y-auto p-1">
+        <div className="mt-2 max-h-[70vh] [scrollbar-width:none] overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden">
           <TreePanel tree={tree} onNavigate={() => setOpen(false)} />
         </div>
       )}
