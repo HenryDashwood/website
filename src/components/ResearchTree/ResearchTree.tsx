@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { ResearchNavNode } from "@/lib/research";
 
@@ -163,7 +163,8 @@ function useResearchTree(tree: ResearchNavNode[]) {
   };
 }
 
-function TreePanel({ tree, onNavigate }: { tree: ResearchNavNode[]; onNavigate?: () => void }) {
+/** The research hierarchy with a filter, shown in the site sidebar. */
+export default function ResearchTreePanel({ tree, onNavigate }: { tree: ResearchNavNode[]; onNavigate?: () => void }) {
   const state = useResearchTree(tree);
 
   return (
@@ -197,70 +198,6 @@ function TreePanel({ tree, onNavigate }: { tree: ResearchNavNode[]; onNavigate?:
         />
       ) : (
         <p className="px-2 text-text-muted">No notes match “{state.query}”.</p>
-      )}
-    </div>
-  );
-}
-
-/** Desktop: a sticky column of the whole research hierarchy beside the content. */
-export default function ResearchTree({ tree }: { tree: ResearchNavNode[] }) {
-  const pathname = usePathname();
-  const asideRef = useRef<HTMLElement>(null);
-
-  // Bring the current note into view when arriving on a page
-  useEffect(() => {
-    asideRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "nearest" });
-    // pathname is intentionally a dependency so the effect re-runs on navigation.
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies
-  }, [pathname]);
-
-  return (
-    <aside
-      ref={asideRef}
-      aria-label="Research notes"
-      className="hidden shrink-0 [scrollbar-width:none] px-3 pt-6 pb-10 lg:sticky lg:top-0 lg:block lg:h-screen lg:w-68 lg:overflow-y-auto [&::-webkit-scrollbar]:hidden"
-    >
-      <Link
-        href="/research"
-        className={`mb-3 block px-2 font-arizona-flare text-xl text-foreground! hover:no-underline! ${
-          pathname === "/research" ? "underline" : ""
-        }`}
-      >
-        Research
-      </Link>
-      <TreePanel tree={tree} />
-    </aside>
-  );
-}
-
-/** Narrow screens: the same tree behind a "Browse notes" toggle at the top of the page. */
-export function ResearchBrowse({ tree, count }: { tree: ResearchNavNode[]; count: number }) {
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  // Close after navigating
-  const [closedFor, setClosedFor] = useState(pathname);
-  if (pathname !== closedFor) {
-    setClosedFor(pathname);
-    setOpen(false);
-  }
-
-  return (
-    <div className="mb-2 lg:hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        className="flex w-full items-center gap-2 rounded-lg border border-black/15 px-3 py-2 text-left font-mallory-book text-sm"
-      >
-        <Chevron open={open} />
-        <span className="flex-1">Browse notes</span>
-        <span className="text-text-muted">{count}</span>
-      </button>
-      {open && (
-        <div className="mt-2 max-h-[70vh] [scrollbar-width:none] overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden">
-          <TreePanel tree={tree} onNavigate={() => setOpen(false)} />
-        </div>
       )}
     </div>
   );
