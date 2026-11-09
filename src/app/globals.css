@@ -29,9 +29,10 @@
   --color-chart-series-2: #a5481a;
 
   /* Fonts */
-  --font-martina-plantijn: var(--font-martina-plantijn);
+  --font-source-serif: var(--font-source-serif);
   --font-arizona-flare: var(--font-arizona-flare);
   --font-mallory-book: var(--font-mallory-book);
+  --font-code: var(--font-code);
 }
 
 :root {
@@ -51,8 +52,21 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-martina-plantijn);
+  font-family: var(--font-source-serif), Georgia, serif;
   overflow-x: hidden;
+}
+
+/* Long-form reading text in posts and notes */
+.prose-content {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* Headings: display font, no rules; spacing above sets sections apart */
@@ -122,6 +136,8 @@ blockquote {
 pre {
   background-color: transparent;
   color: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
   padding: 0.875rem 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -246,7 +262,7 @@ code {
   color: var(--color-code-inline-text);
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
-  font-size: 0.875em;
+  font-size: 0.85em;
   border: 1px solid var(--color-code-inline-border);
 }
 

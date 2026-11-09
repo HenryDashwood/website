@@ -102,7 +102,7 @@ export default function LaborMarketDiagram() {
         label="Roback diagram: iso-utility and iso-profit curves crossing at the equilibrium wage and rent"
       >
         <text x={LEFT} y={10} className="viz-axis">
-          Wage <tspan className="font-martina-plantijn italic">W</tspan>, £k / yr
+          Wage <tspan className="font-source-serif italic">W</tspan>, £k / yr
         </text>
         <Axes left={LEFT} top={TOP} right={LEFT + INNER_W} bottom={BOTTOM} />
         {[0, 25, 50, 75, 100].map((w) => (
@@ -116,7 +116,7 @@ export default function LaborMarketDiagram() {
           </text>
         ))}
         <text x={LEFT + INNER_W} y={HEIGHT} textAnchor="end" className="viz-axis">
-          Rent <tspan className="font-martina-plantijn italic">P</tspan>, £k / yr
+          Rent <tspan className="font-source-serif italic">P</tspan>, £k / yr
         </text>
 
         {/* Baseline curves, shown once a slider has shifted one */}

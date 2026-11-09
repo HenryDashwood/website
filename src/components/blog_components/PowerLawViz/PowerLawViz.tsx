@@ -50,7 +50,7 @@ export default function PowerLawViz() {
     >
       <Chart width={WIDTH} height={HEIGHT} label="City A's wage falling gently as its population share rises">
         <text x={LEFT} y={10} className="viz-axis">
-          Wage <tspan className="font-martina-plantijn italic">W</tspan>, £k
+          Wage <tspan className="font-source-serif italic">W</tspan>, £k
         </text>
         <Axes left={LEFT} top={TOP} right={LEFT + INNER_W} bottom={BOTTOM} />
         {[0, 40, 80, 120].map((w) => (
@@ -64,7 +64,7 @@ export default function PowerLawViz() {
           </text>
         ))}
         <text x={LEFT + INNER_W} y={HEIGHT} textAnchor="end" className="viz-axis">
-          Population share <tspan className="font-martina-plantijn italic">s</tspan>
+          Population share <tspan className="font-source-serif italic">s</tspan>
         </text>
 
         {/* Reference size s = 0.5 */}
@@ -80,7 +80,7 @@ export default function PowerLawViz() {
         <path d={wagePath} fill="none" className="stroke-chart-series-1" strokeWidth={2} strokeLinecap="round" />
         <Point x={xScale(0.5)} y={yScale(W0)} />
         <text x={xScale(0.5) + 8} y={yScale(W0) - 10} className="viz-axis" style={{ fill: "var(--color-chart-ink)" }}>
-          <tspan className="font-martina-plantijn italic">W</tspan>₀ = £{W0}k
+          <tspan className="font-source-serif italic">W</tspan>₀ = £{W0}k
         </text>
         <text x={LEFT + INNER_W + 10} y={yScale(wage(0.99)) + 4} className="viz-label fill-chart-series-1">
           Wage

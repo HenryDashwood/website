@@ -139,12 +139,12 @@ export default function ScalingLawViz() {
         <text x={LEFT} y={10} className="viz-axis">
           {logScale ? (
             <>
-              Reducible loss <tspan className="font-martina-plantijn italic">L</tspan> −{" "}
-              <tspan className="font-martina-plantijn italic">E</tspan>
+              Reducible loss <tspan className="font-source-serif italic">L</tspan> −{" "}
+              <tspan className="font-source-serif italic">E</tspan>
             </>
           ) : (
             <>
-              Loss <tspan className="font-martina-plantijn italic">L</tspan>
+              Loss <tspan className="font-source-serif italic">L</tspan>
             </>
           )}
         </text>
@@ -163,7 +163,7 @@ export default function ScalingLawViz() {
           </text>
         ))}
         <text x={LEFT + INNER_W} y={HEIGHT} textAnchor="end" className="viz-axis">
-          Training compute <tspan className="font-martina-plantijn italic">C</tspan>, FLOPs
+          Training compute <tspan className="font-source-serif italic">C</tspan>, FLOPs
         </text>
 
         <g clipPath={`url(#${clipId})`}>
@@ -180,7 +180,7 @@ export default function ScalingLawViz() {
                 strokeDasharray="1 3"
               />
               <text x={LEFT + 6} y={yScale(E) - 6} className="viz-axis">
-                <tspan className="font-martina-plantijn italic">E</tspan>
+                <tspan className="font-source-serif italic">E</tspan>
               </text>
             </>
           )}
@@ -229,7 +229,7 @@ export default function ScalingLawViz() {
         {gaps.map(({ logC, logMultiple }) => (
           <div key={logC}>
             To match Y at 10<sup>{logC}</sup> FLOPs, X needs{" "}
-            <span className="font-martina-plantijn text-lg text-chart-ink tabular-nums">
+            <span className="font-source-serif text-lg text-chart-ink tabular-nums">
               {formatMultiple(logMultiple)}
             </span>{" "}
             the compute

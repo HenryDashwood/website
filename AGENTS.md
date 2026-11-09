@@ -65,15 +65,16 @@ MDX is configured in `next.config.mjs` with the following plugins:
 
 The site uses Tailwind CSS with custom fonts:
 
-- Arizona Flare (display font)
-- Martina Plantijn (serif font)
-- Mallory Book (sans-serif font)
+- Arizona Flare (display font, headings)
+- Source Serif 4 (body text, from Google Fonts)
+- Mallory Book (sans-serif for UI, tables, asides)
+- JetBrains Mono (code, from Google Fonts)
 
-Font files are located in `src/app/assets/` and loaded via `next/font/local` in `src/app/layout.tsx`.
+Local font files are in `src/app/assets/` and loaded via `next/font/local`; Google fonts via `next/font/google`, both in `src/app/layout.tsx`.
 
 Custom Tailwind classes are defined in `tailwind.config.ts`:
 
-- Font families: `font-martinaPlantijn`, `font-arizonaFlare`, `font-malloryBook`
+- Font families: `font-source-serif`, `font-arizona-flare`, `font-mallory-book`, `font-code`
 - Custom color: `navBackground` (#faad19)
 
 Typography plugin from `@tailwindcss/typography` is enabled for prose styling.
