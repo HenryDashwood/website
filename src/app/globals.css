@@ -279,10 +279,12 @@ pre code {
 }
 
 table {
-  border-collapse: separate;
-  border-spacing: 0;
   width: 100%;
-  border: 1px solid var(--foreground);
+  border-collapse: collapse;
+  font-family: var(--font-mallory-book), system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
   @apply mt-4 mb-4;
 }
 
@@ -297,14 +299,37 @@ table {
 
 th,
 td {
-  padding: 8px;
+  padding: 0.55rem 0.75rem;
   text-align: left;
-  border: 1px solid var(--foreground);
 }
 
+th:first-child,
+td:first-child {
+  padding-left: 0.25rem;
+}
+
+th:last-child,
+td:last-child {
+  padding-right: 0.25rem;
+}
+
+/* Light headers: small muted caps over a single rule, no fill */
 th {
-  background-color: var(--nav-background);
-  font-weight: bold;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  vertical-align: bottom;
+  border-bottom: 1.5px solid var(--foreground);
+}
+
+td {
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+}
+
+tbody tr:last-child td {
+  border-bottom: 1.5px solid var(--foreground);
 }
 
 @layer utilities {
