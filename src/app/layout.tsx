@@ -1,29 +1,26 @@
 import { Analytics } from "@vercel/analytics/react";
 import "katex/dist/katex.min.css";
 import type { Metadata } from "next";
+import { JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import localFont from "next/font/local";
 
 import "./globals.css";
 
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin", "latin-ext"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  variable: "--font-source-serif",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-code",
+});
+
 const arizonaFlare = localFont({
   src: "./assets/arizona-flare-regular.woff2",
   variable: "--font-arizona-flare",
-});
-
-const martinaPlantijn = localFont({
-  src: [
-    {
-      path: "./assets/martina-plantijn-regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./assets/martina-plantijn-italic.woff2",
-      weight: "400",
-      style: "italic",
-    },
-  ],
-  variable: "--font-martina-plantijn",
 });
 
 const malloryBook = localFont({
@@ -70,7 +67,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${martinaPlantijn.variable} ${arizonaFlare.variable} ${malloryBook.variable}`}>
+    <html
+      lang="en"
+      className={`${sourceSerif.variable} ${arizonaFlare.variable} ${malloryBook.variable} ${jetbrainsMono.variable}`}
+    >
       <body suppressHydrationWarning>
         {children}
         <Analytics />

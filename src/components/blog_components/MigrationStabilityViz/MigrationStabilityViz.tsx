@@ -285,7 +285,7 @@ export default function MigrationStabilityViz() {
           </text>
         ))}
         <text x={LEFT + INNER_W} y={HEIGHT} textAnchor="end" className="viz-axis">
-          City A&apos;s population share <tspan className="font-martina-plantijn italic">s</tspan>
+          City A&apos;s population share <tspan className="font-source-serif italic">s</tspan>
         </text>
 
         {sStar !== null && (
@@ -306,7 +306,7 @@ export default function MigrationStabilityViz() {
               className="viz-axis"
               style={{ fill: "var(--color-chart-ink)" }}
             >
-              <tspan className="font-martina-plantijn italic">s</tspan>* = {sStar.toFixed(2)}
+              <tspan className="font-source-serif italic">s</tspan>* = {sStar.toFixed(2)}
             </text>
             {/* Migration direction: towards s* from either side */}
             <g className="fill-chart-muted">

@@ -12,7 +12,7 @@ const toneText: Record<Tone, string> = {
 
 // Italic serif for maths symbols in labels, lighter than KaTeX at small sizes
 export function Sym({ children }: { children: ReactNode }) {
-  return <span className="font-martina-plantijn text-[1.08em] italic">{children}</span>;
+  return <span className="font-source-serif text-[1.08em] italic">{children}</span>;
 }
 
 // Builds an SVG path; a null point lifts the pen so out-of-range stretches are skipped
@@ -35,7 +35,7 @@ export function Figure({ children, caption }: { children: ReactNode; caption: Re
   return (
     <figure className="not-prose mx-0 my-10">
       {children}
-      <figcaption className="mt-4 font-martina-plantijn text-[15px] leading-normal text-chart-muted italic">
+      <figcaption className="mt-4 font-source-serif text-[15px] leading-normal text-chart-muted italic">
         {caption}
       </figcaption>
     </figure>
