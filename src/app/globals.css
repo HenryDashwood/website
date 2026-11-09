@@ -19,8 +19,6 @@
   --color-code-inline-border: #e2e8f0;
 
   /* UI element colors */
-  --color-details-bg: #fff8e1;
-  --color-details-open-bg: #fff3cd;
   --color-text-muted: #666666;
 
   /* Chart/visualization colors */
@@ -382,60 +380,67 @@ img {
   height: auto;
 }
 
-/* Style for the <details> element */
-details {
-  @apply mt-4;
-  border: 1px solid var(--nav-background);
-  border-radius: 8px;
-  padding: 1rem;
-  background-color: var(--color-details-bg);
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-/* Style for the <summary> element inside <details> */
-details summary {
-  font-weight: bold;
-  list-style: none;
+/* Expandable asides: no box. A link-blue summary with a chevron; open content hangs off a faint rule. */
+details:not(.research-outline details) {
   position: relative;
+  margin-top: 1rem;
 }
 
-/* Indicator for the <summary> (e.g., arrow) */
-details summary::before {
-  content: "▶";
-  display: inline-block;
-  margin-right: 0.5rem;
-  transition: transform 0.3s ease;
-}
-
-/* Rotate the indicator when <details> is open */
-details[open] summary::before {
-  transform: rotate(90deg);
-}
-
-/* Style when <details> is expanded */
-details[open] {
-  background-color: var(--color-details-open-bg);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Research outlines use <details> for collapsible folders without the boxed callout style above */
-.research-outline details,
-.research-outline details[open] {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  background-color: transparent;
-  box-shadow: none;
-  cursor: auto;
-}
-
-.research-outline details summary {
-  font-weight: inherit;
+details:not(.research-outline details) > summary {
+  list-style: none;
   cursor: pointer;
+  font-family: var(--font-mallory-book), system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-link);
+}
+
+details:not(.research-outline details) > summary::-webkit-details-marker {
+  display: none;
+}
+
+details:not(.research-outline details) > summary:hover {
+  text-decoration: underline;
+}
+
+details:not(.research-outline details) > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin: 0 0.6em 0.12em 0.1em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+details:not(.research-outline details)[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+details:not(.research-outline details)[open] {
+  padding-left: 1.4rem;
+  padding-bottom: 0.25rem;
+}
+
+details:not(.research-outline details)[open] > summary {
+  margin-left: -1.4rem;
+}
+
+details:not(.research-outline details)[open]::after {
+  content: "";
+  position: absolute;
+  top: 2rem;
+  bottom: 0;
+  left: 0.3rem;
+  border-left: 1.5px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+/* Research outlines use <details> for collapsible folders */
+.research-outline details summary {
+  cursor: pointer;
+  list-style: none;
 }
 
 .research-outline details summary::-webkit-details-marker {
@@ -443,10 +448,17 @@ details[open] {
 }
 
 .research-outline details summary::before {
+  content: "▶";
+  display: inline-block;
   width: 0.75rem;
   margin-right: 0.25rem;
   font-size: 0.65rem;
   color: var(--color-text-muted);
+  transition: transform 0.3s ease;
+}
+
+.research-outline details[open] summary::before {
+  transform: rotate(90deg);
 }
 
 /* Prose content wrapper - constrains regular content but allows breakouts */
