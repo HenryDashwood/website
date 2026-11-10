@@ -169,14 +169,14 @@ export default function ResearchTreePanel({ tree, onNavigate }: { tree: Research
 
   return (
     <div className="font-mallory-book text-sm">
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mx-2 mb-3 flex items-center gap-2">
         <input
           type="search"
           value={state.query}
           onChange={(e) => state.setQuery(e.target.value)}
           placeholder="Filter notes"
           aria-label="Filter notes"
-          className="min-w-0 flex-1 rounded-md border border-black/15 bg-white/60 px-2.5 py-1.5 text-sm placeholder:text-text-muted focus:border-nav-background focus:outline-none"
+          className="min-w-0 flex-1 rounded-none border-0 border-b border-black/20 bg-transparent px-0 py-1 text-sm placeholder:text-black/50 focus:border-black/60 focus:outline-none"
         />
       </div>
       <div className="mb-2 flex gap-3 px-2 text-xs text-text-muted">

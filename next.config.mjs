@@ -20,6 +20,8 @@ const nextConfig = {
     // Research notes that moved when the folders were reorganised (2026-11-01), plus the calculus
     // posts that became research notes.
     const moved = [
+      // The About page was folded into the home page (2026-11-09).
+      ["/about", "/"],
       ["/research/AI/papers/big-bird", "/research/AI/long-context/big-bird"],
       ["/research/AI/papers/linformer", "/research/AI/long-context/linformer"],
       ["/research/AI/papers/longformer", "/research/AI/long-context/longformer"],

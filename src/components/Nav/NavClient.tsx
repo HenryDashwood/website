@@ -146,16 +146,6 @@ function NavClient({ research }: { research: ResearchNavNode[] }) {
         {/* Navigation Links */}
         <div className="flex flex-col gap-1 sm:gap-0.5">
           <Link
-            href="/about"
-            onClick={() => setIsOpen(false)}
-            className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
-              isActive("/about") ? "font-bold underline" : "hover:underline"
-            }`}
-          >
-            About Me
-          </Link>
-
-          <Link
             href="/posts"
             onClick={() => setIsOpen(false)}
             className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
