@@ -129,14 +129,17 @@ function NavClient({ research }: { research: ResearchNavNode[] }) {
           <Link
             href="/"
             onClick={() => setIsOpen(false)}
-            className={`font-arizona-flare text-2xl ${isActive("/") ? "underline" : "hover:underline"}`}
+            className={`font-arizona-flare text-[2.25rem] leading-none ${isActive("/") ? "underline" : "hover:underline"}`}
           >
             Home
           </Link>
         </div>
         {/* Desktop: Logo/Header */}
         <div className="mb-5 hidden border-b border-black/10 pb-5 sm:block">
-          <Link href="/" className={`font-arizona-flare text-2xl ${isActive("/") ? "underline" : "hover:underline"}`}>
+          <Link
+            href="/"
+            className={`font-arizona-flare text-[2.25rem] leading-none ${isActive("/") ? "underline" : "hover:underline"}`}
+          >
             Home
           </Link>
         </div>

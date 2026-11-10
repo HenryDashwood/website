@@ -12,9 +12,8 @@ export default function ResearchBreadcrumbs({ path }: { path: string[] }) {
     })),
   ];
 
-  // sm:mt-[19px] puts the crumbs on the same baseline as "Home" in the sidebar
   return (
-    <nav aria-label="Breadcrumb" className="mt-4 -mb-2 font-mallory-book text-sm text-text-muted sm:mt-[19px]">
+    <nav aria-label="Breadcrumb" className="font-mallory-book text-sm text-text-muted">
       {crumbs.map((crumb, i) => (
         <span key={crumb.href}>
           {i > 0 && <span className="mx-1.5 opacity-60">/</span>}

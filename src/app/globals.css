@@ -86,7 +86,8 @@ h1 {
 }
 
 /* A page title that opens the page sits on the same baseline as "Home" in the sidebar */
-.prose-content > h1:first-child {
+.prose-content > h1:first-child,
+.prose-content article > h1:first-child {
   margin-top: 0;
 }
 
