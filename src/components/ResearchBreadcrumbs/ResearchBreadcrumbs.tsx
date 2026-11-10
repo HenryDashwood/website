@@ -13,7 +13,7 @@ export default function ResearchBreadcrumbs({ path }: { path: string[] }) {
   ];
 
   return (
-    <nav aria-label="Breadcrumb" className="mt-4 -mb-2 font-mallory-book text-sm text-text-muted">
+    <nav aria-label="Breadcrumb" className="font-mallory-book text-sm text-text-muted">
       {crumbs.map((crumb, i) => (
         <span key={crumb.href}>
           {i > 0 && <span className="mx-1.5 opacity-60">/</span>}

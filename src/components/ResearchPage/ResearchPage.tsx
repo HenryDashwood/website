@@ -45,9 +45,10 @@ export default async function ResearchPage({ note }: { note: ResearchNote }) {
     <>
       <div className="max-w-none! 2xl:grid 2xl:grid-cols-[minmax(0,800px)_200px] 2xl:justify-center 2xl:gap-10">
         <article className="min-w-0">
-          <ResearchBreadcrumbs path={note.path.slice(0, -1)} />
           <h1>{note.title}</h1>
-          <div className="mb-6">
+          <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 font-mallory-book text-sm text-text-muted">
+            <ResearchBreadcrumbs path={note.path.slice(0, -1)} />
+            <span aria-hidden="true">·</span>
             <NoteMeta note={note} showCreated />
           </div>
 
