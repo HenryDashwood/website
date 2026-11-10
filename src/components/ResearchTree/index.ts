@@ -1,1 +1,1 @@
-export { default, ResearchBrowse } from "./ResearchTree";
+export { default } from "./ResearchTree";
