@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import Date from "@/components/Date";
+import ListRow from "@/components/ListRow";
 import { TopicPath } from "@/components/ResearchNoteList";
 import { getAllNotes } from "@/lib/research";
 
@@ -42,22 +42,13 @@ async function ResearchIndex() {
             </h2>
             <ul className="m-0 list-none! divide-y divide-black/10 border-y border-black/10 pl-0!">
               {notes.slice(0, RECENT_COUNT).map((note) => (
-                <li
+                <ListRow
                   key={note.slug}
-                  className="flex flex-wrap items-baseline justify-between gap-x-4 py-2 font-mallory-book"
-                >
-                  <span>
-                    <Link href={`/research/${note.slug}`}>{note.title}</Link>{" "}
-                    <span className="text-sm text-text-muted">
-                      <TopicPath note={note} />
-                    </span>
-                  </span>
-                  {note.lastUpdated && (
-                    <span className="text-sm text-text-muted">
-                      <Date dateString={note.lastUpdated} />
-                    </span>
-                  )}
-                </li>
+                  href={`/research/${note.slug}`}
+                  title={note.title}
+                  meta={note.path.length > 1 ? <TopicPath note={note} /> : undefined}
+                  date={note.lastUpdated ? <Date dateString={note.lastUpdated} /> : undefined}
+                />
               ))}
             </ul>
           </section>
