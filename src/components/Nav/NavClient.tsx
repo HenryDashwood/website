@@ -122,33 +122,31 @@ function NavClient({ research }: { research: ResearchNavNode[] }) {
       {/* Navigation Content */}
       <nav
         ref={navRef}
-        className={`fixed top-0 left-0 z-40 h-full w-72 [scrollbar-width:none] overflow-y-auto bg-nav-background p-6 pt-20 font-mallory-book shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:max-h-screen sm:min-h-screen sm:w-72 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none [&::-webkit-scrollbar]:hidden ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
+        className={`fixed top-0 left-0 z-40 h-full w-72 [scrollbar-width:none] overflow-y-auto bg-nav-background p-6 pt-20 font-mallory-book text-[15px] shadow-xl transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:z-auto sm:flex sm:max-h-screen sm:min-h-screen sm:w-72 sm:shrink-0 sm:grow-0 sm:translate-x-0 sm:flex-col sm:self-start sm:p-6 sm:shadow-none [&::-webkit-scrollbar]:hidden ${isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"} `}
       >
         {/* Mobile: Home link */}
-        <div className="mb-6 border-b border-black/10 pb-6 sm:hidden">
+        <div className="mb-5 border-b border-black/10 pb-5 sm:hidden">
           <Link
             href="/"
             onClick={() => setIsOpen(false)}
-            className={`px-3 text-xl font-bold transition-opacity hover:opacity-80 ${
-              isActive("/") ? "underline" : ""
-            }`}
+            className="font-arizona-flare text-2xl text-foreground! hover:no-underline!"
           >
             Home
           </Link>
         </div>
         {/* Desktop: Logo/Header */}
-        <div className="mb-8 hidden border-b border-black/10 pb-6 sm:block">
-          <Link href="/" className="px-3 text-xl font-bold transition-opacity hover:opacity-80">
+        <div className="mb-5 hidden border-b border-black/10 pb-5 sm:block">
+          <Link href="/" className="font-arizona-flare text-2xl text-foreground! hover:no-underline!">
             Home
           </Link>
         </div>
 
         {/* Navigation Links */}
-        <div className="flex flex-col gap-1 sm:gap-0.5">
+        <div className="flex flex-col">
           <Link
             href="/posts"
             onClick={() => setIsOpen(false)}
-            className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+            className={`py-1.5 break-normal whitespace-normal ${
               isActive("/posts") ? "font-bold underline" : "hover:underline"
             }`}
           >
@@ -160,7 +158,7 @@ function NavClient({ research }: { research: ResearchNavNode[] }) {
               key={key}
               href={`/posts/${path}`}
               onClick={() => setIsOpen(false)}
-              className={`rounded-lg px-3 py-2.5 break-normal whitespace-normal transition-all sm:py-2 ${
+              className={`py-1.5 break-normal whitespace-normal ${
                 isActive(`/posts/${path}`) ? "font-bold underline" : "hover:underline"
               }`}
             >
@@ -170,19 +168,15 @@ function NavClient({ research }: { research: ResearchNavNode[] }) {
         </div>
 
         {/* Research: the whole hierarchy, drillable in place */}
-        <div className="my-6 border-t border-black/10" />
+        <div className="my-5 border-t border-black/10" />
         <Link
           href="/research"
           onClick={() => setIsOpen(false)}
-          className={`mb-2 block rounded-lg px-3 py-2.5 sm:py-2 ${
-            isActive("/research") ? "font-bold underline" : "hover:underline"
-          }`}
+          className={`mb-2 block py-1.5 ${isActive("/research") ? "font-bold underline" : "hover:underline"}`}
         >
           Research
         </Link>
-        <div className="-mx-1">
-          <ResearchTreePanel tree={research} onNavigate={() => setIsOpen(false)} />
-        </div>
+        <ResearchTreePanel tree={research} onNavigate={() => setIsOpen(false)} />
       </nav>
     </>
   );

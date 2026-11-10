@@ -60,12 +60,13 @@ interface TreeProps {
 
 function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreeProps) {
   return (
-    <ul className="m-0 list-none! pl-0!" role={depth === 0 ? "tree" : "group"}>
+    // At the top level the chevrons hang in the margin, so folder names line up with the links above
+    <ul className={`m-0 list-none! pl-0! ${depth === 0 ? "-ml-[18px]" : ""}`} role={depth === 0 ? "tree" : "group"}>
       {nodes.map((node) => {
         const hasChildren = node.children.length > 0;
         const open = hasChildren && isOpen(node.slug);
         const active = node.slug === current;
-        const pad = { paddingLeft: `${8 + depth * INDENT}px` };
+        const pad = { paddingLeft: `${depth * INDENT}px` };
 
         return (
           <li key={node.slug} role="treeitem" aria-expanded={hasChildren ? open : undefined}>
@@ -74,7 +75,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                 <button
                   type="button"
                   onClick={() => toggle(node.slug)}
-                  className="flex flex-1 items-center gap-1.5 rounded-md py-1.5 pr-2 text-left font-semibold text-foreground"
+                  className="flex flex-1 items-center gap-1.5 rounded-md py-1.5 text-left font-semibold text-foreground"
                   style={pad}
                 >
                   <Chevron open={open} />
@@ -90,7 +91,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                     onClick={() => toggle(node.slug)}
                     aria-label={open ? `Collapse ${node.title}` : `Expand ${node.title}`}
                     className="mt-1 shrink-0 rounded-md p-1 text-foreground"
-                    style={{ marginLeft: `${4 + depth * INDENT}px` }}
+                    style={{ marginLeft: `${depth * INDENT - 4}px` }}
                   >
                     <Chevron open={open} />
                   </button>
@@ -102,7 +103,7 @@ function TreeNodes({ nodes, depth, current, isOpen, toggle, onNavigate }: TreePr
                   className={`flex-1 rounded-md py-1.5 pr-2 leading-snug ${
                     active ? "font-bold underline!" : "hover:underline!"
                   }`}
-                  style={hasChildren ? { paddingLeft: "4px" } : { paddingLeft: `${8 + depth * INDENT + 18}px` }}
+                  style={hasChildren ? { paddingLeft: "4px" } : { paddingLeft: `${depth * INDENT + 18}px` }}
                 >
                   {node.title}
                 </Link>
@@ -168,8 +169,8 @@ export default function ResearchTreePanel({ tree, onNavigate }: { tree: Research
   const state = useResearchTree(tree);
 
   return (
-    <div className="font-mallory-book text-sm">
-      <div className="mx-2 mb-3 flex items-center gap-2">
+    <div className="font-mallory-book">
+      <div className="mb-2 flex items-center gap-2">
         <input
           type="search"
           value={state.query}
@@ -179,7 +180,7 @@ export default function ResearchTreePanel({ tree, onNavigate }: { tree: Research
           className="min-w-0 flex-1 rounded-none border-0 border-b border-black/20 bg-transparent px-0 py-1 text-sm placeholder:text-black/50 focus:border-black/60 focus:outline-none"
         />
       </div>
-      <div className="mb-2 flex gap-3 px-2 text-xs text-text-muted">
+      <div className="mb-2 flex gap-3 text-xs text-black/55">
         <button type="button" onClick={state.expandAll} className="hover:text-foreground hover:underline">
           Expand all
         </button>
@@ -197,7 +198,7 @@ export default function ResearchTreePanel({ tree, onNavigate }: { tree: Research
           onNavigate={onNavigate}
         />
       ) : (
-        <p className="px-2 text-text-muted">No notes match “{state.query}”.</p>
+        <p className="text-text-muted">No notes match “{state.query}”.</p>
       )}
     </div>
   );
