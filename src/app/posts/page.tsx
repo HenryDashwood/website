@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import Date from "@/components/Date";
+import ListRow from "@/components/ListRow";
 import NavContentWrapper from "@/components/NavContentWrapper";
 import { GetPosts } from "@/lib/posts";
 
@@ -57,18 +58,13 @@ async function PostList() {
             {posts
               .filter((p) => p.published.startsWith(year))
               .map((post) => (
-                <li
+                <ListRow
                   key={post.slug}
-                  className="flex flex-wrap items-baseline justify-between gap-x-4 py-2 font-mallory-book"
-                >
-                  <span>
-                    <Link href={`/posts/${post.slug}`}>{post.title}</Link>{" "}
-                    {post.tags.length > 0 && <span className="text-sm text-text-muted">{post.tags.join(", ")}</span>}
-                  </span>
-                  <span className="text-sm text-text-muted">
-                    <Date dateString={post.published} />
-                  </span>
-                </li>
+                  href={`/posts/${post.slug}`}
+                  title={post.title}
+                  meta={post.tags.join(", ")}
+                  date={<Date dateString={post.published} />}
+                />
               ))}
           </ul>
         </section>
