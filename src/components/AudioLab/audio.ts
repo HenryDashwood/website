@@ -26,11 +26,12 @@ export function waveformLimit(signals: readonly Float32Array[]) {
 }
 
 // Radix-2 FFT with a symmetric Hann window, shared by the spectrum and STFT.
-export function magnitudes(samples: Float32Array, size: number, offset = 0) {
+// A window shorter than size is zero-padded, which samples the same spectrum more finely.
+export function magnitudes(samples: Float32Array, size: number, offset = 0, windowLength = size) {
   const real = new Float64Array(size);
   const imag = new Float64Array(size);
-  for (let i = 0; i < size; i++) {
-    real[i] = (samples[offset + i] ?? 0) * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (size - 1)));
+  for (let i = 0; i < windowLength; i++) {
+    real[i] = (samples[offset + i] ?? 0) * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (windowLength - 1)));
   }
   for (let i = 1, j = 0; i < size; i++) {
     let bit = size >> 1;

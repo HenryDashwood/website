@@ -10,13 +10,13 @@ const LIMIT = 2.3;
 const [LEFT, RIGHT, TOP, BOTTOM] = [12, 352, 8, 128];
 const MID = (TOP + BOTTOM) / 2;
 
-interface Part {
+export interface Part {
   freq: number;
   strength?: number;
   phase?: number;
 }
 
-const value = (t: number, parts: Part[]) =>
+export const value = (t: number, parts: Part[]) =>
   parts.reduce(
     (sum, { freq, strength = 1, phase = 0 }) => sum + strength * Math.sin(2 * Math.PI * freq * t + phase),
     0
@@ -119,8 +119,10 @@ export const HighTone = () => (
   </Single>
 );
 
+export const SUM: Part[] = [{ freq: 170 }, { freq: 340, strength: 0.5 }];
+
 export const SumTone = () => (
   <Single>
-    <Tone title="The two added together" parts={[{ freq: 170 }, { freq: 340, strength: 0.5 }]} showParts />
+    <Tone title="The two added together" parts={SUM} showParts />
   </Single>
 );
