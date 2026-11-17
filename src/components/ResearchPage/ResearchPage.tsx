@@ -43,7 +43,7 @@ export default async function ResearchPage({ note }: { note: ResearchNote }) {
 
   return (
     <>
-      <div className="max-w-none! 2xl:grid 2xl:grid-cols-[minmax(0,800px)_200px] 2xl:justify-center 2xl:gap-10">
+      <div className="2xl:grid 2xl:max-w-none! 2xl:grid-cols-[minmax(0,800px)_200px] 2xl:justify-center 2xl:gap-10">
         <article className="min-w-0">
           <h1>{note.title}</h1>
           <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 font-mallory-book text-sm text-text-muted">
