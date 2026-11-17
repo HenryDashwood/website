@@ -1,13 +1,14 @@
 import AudioLab from "@/components/AudioLab/AudioLab";
 import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
 import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
+import { DecibelSpectra, LinearSpectra } from "@/components/AudioLab/Spectra";
 import WaveformPlayer from "@/components/AudioLab/WaveformPlayer";
 
 export const metadata = {
   title: "Representing Audio Data",
   description: "",
   created: "2026-09-23",
-  lastUpdated: "2026-11-15",
+  lastUpdated: "2026-11-17",
   tags: ["AI"],
 };
 
@@ -61,6 +62,16 @@ Now here is a sound whose waveform is the sum of the previous two sounds' wavefo
 Notice how both of the original sine waves are still visible in the wave of the more complex sound.
 
 It turns out that it is possible to perform this operation in reverse and decompose the complex sounds we experience in the real world into the simpler sounds that make them up. The operation that performs this decomposition is the Fourier Transform.
+
+The step by step operations that make up a Fourier transform are something I'll write up in a separate page another time. For now, the best resource for getting a high level understanding of why the Fourier Transform works is from Grant Sanderson [here](https://youtu.be/spUNpyF58BY?si=IIKNcu5VFWZOo3hn).
+
+Applying Fourier Transforms to the combined waveform, and to the letter "i" from the audio above, produces the following frequency spectrums.
+
+<LinearSpectra />
+
+The vowel's spikes shrink quickly. After the third, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Decibels describe a ratio on a logarithmic scale: 0 dB is the strongest frequency, and every 20 dB below that is ten times weaker, so −40 dB is a hundredth of the strength and −60 dB a thousandth. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. It is also closer to how we hear, since our ears judge loudness by ratios rather than differences.
+
+<DecibelSpectra />
 
 -------------- Earlier work ------------------
 
