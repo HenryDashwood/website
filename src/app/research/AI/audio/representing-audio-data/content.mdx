@@ -8,7 +8,7 @@ export const metadata = {
   title: "Representing Audio Data",
   description: "",
   created: "2026-09-23",
-  lastUpdated: "2026-11-17",
+  lastUpdated: "2026-11-18",
   tags: ["AI"],
 };
 
@@ -69,17 +69,27 @@ Applying Fourier Transforms to the combined waveform, and to the letter "i" from
 
 <LinearSpectra />
 
-The vowel's spikes shrink quickly. After the third, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Decibels describe a ratio on a logarithmic scale: 0 dB is the strongest frequency, and every 20 dB below that is ten times weaker, so −40 dB is a hundredth of the strength and −60 dB a thousandth. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. It is also closer to how we hear, since our ears judge loudness by ratios rather than differences.
+The first spectrum has two spikes, at 170 and 340 Hz. So we have retrieved the frequencies we used in the synthetic waveform. 
+
+The second has many more spikes, which get smaller as the frequency rises. Each spike sits at a whole multiple of the vowel’s 170 Hz pitch. That’s because the waveform is a puff of air repeated 170 times a second. A frequency that’s a whole multiple of 170 Hz lines up with every puff in the same way, so its strength builds up. A frequency in between lines up with some puffs and against others, so it cancels itself out. The heights of the spikes trace out the shape of a single puff, as filtered by the throat and mouth. That shape is the timbre.
+
+The spikes are also wider than in the first spectrum. The cancelling only works fully over many repeats, and our clip of the vowel is only 43 ms long, about seven puffs. The synthetic tone lasts a full second, so its spikes are much sharper.
+
+After the third spike, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Here 0 dB is the strongest frequency in the sample, and every 20 dB below that is ten times weaker. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. This is closer to how we hear, since our ears judge loudness by ratios rather than differences.
+
+<details>
+<summary>How do decibels work?</summary>
+
+Decibels describe a ratio on a logarithmic scale, so they always compare a value against a reference. The formula is: 
+
+$$\text{decibels} = 20 \log_{10}\left(\frac{\text{strength}}{\text{reference}}\right)$$
+
+Every 20 dB is a factor of ten, so −20 dB is a tenth of the reference's strength, −40 dB a hundredth and −60 dB a thousandth.
+
+You may have seen decibels used for loudness, where a conversation is about 60 dB and a jet engine 120 dB. Those figures compare a sound's pressure to that of the quietest sound a human can hear, which is set as 0 dB. Because that reference is fixed and widely agreed on, it usually goes unmentioned.
+</details>
 
 <DecibelSpectra />
-
--------------- Earlier work ------------------
-
-We can apply a Fourier transform to the audio stream to decompose it into different frequencies. First we taper the edges with a Hann window, reducing spurious frequencies caused by abruptly cutting the signal.
-
-The evenly spaced spikes are harmonics: whole multiples of the pitch. Their heights rise and fall in broad hills called formants. Change the pitch and the spikes move; change the vowel and the hills move.
-
-The synthetic sounds below use a simple source-filter model. A buzz of harmonics represents the vocal folds, while boosts around the formant frequencies approximate the effect of the throat and mouth.
 
 ## Spectrogram
 
