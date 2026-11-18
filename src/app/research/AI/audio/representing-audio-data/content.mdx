@@ -1,4 +1,4 @@
-import AudioLab from "@/components/AudioLab/AudioLab";
+import MelSpectrogram from "@/components/AudioLab/MelSpectrogram";
 import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
 import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
 import { DecibelSpectra, LinearSpectra } from "@/components/AudioLab/Spectra";
@@ -91,10 +91,6 @@ You may have seen decibels used for loudness, where a conversation is about 60 d
 
 <DecibelSpectra />
 
-## Spectrogram
+## The Spectrogram
 
-Speech changes over time, so one spectrum is not enough. A spectrogram lines up the spectra of short, overlapping windows: time runs along the horizontal axis, frequency up the vertical axis, and colour shows strength.
-
-Record yourself speaking to see harmonics as parallel stripes, with brighter formant bands moving as your mouth changes shape. Unvoiced consonants such as “s” look more like fuzzy smears.
-
-<AudioLab />
+<MelSpectrogram />
