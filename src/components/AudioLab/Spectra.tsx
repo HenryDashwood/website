@@ -3,27 +3,45 @@
 import { useMemo } from "react";
 
 import { Axes, Chart, toPath } from "../blog_components/shared/viz";
-import { decibels, magnitudes } from "./audio";
+import { decibels, FFT_SIZE, magnitudes } from "./audio";
 import { SUM, value } from "./Tones";
 import { AXIS, useSentence } from "./WaveformPlayer";
 
-// Spectra relative to each sound's strongest frequency (linear or dB), on a shared 0–4,000 Hz axis. The tone
+// Spectra relative to each sound's strongest frequency (linear or dB), by default on a 0–4,000 Hz axis. The tone
 // uses one second (sharp spikes); the vowel uses the 43 ms where its pitch holds at 170 Hz.
 const [LEFT, RIGHT, TOP, BOTTOM] = [44, 352, 8, 128];
-const MAX_HZ = 4000;
-const FLOOR = -60;
-const x = (hz: number) => LEFT + (hz / MAX_HZ) * (RIGHT - LEFT);
 
-function Plot({ title, mags, binHz, db }: { title: string; mags: Float64Array | null; binHz: number; db: boolean }) {
-  const y = (v: number) => (db ? TOP + (Math.min(-FLOOR, -v) / -FLOOR) * (BOTTOM - TOP) : BOTTOM - v * (BOTTOM - TOP));
+export function Plot({
+  title,
+  mags,
+  binHz,
+  db,
+  maxHz = 4000,
+  floor = -60,
+}: {
+  title: string;
+  mags: Float64Array | null;
+  binHz: number;
+  db: boolean;
+  maxHz?: number;
+  floor?: number;
+}) {
+  const x = (hz: number) => LEFT + (hz / maxHz) * (RIGHT - LEFT);
+  const y = (v: number) => (db ? TOP + (Math.min(-floor, -v) / -floor) * (BOTTOM - TOP) : BOTTOM - v * (BOTTOM - TOP));
   let path = "";
   if (mags) {
     const peak = mags.reduce((m, v) => Math.max(m, v), 0);
-    path = toPath(
-      Array.from(mags, (v, i) => (i * binHz > MAX_HZ ? null : [x(i * binHz), y(db ? decibels(v, peak) : v / peak)]))
-    );
+    // Keep the strongest value in each half-unit column so very long spectra stay drawable
+    const columns = new Map<number, number>();
+    for (let i = 0; i * binHz <= maxHz && i < mags.length; i++) {
+      const column = Math.round(x(i * binHz) * 2) / 2;
+      const level = y(db ? decibels(mags[i], peak) : mags[i] / peak);
+      columns.set(column, Math.min(columns.get(column) ?? Infinity, level));
+    }
+    path = toPath([...columns]);
   }
-  const ticks = db ? [0, -20, -40, -60] : [1, 0.5, 0];
+  const ticks = db ? Array.from({ length: -floor / 20 + 1 }, (_, i) => -20 * i) : [1, 0.5, 0];
+  const hzTicks = Array.from({ length: 5 }, (_, i) => (i * maxHz) / 4);
   return (
     <figure className="m-0">
       <figcaption className="mb-1 text-[13px] text-chart-ink">{title}</figcaption>
@@ -44,7 +62,7 @@ function Plot({ title, mags, binHz, db }: { title: string; mags: Float64Array | 
         >
           {db ? "Strength (dB)" : "Strength"}
         </text>
-        {[0, 1000, 2000, 3000, 4000].map((hz) => (
+        {hzTicks.map((hz) => (
           <text key={hz} x={x(hz)} y={BOTTOM + 12} textAnchor="middle" className="viz-axis" style={AXIS}>
             {hz.toLocaleString("en-GB")}
           </text>
@@ -70,7 +88,7 @@ function useSpectra() {
     []
   );
   const vowel = useMemo(
-    () => (sound ? magnitudes(sound.samples, 4096, Math.round(2.805 * sound.sampleRate), 1024) : null),
+    () => (sound ? magnitudes(sound.samples, 4096, Math.round(2.805 * sound.sampleRate), FFT_SIZE) : null),
     [sound]
   );
   return { tone, vowel, vowelBin: (sound?.sampleRate ?? 24000) / 4096 };
@@ -95,7 +113,7 @@ export const DecibelSpectra = () => <Row db />;
 // (af_heart 170 Hz, af_river 167 Hz): the spikes line up, but their heights differ.
 const RIVER = "/audio/kokoro-sentence-river.wav";
 const vowelSpectrum = (sound: ReturnType<typeof useSentence>, start: number) =>
-  sound ? magnitudes(sound.samples, 4096, Math.round(start * sound.sampleRate), 1024) : null;
+  sound ? magnitudes(sound.samples, 4096, Math.round(start * sound.sampleRate), FFT_SIZE) : null;
 export function VoiceSpectra() {
   const heart = useSentence();
   const river = useSentence(RIVER);

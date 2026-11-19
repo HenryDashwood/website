@@ -3,8 +3,10 @@ export interface Sound {
   sampleRate: number;
 }
 
-export const FFT_SIZE = 2048;
-export const HOP = 512;
+// One analysis window for every spectrum and spectrogram on the page: 1,024 samples (43 ms at
+// 24 kHz), long enough to hold about seven pitch periods. The spectrogram steps a quarter window.
+export const FFT_SIZE = 1024;
+export const HOP = 256;
 
 // Radix-2 FFT with a symmetric Hann window, shared by the spectrum and STFT.
 // A window shorter than size is zero-padded, which samples the same spectrum more finely.

@@ -1,4 +1,5 @@
 import { LinearSpectrogram, MelSpectrogram } from "@/components/AudioLab/Spectrogram";
+import { SlidingWindow, WholeSentenceSpectrum } from "@/components/AudioLab/SpectrogramSteps";
 import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
 import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
 import { DecibelSpectra, LinearSpectra, VoiceSpectra } from "@/components/AudioLab/Spectra";
@@ -97,6 +98,16 @@ Now we can return to the two voices from the start of this section. Here is the 
 The spikes sit in almost the same places, because both voices are speaking at almost the same pitch. But their heights rise and fall differently. Those broad hills in the heights are called _formants_, and they are set by the shape of the speaker's throat and mouth. They are a large part of what makes the two voices sound different, even when saying the same vowel at the same pitch.
 
 ## The Spectrogram
+
+{/* TODO: one spectrum of the whole sentence blurs everything together */}
+
+<WholeSentenceSpectrum />
+
+{/* TODO: so take a spectrum of each short window instead, sliding it along */}
+
+<SlidingWindow />
+
+{/* TODO: a spectrogram is every one of those spectra, side by side */}
 
 <LinearSpectrogram />
 

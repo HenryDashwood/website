@@ -32,6 +32,24 @@ export function useSentence(src = SRC) {
   return sound;
 }
 
+// Min/max per bucket keeps short peaks visible when thousands of samples share a pixel.
+// Full scale (±1) fills the box from top to bottom.
+export function waveformPath(samples: Float32Array, left: number, right: number, top: number, bottom: number) {
+  const mid = (top + bottom) / 2;
+  const points: [number, number][] = [];
+  const step = Math.ceil(samples.length / 1500);
+  for (let i = 0; i < samples.length; i += step) {
+    let [min, max] = [1, -1];
+    for (let j = i; j < Math.min(samples.length, i + step); j++) {
+      min = Math.min(min, samples[j]);
+      max = Math.max(max, samples[j]);
+    }
+    const x = left + (i / samples.length) * (right - left);
+    points.push([x, mid - max * (mid - top)], [x, mid - min * (mid - top)]);
+  }
+  return toPath(points);
+}
+
 export default function WaveformPlayer() {
   const sound = useSentence();
   const samples = sound?.samples ?? null;
@@ -39,22 +57,7 @@ export default function WaveformPlayer() {
   const playback = useSentencePlayback(duration);
   const { time, playing, seek } = playback;
 
-  const path = useMemo(() => {
-    if (!samples) return "";
-    // Min/max per bucket keeps short peaks visible at this zoom
-    const points: [number, number][] = [];
-    const step = Math.ceil(samples.length / 1500);
-    for (let i = 0; i < samples.length; i += step) {
-      let [min, max] = [1, -1];
-      for (let j = i; j < Math.min(samples.length, i + step); j++) {
-        min = Math.min(min, samples[j]);
-        max = Math.max(max, samples[j]);
-      }
-      const x = LEFT + (i / samples.length) * (RIGHT - LEFT);
-      points.push([x, MID - max * (MID - TOP)], [x, MID - min * (MID - TOP)]);
-    }
-    return toPath(points);
-  }, [samples]);
+  const path = useMemo(() => (samples ? waveformPath(samples, LEFT, RIGHT, TOP, BOTTOM) : ""), [samples]);
 
   const playheadX = LEFT + (duration ? time / duration : 0) * (RIGHT - LEFT);
 
