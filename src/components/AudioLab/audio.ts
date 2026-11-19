@@ -6,25 +6,6 @@ export interface Sound {
 export const FFT_SIZE = 2048;
 export const HOP = 512;
 
-export function signalLevel(samples: Float32Array) {
-  let peak = 0;
-  let squares = 0;
-  for (const sample of samples) {
-    peak = Math.max(peak, Math.abs(sample));
-    squares += sample * sample;
-  }
-  const rms = samples.length ? Math.sqrt(squares / samples.length) : 0;
-  return { peak, db: Math.max(-90, 20 * Math.log10(rms || 1e-12)) };
-}
-
-export function waveformLimit(signals: readonly Float32Array[]) {
-  let peak = 0;
-  for (const samples of signals) {
-    for (const sample of samples) peak = Math.max(peak, Math.abs(sample));
-  }
-  return peak > 0 ? peak * 1.05 : 1;
-}
-
 // Radix-2 FFT with a symmetric Hann window, shared by the spectrum and STFT.
 // A window shorter than size is zero-padded, which samples the same spectrum more finely.
 export function magnitudes(samples: Float32Array, size: number, offset = 0, windowLength = size) {
@@ -59,28 +40,4 @@ export function magnitudes(samples: Float32Array, size: number, offset = 0, wind
 
 export function decibels(value: number, reference: number) {
   return 20 * Math.log10(Math.max(value / (reference || 1), 1e-6));
-}
-
-export function synthesize(vowel: "buzz" | "ah" | "ee", pitch: number): Sound {
-  const sampleRate = 44100;
-  const samples = new Float32Array(sampleRate);
-  const peaks = vowel === "ah" ? [700, 1200] : vowel === "ee" ? [300, 2300] : [];
-  for (let harmonic = 1; harmonic <= 40; harmonic++) {
-    const frequency = harmonic * pitch;
-    const gain =
-      (1 + peaks.reduce((sum, peak) => sum + 20 * Math.exp(-(((frequency - peak) / 100) ** 2)), 0)) / harmonic;
-    for (let i = 0; i < samples.length; i++) samples[i] += gain * Math.sin((2 * Math.PI * frequency * i) / sampleRate);
-  }
-  const peak = samples.reduce((max, value) => Math.max(max, Math.abs(value)), 0);
-  for (let i = 0; i < samples.length; i++) samples[i] *= 0.9 / (peak || 1);
-  return { samples, sampleRate };
-}
-
-export function vowelSegment(sound: Sound): Sound {
-  const length = Math.round(sound.sampleRate * 0.2);
-  const start = Math.max(0, Math.min(Math.floor(sound.samples.length / 2), sound.samples.length - length));
-  return {
-    samples: sound.samples.slice(start, start + length),
-    sampleRate: sound.sampleRate,
-  };
 }

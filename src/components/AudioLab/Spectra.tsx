@@ -90,3 +90,31 @@ function Row({ db }: { db: boolean }) {
 
 export const LinearSpectra = () => <Row db={false} />;
 export const DecibelSpectra = () => <Row db />;
+
+// The same vowel from both voices, each from a 43 ms stretch where its pitch holds steady
+// (af_heart 170 Hz, af_river 167 Hz): the spikes line up, but their heights differ.
+const RIVER = "/audio/kokoro-sentence-river.wav";
+const vowelSpectrum = (sound: ReturnType<typeof useSentence>, start: number) =>
+  sound ? magnitudes(sound.samples, 4096, Math.round(start * sound.sampleRate), 1024) : null;
+export function VoiceSpectra() {
+  const heart = useSentence();
+  const river = useSentence(RIVER);
+  const heartMags = useMemo(() => vowelSpectrum(heart, 2.805), [heart]);
+  const riverMags = useMemo(() => vowelSpectrum(river, 2.405), [river]);
+  return (
+    <div className="not-prose my-10 grid grid-cols-1 gap-6 font-mallory-book sm:grid-cols-2 sm:gap-4">
+      <Plot
+        title="The “i” in “times”, voice af_heart"
+        mags={heartMags}
+        binHz={(heart?.sampleRate ?? 24000) / 4096}
+        db
+      />
+      <Plot
+        title="The “i” in “times”, voice af_river"
+        mags={riverMags}
+        binHz={(river?.sampleRate ?? 24000) / 4096}
+        db
+      />
+    </div>
+  );
+}

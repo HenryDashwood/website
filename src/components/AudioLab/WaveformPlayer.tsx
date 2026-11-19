@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Axes, Chart, toPath } from "../blog_components/shared/viz";
+import { SentencePlayback, useSentencePlayback } from "./SentencePlayback";
 
 export const SRC = "/audio/kokoro-sentence.wav";
 const [LEFT, RIGHT, TOP, BOTTOM] = [64, 624, 10, 136];
@@ -32,26 +33,12 @@ export function useSentence(src = SRC) {
 }
 
 export default function WaveformPlayer() {
-  const audio = useRef<HTMLAudioElement>(null);
   const sound = useSentence();
   const samples = sound?.samples ?? null;
-  const sampleRate = sound?.sampleRate ?? 24000;
-  const [time, setTime] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const duration = sound ? sound.samples.length / sound.sampleRate : 0;
+  const playback = useSentencePlayback(duration);
+  const { time, playing, seek } = playback;
 
-  // Follow the playhead every frame while playing
-  useEffect(() => {
-    if (!playing) return;
-    let frame = 0;
-    const tick = () => {
-      setTime(audio.current?.currentTime ?? 0);
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [playing]);
-
-  const duration = samples ? samples.length / sampleRate : 0;
   const path = useMemo(() => {
     if (!samples) return "";
     // Min/max per bucket keeps short peaks visible at this zoom
@@ -71,52 +58,9 @@ export default function WaveformPlayer() {
 
   const playheadX = LEFT + (duration ? time / duration : 0) * (RIGHT - LEFT);
 
-  function toggle() {
-    const el = audio.current;
-    if (!el) return;
-    if (el.paused) void el.play();
-    else el.pause();
-  }
-
-  function seek(event: React.MouseEvent<SVGRectElement>) {
-    const el = audio.current;
-    const box = event.currentTarget.getBoundingClientRect();
-    if (!el || !duration) return;
-    el.currentTime = Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)) * duration;
-    setTime(el.currentTime);
-  }
-
   return (
     <figure className="not-prose mx-0 my-10">
-      <audio
-        ref={audio}
-        src={SRC}
-        preload="auto"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => {
-          setPlaying(false);
-          setTime(0);
-        }}
-      />
-      <div className="mb-2 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label={playing ? "Pause" : "Play"}
-          className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full bg-chart-series-1 text-white hover:opacity-85"
-        >
-          <svg viewBox="0 0 16 16" className="size-3 fill-current" aria-hidden="true">
-            {playing ? <path d="M3 2h3.5v12H3zM9.5 2H13v12H9.5z" /> : <path d="M4 1.5v13L14 8z" />}
-          </svg>
-        </button>
-        <p className="min-w-0 flex-1 font-source-serif text-[15px] text-chart-ink italic">
-          “A microphone measures air pressure thousands of times every second.”
-        </p>
-        <span className="font-mallory-book text-xs text-chart-muted tabular-nums">
-          {time.toFixed(2)} / {duration.toFixed(2)} s
-        </span>
-      </div>
+      <SentencePlayback src={SRC} playback={playback} label="sentence" />
       <Chart
         width={640}
         height={170}

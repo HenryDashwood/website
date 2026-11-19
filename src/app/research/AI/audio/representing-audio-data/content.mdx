@@ -1,14 +1,14 @@
-import MelSpectrogram from "@/components/AudioLab/MelSpectrogram";
+import { LinearSpectrogram, MelSpectrogram } from "@/components/AudioLab/Spectrogram";
 import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
 import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
-import { DecibelSpectra, LinearSpectra } from "@/components/AudioLab/Spectra";
+import { DecibelSpectra, LinearSpectra, VoiceSpectra } from "@/components/AudioLab/Spectra";
 import WaveformPlayer from "@/components/AudioLab/WaveformPlayer";
 
 export const metadata = {
   title: "Representing Audio Data",
   description: "",
   created: "2026-09-23",
-  lastUpdated: "2026-11-18",
+  lastUpdated: "2026-11-19",
   tags: ["AI"],
 };
 
@@ -42,9 +42,9 @@ Let's have a look at the waveform of the same vowel, spoken by a different voice
 
 <VoiceZooms />
 
-Notice how a repeating pattern remains at a similar interval, but the shape of the pattern is slightly different. 
+Notice how a repeating pattern remains at a similar interval, but the shape of the pattern is slightly different.
 
-The name for the "shape" of a sound is its timbre. It's what differentiates the sounds of two musical instruments playing the same note. It's obviously very important to have a mathematical way of describing the timbre of a sound when generating audio to reproduce it.
+The name for the "shape" of a sound is its timbre. It's what differentiates the sounds of two musical instruments playing the same note. It's very important to have a mathematical way of describing the timbre of a sound when generating audio to reproduce it.
 
 Let's start with an extremely simple sound. A single note whose waveform is a sine wave like the one below.
 
@@ -58,29 +58,28 @@ Now here is a sound whose waveform is the sum of the previous two sounds' wavefo
 
 <SumTone />
 
-
 Notice how both of the original sine waves are still visible in the wave of the more complex sound.
 
-It turns out that it is possible to perform this operation in reverse and decompose the complex sounds we experience in the real world into the simpler sounds that make them up. The operation that performs this decomposition is the Fourier Transform.
+It turns out that it is possible to perform this operation in reverse and decompose the complex sounds we experience in the real world into the simpler sounds that make them up. The operation that performs this decomposition is the Fourier transform.
 
-The step by step operations that make up a Fourier transform are something I'll write up in a separate page another time. For now, the best resource for getting a high level understanding of why the Fourier Transform works is from Grant Sanderson [here](https://youtu.be/spUNpyF58BY?si=IIKNcu5VFWZOo3hn).
+The step by step operations that make up a Fourier transform are something I'll write up in a separate page another time. For now, the best resource for getting a high level understanding of why the Fourier transform works is [Grant Sanderson's video](https://youtu.be/spUNpyF58BY).
 
-Applying Fourier Transforms to the combined waveform, and to the letter "i" from the audio above, produces the following frequency spectrums.
+Applying Fourier transforms to the combined waveform, and to the "i" sound from the audio above, produces the following frequency spectra.
 
 <LinearSpectra />
 
-The first spectrum has two spikes, at 170 and 340 Hz. So we have retrieved the frequencies we used in the synthetic waveform. 
+The first spectrum has two spikes, at 170 and 340 Hz. So we have retrieved the frequencies we used in the synthetic waveform.
 
 The second has many more spikes, which get smaller as the frequency rises. Each spike sits at a whole multiple of the vowel’s 170 Hz pitch. That’s because the waveform is a puff of air repeated 170 times a second. A frequency that’s a whole multiple of 170 Hz lines up with every puff in the same way, so its strength builds up. A frequency in between lines up with some puffs and against others, so it cancels itself out. The heights of the spikes trace out the shape of a single puff, as filtered by the throat and mouth. That shape is the timbre.
 
 The spikes are also wider than in the first spectrum. The cancelling only works fully over many repeats, and our clip of the vowel is only 43 ms long, about seven puffs. The synthetic tone lasts a full second, so its spikes are much sharper.
 
-After the third spike, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Here 0 dB is the strongest frequency in the sample, and every 20 dB below that is ten times weaker. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. This is closer to how we hear, since our ears judge loudness by ratios rather than differences.
+After the third spike, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Here 0 dB is the strongest frequency in the clip, and every 20 dB below that is ten times weaker. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. This is closer to how we hear, since our ears judge loudness by ratios rather than differences.
 
 <details>
 <summary>How do decibels work?</summary>
 
-Decibels describe a ratio on a logarithmic scale, so they always compare a value against a reference. The formula is: 
+Decibels describe a ratio on a logarithmic scale, so they always compare a value against a reference. The formula is:
 
 $$\text{decibels} = 20 \log_{10}\left(\frac{\text{strength}}{\text{reference}}\right)$$
 
@@ -91,6 +90,16 @@ You may have seen decibels used for loudness, where a conversation is about 60 d
 
 <DecibelSpectra />
 
+Now we can return to the two voices from the start of this section. Here is the same "i" sound from each, in decibels.
+
+<VoiceSpectra />
+
+The spikes sit in almost the same places, because both voices are speaking at almost the same pitch. But their heights rise and fall differently. Those broad hills in the heights are called _formants_, and they are set by the shape of the speaker's throat and mouth. They are a large part of what makes the two voices sound different, even when saying the same vowel at the same pitch.
+
 ## The Spectrogram
+
+<LinearSpectrogram />
+
+{/* TODO: explain the mel scale */}
 
 <MelSpectrogram />
