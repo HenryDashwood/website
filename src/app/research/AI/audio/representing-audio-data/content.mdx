@@ -1,5 +1,6 @@
+import MelFilterbankAnimation from "@/components/AudioLab/MelFilterbankAnimation";
 import { LinearSpectrogram, MelSpectrogram } from "@/components/AudioLab/Spectrogram";
-import { SlidingWindow, WholeSentenceSpectrum } from "@/components/AudioLab/SpectrogramSteps";
+import { HannSlidingWindow, SlidingWindow, WholeSentenceSpectrum } from "@/components/AudioLab/SpectrogramSteps";
 import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
 import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
 import { DecibelSpectra, LinearSpectra, VoiceSpectra } from "@/components/AudioLab/Spectra";
@@ -7,9 +8,9 @@ import WaveformPlayer from "@/components/AudioLab/WaveformPlayer";
 
 export const metadata = {
   title: "Representing Audio Data",
-  description: "",
+  description: "How sound is turned into numbers for AI models, from air pressure and waveforms to Fourier transforms and mel spectrograms.",
   created: "2026-09-23",
-  lastUpdated: "2026-11-19",
+  lastUpdated: "2026-11-20",
   tags: ["AI"],
 };
 
@@ -71,11 +72,11 @@ Applying Fourier transforms to the combined waveform, and to the "i" sound from 
 
 The first spectrum has two spikes, at 170 and 340 Hz. So we have retrieved the frequencies we used in the synthetic waveform.
 
-The second has many more spikes, which get smaller as the frequency rises. Each spike sits at a whole multiple of the vowel’s 170 Hz pitch. That’s because the waveform is a puff of air repeated 170 times a second. A frequency that’s a whole multiple of 170 Hz lines up with every puff in the same way, so its strength builds up. A frequency in between lines up with some puffs and against others, so it cancels itself out. The heights of the spikes trace out the shape of a single puff, as filtered by the throat and mouth. That shape is the timbre.
+The second has many more spikes, which get smaller as the frequency rises. These spikes are called _harmonics_. Each appears at a whole number multiple of the vowel’s 170 Hz pitch. This is because the waveform is a puff of air repeated 170 times a second. Frequencies that are whole multiples of 170 Hz will line up together, so their strength will build up. Frequencies in between line up with some puffs and against others. So they end up cancelling themselves out.
 
-The spikes are also wider than in the first spectrum. The cancelling only works fully over many repeats, and our clip of the vowel is only 43 ms long, about seven puffs. The synthetic tone lasts a full second, so its spikes are much sharper.
+The harmonics are also wider than in the first spectrum. The cancelling only works fully over many repeats, and our clip of the vowel is only 43 ms long, about seven puffs. The synthetic tone lasts a full second, so its harmonic spikes are much sharper.
 
-After the third spike, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Here 0 dB is the strongest frequency in the clip, and every 20 dB below that is ten times weaker. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. This is closer to how we hear, since our ears judge loudness by ratios rather than differences.
+After the third harmonic, each one is less than 4% as strong as the first, so on this scale they all but disappear. To see them we can plot strength in _decibels_ (dB) instead. Here 0 dB is the strongest frequency in the clip, and every 20 dB below that is ten times weaker. This gives each factor of ten the same amount of room on the plot, so the quiet harmonics become visible. This is closer to how we hear, since our ears judge loudness by ratios rather than differences.
 
 <details>
 <summary>How do decibels work?</summary>
@@ -86,7 +87,7 @@ $$\text{decibels} = 20 \log_{10}\left(\frac{\text{strength}}{\text{reference}}\r
 
 Every 20 dB is a factor of ten, so −20 dB is a tenth of the reference's strength, −40 dB a hundredth and −60 dB a thousandth.
 
-You may have seen decibels used for loudness, where a conversation is about 60 dB and a jet engine 120 dB. Those figures compare a sound's pressure to that of the quietest sound a human can hear, which is set as 0 dB. Because that reference is fixed and widely agreed on, it usually goes unmentioned.
+You may have seen decibels used for loudness, where a conversation is about 60 dB and a jet engine 120 dB. In that context 0 dB is defined as the quietest sound a human can hear. Because that reference is fixed and widely agreed on, it usually goes unmentioned.
 </details>
 
 <DecibelSpectra />
@@ -99,18 +100,59 @@ The spikes sit in almost the same places, because both voices are speaking at al
 
 ## The Spectrogram
 
-{/* TODO: one spectrum of the whole sentence blurs everything together */}
+The spectra in the previous section were for a single synthetic tone, and a steady vowel. The frequency spectrum of a longer recording changes as the sound changes. We can, if we want to, run a Fourier transform on our entire example sentence, and mix it all into a single plot.
 
 <WholeSentenceSpectrum />
 
-{/* TODO: so take a spectrum of each short window instead, sliding it along */}
+This only tells us which frequencies appeared across the sentence overall, not when they happened. To capture each sound in the order it was made we can slide a short window along the waveform and take the Fourier transform of each slice. The trade off here is making the window narrow enough to capture one sound at a time but long enough to fit several repeats of the vocal pitch. In this example, I've used 1,024 samples, which is equivalent to about 43 ms.
+
+If you click play on the animation below you'll see it plot the spectrum of each window as it passes through the waveform.
 
 <SlidingWindow />
 
-{/* TODO: a spectrogram is every one of those spectra, side by side */}
+<details>
+<summary>How is each window cut out?</summary>
+
+If you chop a slice out of a waveform, the signal starts and stops abruptly at the edges. The Fourier transform treats finite clips as though they loop. The abrupt jump in amplitude from the end of a slice back to its start gets recreated by the Fourier transform using high frequencies that weren't originally there.
+
+To prevent this, each slice is multiplied by a smooth bell-shaped curve (a _Hann window_) that starts at zero, rises to one in the middle, and fades back to zero at the end:
+
+$$w(n) = 0.5 - 0.5 \cos\left(\frac{2\pi n}{N - 1}\right)$$
+
+where $n$ is the sample's position in a window of length $N$.
+
+<HannSlidingWindow />
+
+This tapering squashes the ends of each slice, so adjacent windows are overlapped. In the spectrograms below, each 1,024-sample window steps forward by 256 samples (about 11 ms), so every part of the recording passes through the middle of a window.
+</details>
+
+To visualise all the data in that animation in a single picture, we can use colour. We plot every window's spectrum alongside one another, rotated. In a linear spectrogram like this:
+
+  - The horizontal axis is time.
+  - The vertical axis is frequency (0 to 12,000 Hz, split into 513 evenly spaced bins; a 24,000 Hz recording tops out at half its sample rate because capturing a wave takes at least two samples per cycle).
+  - The brightness is the strength of each frequency at that instant.
 
 <LinearSpectrogram />
 
-{/* TODO: explain the mel scale */}
+Notice how on the linear spectrogram above, most speech detail is crammed into the bottom third. Half the vertical space goes to 6,000 – 12,000 Hz, mostly the noisy hiss in sounds like "s" and "f".
+
+Human pitch perception responds to ratios rather than absolute differences, much like with loudness. We find it easier to tell low frequencies apart than high ones.
+
+The _mel scale_ (short for melody) warps frequency so equal steps sound like equal steps in pitch, stretching low frequencies and compressing high ones. Grouping the 513 linear bins into 80 evenly spaced bands on this scale gives us a _mel spectrogram_.
+
+<details>
+<summary>How is a mel spectrogram calculated?</summary>
+
+We map frequencies in hertz onto the mel scale, before rebinning them.
+
+$$\text{mel} = 2595 \log_{10}\left(1 + \frac{\text{frequency}}{700}\right)$$
+
+<MelFilterbankAnimation />
+
+</details>
 
 <MelSpectrogram />
+
+The frequencies below 4,000 Hz now take up roughly two thirds of the chart instead of one third. The harmonics and shifting formants are clearer.
+
+Mel spectrograms pack the parts of sound we actually notice into a compact grid. Speech recognition models often take mel spectrograms as input. Many text to speech models generate them as an intermediate step. Because discarding phase and averaging bins into mel bands throws information away, you can't mathematically invert a mel spectrogram back into audio. So systems based on mel spectrograms need a a separate neural network (a _vocoder_) to be trained to turn them back into a waveform.

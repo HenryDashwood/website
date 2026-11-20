@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import Date from "@/components/Date";
 import ResearchBreadcrumbs from "@/components/ResearchBreadcrumbs";
-import ResearchNoteList, { NoteMeta } from "@/components/ResearchNoteList";
+import ResearchNoteList from "@/components/ResearchNoteList";
 import { getBacklinks, getChildNotes, getHeadings, ResearchHeading, ResearchNote } from "@/lib/research";
 
 function RailSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -48,8 +48,6 @@ export default async function ResearchPage({ note }: { note: ResearchNote }) {
           <h1>{note.title}</h1>
           <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 font-mallory-book text-sm text-text-muted">
             <ResearchBreadcrumbs path={note.path.slice(0, -1)} />
-            <span aria-hidden="true">·</span>
-            <NoteMeta note={note} showCreated />
           </div>
 
           <Markdown />
@@ -94,8 +92,8 @@ export default async function ResearchPage({ note }: { note: ResearchNote }) {
           )}
         </article>
 
-        <aside className="hidden 2xl:block">
-          <div className="sticky top-8 flex max-h-[calc(100vh-4rem)] flex-col gap-8 overflow-y-auto pt-16 pb-8">
+        <aside className="hidden 2xl:block 2xl:pt-16">
+          <div className="sticky top-8 flex max-h-[calc(100vh-4rem)] flex-col gap-8 overflow-y-auto pb-8">
             <OnThisPage headings={headings} />
           </div>
         </aside>
