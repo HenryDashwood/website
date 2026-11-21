@@ -1,0 +1,35 @@
+import PhaseVisual from "./_components/PhaseVisual";
+import StftReconstruction from "./_components/StftReconstruction";
+
+export const metadata = {
+  title: "Vocoders",
+  description: "How vocoders take frame-by-frame acoustic representations and produce audio waveforms",
+  created: "2026-11-21",
+  tags: ["AI"],
+};
+
+In the 1930s, Bell Labs developed a system that split speech into pitch and frequency bands to send it over narrow phone lines, before reconstructing it at the other end. It was known as a voice encoder, or "vocoder" for short. In modern text-to-speech, the term is used for the reconstruction half: a model that takes frame-by-frame acoustic representations and converts them into audio waveforms.
+
+In [Representing Audio Data](/research/AI/audio/representing-audio-data), we slid a 1,024-sample Hann window over our audio recording 256 samples at a time, performing a Fourier transform on each slice. This process is called the _short time Fourier transform_ (STFT).
+
+I will do a more detailed exploration of the STFT in another post. For now, the important thing to know is that we get two pieces of information about the waveform from the STFT, represented together as a complex number:
+
+- The magnitude: how strong a frequency is during the window.
+- The phase: where along its up and down cycle a wave is during the window.
+
+When we create a spectrogram, we discard the information about the phase. This creates a problem. To see why, have a look at the visualisation below. For a single wave, changing the phase just slides it left or right without changing its shape. However, with a more complex wave made up of different frequencies, the phase determines how the frequencies interact with each other, and changes the shape of the overall wave accordingly.
+
+<details>
+<summary>How does a complex number encode magnitude and phase?</summary>
+
+Each frequency bin in the STFT is a complex number $a + bi$, which you can picture as an arrow from the origin to $(a, b)$. Its length ($\sqrt{a^2 + b^2}$) is the magnitude and its angle is the phase.
+
+Rather than searching over every possible shift of a wave, the Fourier transform measures how much the signal matches two fixed reference waves: an unshifted cosine ($a$) and an unshifted sine ($b$). Adding those two dashed waves together — $a\cos(2\pi f t) - b\sin(2\pi f t)$ — reproduces the wave at any height and phase shift.
+
+</details>
+
+<PhaseVisual />
+
+This has big implications for how the reconstructed audio sounds.
+
+<StftReconstruction />
