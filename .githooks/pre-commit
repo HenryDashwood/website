@@ -1,3 +1,0 @@
-#!/bin/sh
-# Stamp lastUpdated on any research notes in this commit.
-exec bun run scripts/stamp-research.ts

@@ -3,7 +3,19 @@
 import type { PointerEvent } from "react";
 import { useMemo, useState } from "react";
 
-import { Axes, Chart, Controls, Figure, GroupHeading, Point, Slider, Sym, TextButton, toPath } from "../shared/viz";
+import {
+  Axes,
+  Chart,
+  Controls,
+  type FeedFallbackProps,
+  Figure,
+  GroupHeading,
+  Point,
+  Slider,
+  Sym,
+  TextButton,
+  toPath,
+} from "@/components/viz";
 
 interface Params {
   WA0: number; // Base wage City A (£k)
@@ -105,7 +117,7 @@ type SliderKey = "WA0" | "PA0" | "epsA" | "etaA" | "gammaA";
 
 const money = (v: number) => `£${Math.round(v * 10) / 10}k`;
 
-export default function MigrationStabilityViz() {
+export default function MigrationStabilityViz(_props: FeedFallbackProps) {
   const [params, setParams] = useState<Params>(PRESETS.default.params);
   const [preset, setPreset] = useState<Preset | null>("default");
   const [hover, setHover] = useState<number | null>(null);

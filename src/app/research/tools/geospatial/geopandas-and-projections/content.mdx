@@ -2,7 +2,6 @@ export const metadata = {
   title: "GeoPandas and Projections",
   description: "Geometry columns, coordinate reference systems, and quick maps with GeoPandas and Folium",
   created: "2023-08-27",
-  lastUpdated: "2026-11-01",
   tags: ["Data Science", "Geospatial"],
   log: [
     {
@@ -33,7 +32,7 @@ trails.plot(color="black", ax=ax)
 ```
 
 <LocalImage
-  src="/images/research/data-science/tools/geospatial/geopandas-and-projections/new-york-wild-lands.png"
+  src="/media/research/tools/geospatial/geopandas-and-projections/new-york-wild-lands.png"
   alt="Map of New York State counties with wild lands in green, campsites in red and trails in black"
   width={640}
   height={493}
@@ -74,7 +73,7 @@ facilities.to_crs(epsg=32630).plot(markersize=1, ax=ax)
 ```
 
 <LocalImage
-  src="/images/research/data-science/tools/geospatial/geopandas-and-projections/ghana-facilities.png"
+  src="/media/research/tools/geospatial/geopandas-and-projections/ghana-facilities.png"
   alt="Outline of Ghana's regions with health facilities plotted as dots"
   width={446}
   height={636}
@@ -109,7 +108,7 @@ ends = birds.groupby("tag-local-identifier")["geometry"].last()
 ```
 
 <LocalImage
-  src="/images/research/data-science/tools/geospatial/geopandas-and-projections/purple-martin-paths.png"
+  src="/media/research/tools/geospatial/geopandas-and-projections/purple-martin-paths.png"
   alt="Migration paths of 11 purple martins from North America to South America"
   width={640}
   height={568}
@@ -119,7 +118,7 @@ ends = birds.groupby("tag-local-identifier")["geometry"].last()
 Overlaying the birds' southern-hemisphere readings on South America's protected areas shows where they spend the winter relative to protection:
 
 <LocalImage
-  src="/images/research/data-science/tools/geospatial/geopandas-and-projections/south-america-protected.png"
+  src="/media/research/tools/geospatial/geopandas-and-projections/south-america-protected.png"
   alt="South America with protected areas in green and bird sightings in red"
   width={640}
   height={565}

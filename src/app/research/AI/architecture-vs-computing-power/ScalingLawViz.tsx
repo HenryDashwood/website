@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState } from "react";
 
-import { Axes, Chart, Figure, GroupHeading, Slider, Sym, TextButton, toPath } from "../shared/viz";
+import { Axes, Chart, Figure, GroupHeading, Slider, Sym, TextButton, toPath } from "@/components/viz";
 
 interface Architecture {
   A: number;

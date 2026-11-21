@@ -110,6 +110,10 @@ const nextConfig = {
       ["/posts/bioinformatics", "/research/biology/bioinformatics"],
       ["/posts/scrapy-notes", "/research/tools/scrapy"],
       ["/posts/programming-cheatsheet", "/research/tools/programming-cheatsheet"],
+      // Post images moved to /media/posts/<slug>/ (keep old URLs working for cached RSS entries).
+      ...["alonso-muth-mills-model", "california-1769-1848", "magpie", "the-art-of-doing-science-and-engineering"].map(
+        (slug) => [`/images/${slug}/:path*`, `/media/posts/${slug}/:path*`]
+      ),
     ];
     return moved.map(([source, destination]) => ({ source, destination, permanent: true }));
   },

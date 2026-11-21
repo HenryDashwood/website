@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Axes, Chart, toPath } from "../blog_components/shared/viz";
+import { Axes, Chart, toPath } from "@/components/viz";
+
 import { SentencePlayback, useSentencePlayback } from "./SentencePlayback";
 
-export const SRC = "/audio/kokoro-sentence.wav";
+export const SRC = "/media/research/AI/audio/representing-audio-data/kokoro-sentence.wav";
 const [LEFT, RIGHT, TOP, BOTTOM] = [64, 624, 10, 136];
 // The chart scales up with the column, so its labels use smaller units to stay near caption size
 export const AXIS = { fontSize: 8.5 };

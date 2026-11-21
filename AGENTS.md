@@ -81,23 +81,34 @@ Typography plugin from `@tailwindcss/typography` is enabled for prose styling.
 
 ### Component Architecture
 
-Key reusable components in `src/components/`:
+Shared reusable components live in `src/components/`:
 
 - `PostPage` - Wrapper component that dynamically imports and renders MDX content for a post
 - `NavContentWrapper` - Layout wrapper for navigation and content
 - `Content` - Content container component
 - `Date` - Formats and displays dates consistently
 - `Nav` - Navigation component
-- `LinkBox` / `LinkBoxContainer` - UI components for link displays
+- `LocalImage` - Image wrapper components (`LocalImage`, `LocalImageGrid`, `LocalImageSideBySide`)
+- `viz.tsx` - Shared interactive chart/diagram primitives (`Axes`, `Chart`, `Figure`, `Slider`, etc.)
+
+Components specific to a single post or research note are colocated inside that post's or note's folder (as sibling files or in a `_components/` subfolder). Promote a component to `src/components/` only when a second post or note uses it.
+
+### Media
+
+- Site-wide assets (headshot, social icons) live in `public/images/`.
+- Post media lives in `public/media/posts/<slug>/` (referenced as `/media/posts/<slug>/<file>`).
+- Research note media lives in `public/media/research/<note-path>/` (referenced as `/media/research/<note-path>/<file>`).
 
 ### RSS Feed
 
-RSS feed is generated dynamically at `/feed.xml` via `src/app/feed.xml/route.ts`:
+RSS feed is generated at `/feed.xml` via `src/app/feed.xml/route.ts` and `src/lib/feedHtml.ts`:
 
-- Converts MDX to HTML using `marked`
-- Sanitizes HTML with `sanitize-html`
-- Handles Next.js Image component by converting to standard `<img>` tags
-- Uses `rss` package to generate XML feed
+- Parses MDX via `unified` + `remark-mdx` + `remark-gfm` + `remark-math`
+- Renders maths to standalone MathML via `rehype-katex` (`output: "mathml"`)
+- Unpacks `LocalImage`, `LocalImageGrid`, `LocalImageSideBySide`, and `Image` into `<figure>`/`<figcaption>` with absolute URLs
+- Replaces interactive React components with a link back to the post (or an optional `feedLabel` / `feedImage`)
+- Sanitizes HTML with `sanitize-html` and puts the post's short `description` in `<description>` and full HTML in `<content:encoded>`
+- Uses `rss` package to generate the XML feed
 
 ### Environment Variables
 
@@ -129,14 +140,14 @@ export const metadata = {
   title: "Flash Attention",
   description: "",
   created: "2026-01-27",
-  lastUpdated: "2026-01-27", // stamped automatically by the pre-commit hook
   tags: ["AI"],
-  log: [{ date: "2026-01-27", note: "First notes" }], // optional, shown on the note and the index
+  log: [{ date: "2026-01-27", note: "First notes" }], // optional, shown on the note
 };
 ```
 
 - `bun run new:research <path> [title]` scaffolds a note.
+- Put note-specific components in the note's folder (alongside `content.mdx` or in `_components/`).
+- Put note media (images, audio, etc.) in `public/media/research/<path>/`.
 - Every folder that contains notes gets a topic page at its URL, titled from the folder name, showing its whole subtree as an outline.
 - `src/app/research/layout.tsx` renders the site nav, the collapsible research tree (`src/components/ResearchTree`, built from `getResearchNav()`), and the content. Research pages render content only, not `NavContentWrapper`.
 - `src/lib/research.ts` builds the notes, topic tree, backlinks (from `/research/...` links in MDX) and headings.
-- `.githooks/pre-commit` runs `scripts/stamp-research.ts`, which sets `lastUpdated` on staged notes. `bun install` enables it via the `prepare` script (`git config core.hooksPath .githooks`). Use `git commit --no-verify` to skip it.

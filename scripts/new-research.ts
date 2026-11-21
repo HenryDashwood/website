@@ -27,7 +27,7 @@ const title =
 
 const today = new Date().toISOString().split("T")[0];
 const researchDir = path.join(process.cwd(), "src/app/research", slug);
-const imagesDir = path.join(process.cwd(), "public/images/research", slug);
+const mediaDir = path.join(process.cwd(), "public/media/research", slug);
 
 // Check if directory already exists
 if (existsSync(researchDir)) {
@@ -35,9 +35,8 @@ if (existsSync(researchDir)) {
   process.exit(1);
 }
 
-// Create directories (including any nested directories)
+// Create directory (including any nested directories)
 mkdirSync(researchDir, { recursive: true });
-mkdirSync(imagesDir, { recursive: true });
 
 // Metadata lives in the MDX file itself. Optional field: log
 // ([{ date: "YYYY-MM-DD", note: "What changed" }]).
@@ -45,7 +44,6 @@ const mdxContent = `export const metadata = {
   title: ${JSON.stringify(title)},
   description: "",
   created: "${today}",
-  lastUpdated: "${today}",
   tags: [],
   log: [{ date: "${today}", note: "Started this note" }],
 };
@@ -57,7 +55,7 @@ writeFileSync(path.join(researchDir, "content.mdx"), mdxContent);
 
 console.log(`✓ Created research page: ${slug}`);
 console.log(`  - ${researchDir}/content.mdx`);
-console.log(`  - ${imagesDir}/ (for images)`);
 console.log("");
-console.log(`Edit content.mdx to add your content. lastUpdated is stamped automatically when you commit.`);
-console.log(`Use /images/research/${slug}/<image> for image paths.`);
+console.log(`Edit content.mdx to add your content.`);
+console.log(`Put note-specific components alongside content.mdx (or in _components/).`);
+console.log(`Put media in ${mediaDir}/ and reference as /media/research/${slug}/<file>.`);

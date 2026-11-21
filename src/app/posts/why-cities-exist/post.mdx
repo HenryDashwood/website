@@ -1,5 +1,5 @@
-import MigrationStabilityViz from "@/components/blog_components/MigrationStabilityViz";
-import PowerLawViz from "@/components/blog_components/PowerLawViz";
+import MigrationStabilityViz from "./MigrationStabilityViz";
+import PowerLawViz from "./PowerLawViz";
 
 ## Introduction
 
@@ -117,7 +117,7 @@ Here, $W_{A0}$ is the base wage when $s = 0.5$ (half the population in each city
 
 Why this functional form? It's simple, matches empirical evidence well, and ensures wages never hit zero or infinity.
 
-<PowerLawViz />
+<PowerLawViz feedLabel="Interactive power-law wage curve" />
 
 The same logic applies to City B, using $(1-s)$ since that's City B's population share:
 
@@ -176,7 +176,7 @@ The visualisation shows how different parameters affect the curves.
 - Add crowding penalties to capture quality-of-life costs (congestion, pollution, noise) as cities get crowded. A positive penalty tilts curves downward.
 - Click on the chart to see the exact wages, rents, consumption, and utility at that population split. This helps you understand the curves’ shapes.
 
-<MigrationStabilityViz />
+<MigrationStabilityViz feedLabel="Interactive two-city migration stability simulator" />
 
 ## Simplifying Assumptions
 

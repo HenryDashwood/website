@@ -1,6 +1,7 @@
 "use client";
 
-import { Axes, Chart, toPath } from "../blog_components/shared/viz";
+import { Axes, Chart, toPath } from "@/components/viz";
+
 import { AXIS, SRC, useSentence } from "./WaveformPlayer";
 
 const WINDOW = 0.03;
@@ -84,7 +85,7 @@ export function VoiceZooms() {
       <Zoom title="The “i” in “times”, voice af_heart" start={2.79} limit={4000} />
       <Zoom
         title="The “i” in “times”, voice af_river"
-        src="/audio/kokoro-sentence-river.wav"
+        src="/media/research/AI/audio/representing-audio-data/kokoro-sentence-river.wav"
         start={2.409}
         limit={9000}
       />

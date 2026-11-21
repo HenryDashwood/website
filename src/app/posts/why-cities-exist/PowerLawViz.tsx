@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Axes, Chart, Controls, Figure, Point, Slider, Sym, toPath } from "../shared/viz";
+import { Axes, Chart, Controls, type FeedFallbackProps, Figure, Point, Slider, Sym, toPath } from "@/components/viz";
 
 // Chart geometry: population share s from 0 to 1, wages from £0 to £120k
 const WIDTH = 680;
@@ -17,7 +17,7 @@ const W_MAX = 120;
 const xScale = (s: number) => LEFT + s * INNER_W;
 const yScale = (w: number) => BOTTOM - (w / W_MAX) * INNER_H;
 
-export default function PowerLawViz() {
+export default function PowerLawViz(_props: FeedFallbackProps) {
   const [W0, setW0] = useState(70);
   const [eta, setEta] = useState(0.05);
 

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Axes, Chart, TextButton } from "../blog_components/shared/viz";
+import { Axes, Chart, TextButton } from "@/components/viz";
+
 import { decibels, FFT_SIZE, magnitudes } from "./audio";
 import { hzToMel } from "./spectrogram";
 import { AXIS, useSentence } from "./WaveformPlayer";
@@ -60,19 +61,22 @@ const STAGES = [
     id: 1,
     label: "2. Warp scale",
     stop: 0.37,
-    caption: "Applying the mel formula stretches low frequencies apart and crushes high ones together — still 64 uneven bins.",
+    caption:
+      "Applying the mel formula stretches low frequencies apart and crushes high ones together — still 64 uneven bins.",
   },
   {
     id: 2,
     label: "3. Triangles",
     stop: 0.65,
-    caption: "Overlay evenly spaced triangular filters in mel space (12 shown; speech models use 80) to weight the bins beneath each band.",
+    caption:
+      "Overlay evenly spaced triangular filters in mel space (12 shown; speech models use 80) to weight the bins beneath each band.",
   },
   {
     id: 3,
     label: "4. Re-bin",
     stop: 0.94,
-    caption: "Each triangle averages its FFT bins into one value, collapsing 64 uneven bins into 12 evenly spaced mel bands. Hover a band to inspect it.",
+    caption:
+      "Each triangle averages its FFT bins into one value, collapsing 64 uneven bins into 12 evenly spaced mel bands. Hover a band to inspect it.",
   },
 ] as const;
 
@@ -388,7 +392,8 @@ export default function MelFilterbankAnimation() {
         {/* Warped X-axis ticks */}
         {TICKS_HZ.map((hz) => {
           const x = xForHz(hz, warp);
-          const opacity = (hz === 500 ? clamp01(warp * 1.4 - 0.2) : 1) * (hz === 6000 ? 1 - clamp01((warp - 0.7) * 2) * 0.5 : 1);
+          const opacity =
+            (hz === 500 ? clamp01(warp * 1.4 - 0.2) : 1) * (hz === 6000 ? 1 - clamp01((warp - 0.7) * 2) * 0.5 : 1);
           return (
             <g key={hz} opacity={opacity}>
               <line x1={x} y1={BOTTOM} x2={x} y2={BOTTOM + 3.5} className="stroke-chart-hairline" strokeWidth={1} />
@@ -491,7 +496,13 @@ export default function MelFilterbankAnimation() {
         {/* Stage 4: 12 evenly spaced mel bands */}
         {rebin > 0.05 && (
           <g opacity={clamp01((rebin - 0.05) / 0.8)}>
-            <path d={melCurvePath} fill="none" className="stroke-chart-series-2" strokeWidth={1.25} strokeOpacity={0.65} />
+            <path
+              d={melCurvePath}
+              fill="none"
+              className="stroke-chart-series-2"
+              strokeWidth={1.25}
+              strokeOpacity={0.65}
+            />
             {bands.map((band) => {
               const cx = xForHz(band.centreHz, warp);
               const cy = yForLevel(band.level);

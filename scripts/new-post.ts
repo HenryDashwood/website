@@ -24,7 +24,7 @@ const title =
 
 const today = new Date().toISOString().split("T")[0];
 const postDir = path.join(process.cwd(), "src/app/posts", slug);
-const imagesDir = path.join(process.cwd(), "public/images/posts", slug);
+const mediaDir = path.join(process.cwd(), "public/media/posts", slug);
 
 // Check if directory already exists
 if (existsSync(postDir)) {
@@ -32,9 +32,8 @@ if (existsSync(postDir)) {
   process.exit(1);
 }
 
-// Create directories
+// Create post directory
 mkdirSync(postDir, { recursive: true });
-mkdirSync(imagesDir, { recursive: true });
 
 // Generate page.tsx content
 const encodedTitle = encodeURIComponent(title);
@@ -73,7 +72,7 @@ writeFileSync(path.join(postDir, "post.mdx"), mdxContent);
 console.log(`✓ Created post: ${slug}`);
 console.log(`  - ${postDir}/page.tsx`);
 console.log(`  - ${postDir}/post.mdx`);
-console.log(`  - ${imagesDir}/ (for images)`);
 console.log("");
 console.log(`Edit the files to add your content and update the metadata.`);
-console.log(`Use /images/posts/${slug}/<image> for image paths.`);
+console.log(`Put post-specific components alongside post.mdx (or in _components/).`);
+console.log(`Put media in ${mediaDir}/ and reference as /media/posts/${slug}/<file>.`);

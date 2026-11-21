@@ -1,6 +1,7 @@
 "use client";
 
-import { Axes, Chart, toPath } from "../blog_components/shared/viz";
+import { Axes, Chart, toPath } from "@/components/viz";
+
 import { AXIS } from "./WaveformPlayer";
 
 // Sums of sine waves at multiples of a 170 Hz voice, drawn over 15 ms on a shared y range

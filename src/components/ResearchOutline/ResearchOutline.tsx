@@ -1,17 +1,11 @@
 import Link from "next/link";
 
-import Date from "@/components/Date";
 import type { ResearchNavNode } from "@/lib/research";
 
 function NoteRow({ node }: { node: ResearchNavNode }) {
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-4 py-1">
+    <div className="py-1">
       <Link href={`/research/${node.slug}`}>{node.title}</Link>
-      {node.lastUpdated && (
-        <span className="shrink-0 font-mallory-book text-xs text-text-muted">
-          <Date dateString={node.lastUpdated} />
-        </span>
-      )}
     </div>
   );
 }

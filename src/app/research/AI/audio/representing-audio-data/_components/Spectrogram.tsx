@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 
-import { Axes, Chart } from "../blog_components/shared/viz";
+import { Axes, Chart } from "@/components/viz";
+
 import { FFT_SIZE } from "./audio";
 import { SentencePlayback, useSentencePlayback } from "./SentencePlayback";
 import {

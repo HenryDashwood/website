@@ -8,11 +8,13 @@
  * `import` statement and a paragraph, and hands the sanitiser a `<LocalImage>`
  * it can only throw away.
  *
- * Maths is deliberately left as the TeX it was written in. Feed readers do not
- * run KaTeX, and the readers that do understand formulas look for dollar signs.
+ * Maths is rendered to standalone MathML via KaTeX (`output: "mathml"`),
+ * requiring no external CSS or fonts and rendering natively in WebKit,
+ * Firefox, and Chromium-based feed readers.
  */
 
 import type { Element, ElementContent, Properties, Root as HastRoot } from "hast";
+import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -24,7 +26,7 @@ import { unified } from "unified";
 import { visit } from "unist-util-visit";
 
 export interface FeedHtmlOptions {
-  /** Absolute base of the site, so a reader on another domain resolves `/images/...`. */
+  /** Absolute base of the site, so a reader on another domain resolves `/media/...`. */
   siteUrl: string;
   /** Canonical URL of this post, linked to in place of anything that cannot be shown. */
   postUrl: string;
@@ -46,12 +48,85 @@ const PASSTHROUGH_ATTRIBUTES = new Set(["id", "class", "className", "href", "src
 /** MDX nodes that carry code rather than content, and belong nowhere in a feed. */
 const DISCARDED_NODES = ["mdxjsEsm", "mdxFlowExpression", "mdxTextExpression"] as const;
 
+const MATHML_TAGS = [
+  "math",
+  "mrow",
+  "mi",
+  "mn",
+  "mo",
+  "ms",
+  "mtext",
+  "mspace",
+  "mfrac",
+  "msqrt",
+  "mroot",
+  "mstyle",
+  "merror",
+  "mpadded",
+  "mphantom",
+  "mfenced",
+  "menclose",
+  "msub",
+  "msup",
+  "msubsup",
+  "munder",
+  "mover",
+  "munderover",
+  "mmultiscripts",
+  "mprescripts",
+  "none",
+  "mtable",
+  "mtr",
+  "mtd",
+  "mlabeledtr",
+  "maction",
+];
+
+const MATHML_ATTRIBUTES = [
+  "xmlns",
+  "display",
+  "mathvariant",
+  "mathsize",
+  "stretchy",
+  "symmetric",
+  "maxsize",
+  "minsize",
+  "lspace",
+  "rspace",
+  "fence",
+  "separator",
+  "accent",
+  "accentunder",
+  "linethickness",
+  "width",
+  "height",
+  "depth",
+  "columnalign",
+  "rowalign",
+  "columnspacing",
+  "rowspacing",
+  "columnlines",
+  "rowlines",
+  "frame",
+  "framespacing",
+  "notation",
+  "scriptlevel",
+  "displaystyle",
+  "movablelimits",
+  "largeop",
+  "form",
+  "rowspan",
+  "columnspan",
+  "voffset",
+];
+
 const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
-  allowedTags: [...sanitizeHtml.defaults.allowedTags, "img", "details", "summary"],
+  allowedTags: [...sanitizeHtml.defaults.allowedTags, "img", "del", "details", "summary", ...MATHML_TAGS],
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     a: ["href", "name", "target", "id"],
     img: ["src", "alt", "title", "width", "height"],
+    ...Object.fromEntries(MATHML_TAGS.map((tag) => [tag, MATHML_ATTRIBUTES])),
     // Footnote markers are only useful if they still point at their notes.
     "*": ["id"],
   },
@@ -159,8 +234,12 @@ function text(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-/** One picture, with its caption if it has one. Sourceless images are dropped. */
-function figureFor(spec: ImageSpec): Element | undefined {
+function hasVisibleContent(nodes: ElementContent[]): boolean {
+  return nodes.some((child) => (child.type === "text" ? child.value.trim() !== "" : true));
+}
+
+/** One picture, with its caption and/or JSX children if present. Sourceless images are dropped. */
+function figureFor(spec: ImageSpec, extraCaption: ElementContent[] = []): Element | undefined {
   const src = text(spec.src);
   if (!src) return undefined;
 
@@ -174,19 +253,59 @@ function figureFor(spec: ImageSpec): Element | undefined {
 
   const children: ElementContent[] = [{ type: "element", tagName: "img", properties, children: [] }];
   const caption = text(spec.caption);
-  if (caption) {
+  const captionChildren: ElementContent[] = [];
+  if (caption) captionChildren.push({ type: "text", value: caption });
+  if (hasVisibleContent(extraCaption)) {
+    if (captionChildren.length > 0) captionChildren.push({ type: "text", value: " " });
+    captionChildren.push(...extraCaption);
+  }
+  if (captionChildren.length > 0) {
     children.push({
       type: "element",
       tagName: "figcaption",
       properties: {},
-      children: [{ type: "text", value: caption }],
+      children: captionChildren,
     });
   }
   return { type: "element", tagName: "figure", properties: {}, children };
 }
 
 /** Stands in for a component that only exists as React, such as an interactive chart. */
-function placeholderFor(postUrl: string): Element {
+function placeholderFor(attributes: Record<string, unknown>, postUrl: string): Element {
+  const label = text(attributes.feedLabel);
+  const feedImage = text(attributes.feedImage);
+
+  if (feedImage) {
+    const imgProperties: Properties = { src: feedImage };
+    if (label) imgProperties.alt = label;
+    const captionChildren: ElementContent[] = [
+      {
+        type: "element",
+        tagName: "em",
+        properties: {},
+        children: [
+          { type: "text", value: label ? `${label} — ` : "" },
+          {
+            type: "element",
+            tagName: "a",
+            properties: { href: postUrl },
+            children: [{ type: "text", value: "try the interactive version on the original post" }],
+          },
+          { type: "text", value: "." },
+        ],
+      },
+    ];
+    return {
+      type: "element",
+      tagName: "figure",
+      properties: {},
+      children: [
+        { type: "element", tagName: "img", properties: imgProperties, children: [] },
+        { type: "element", tagName: "figcaption", properties: {}, children: captionChildren },
+      ],
+    };
+  }
+
   return {
     type: "element",
     tagName: "p",
@@ -196,16 +315,27 @@ function placeholderFor(postUrl: string): Element {
         type: "element",
         tagName: "em",
         properties: {},
-        children: [
-          { type: "text", value: "This post contains an interactive figure that a feed reader cannot show — " },
-          {
-            type: "element",
-            tagName: "a",
-            properties: { href: postUrl },
-            children: [{ type: "text", value: "see it on the original post" }],
-          },
-          { type: "text", value: "." },
-        ],
+        children: label
+          ? [
+              { type: "text", value: `${label} — ` },
+              {
+                type: "element",
+                tagName: "a",
+                properties: { href: postUrl },
+                children: [{ type: "text", value: "view it on the original post" }],
+              },
+              { type: "text", value: "." },
+            ]
+          : [
+              { type: "text", value: "This post contains an interactive figure that a feed reader cannot show — " },
+              {
+                type: "element",
+                tagName: "a",
+                properties: { href: postUrl },
+                children: [{ type: "text", value: "see it on the original post" }],
+              },
+              { type: "text", value: "." },
+            ],
       },
     ],
   };
@@ -222,6 +352,36 @@ function passthroughProperties(attributes: Record<string, unknown>): Properties 
     }
   }
   return properties;
+}
+
+/**
+ * Unwraps KaTeX's `<span class="katex">` wrapper and `<semantics>`/`<annotation>`
+ * nodes so the feed contains clean standalone `<math>` elements. Dropping
+ * `<annotation>` prevents tag-stripping readers from showing the formula twice.
+ */
+function rehypeCleanMathml() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (!parent || index === undefined) return;
+
+      if (node.tagName === "span") {
+        const className = node.properties?.className;
+        const classes = Array.isArray(className) ? className.map(String) : [];
+        if (classes.includes("katex") || classes.includes("katex-display")) {
+          parent.children.splice(index, 1, ...node.children);
+          return index;
+        }
+      }
+
+      if (node.tagName === "semantics") {
+        const withoutAnnotations = node.children.filter(
+          (child) => !(child.type === "element" && child.tagName === "annotation")
+        );
+        parent.children.splice(index, 1, ...withoutAnnotations);
+        return index;
+      }
+    });
+  };
 }
 
 /** Relative URLs made absolute, so the feed reads the same on any domain. */
@@ -242,7 +402,8 @@ function rehypeAbsoluteUrls(siteUrl: string) {
 
 /**
  * MDX source as HTML a feed reader can render: no JSX, no imports, images
- * unpacked from their components, and every URL absolute.
+ * unpacked from their components, maths as standalone MathML, and every URL
+ * absolute.
  */
 export async function MdxToFeedHtml(source: string, options: FeedHtmlOptions): Promise<string> {
   const siteUrl = options.siteUrl.replace(/\/$/, "");
@@ -255,7 +416,7 @@ export async function MdxToFeedHtml(source: string, options: FeedHtmlOptions): P
     const attributes = readAttributes(node);
 
     if (SINGLE_IMAGE_COMPONENTS.has(node.name)) {
-      return figureFor(attributes as ImageSpec);
+      return figureFor(attributes as ImageSpec, state.all(node as never));
     }
 
     if (IMAGE_LIST_COMPONENTS.has(node.name)) {
@@ -274,23 +435,12 @@ export async function MdxToFeedHtml(source: string, options: FeedHtmlOptions): P
       } satisfies Element;
     }
 
-    return placeholderFor(postUrl);
+    return placeholderFor(attributes, postUrl);
   };
 
   const handlers: Record<string, unknown> = {
     mdxJsxFlowElement: jsxHandler,
     mdxJsxTextElement: jsxHandler,
-    math: (_state: unknown, node: { value: string }) =>
-      node.value.trim()
-        ? ({
-            type: "element",
-            tagName: "p",
-            properties: {},
-            children: [{ type: "text", value: `$$\n${node.value.trim()}\n$$` }],
-          } satisfies Element)
-        : undefined,
-    inlineMath: (_state: unknown, node: { value: string }) =>
-      node.value.trim() ? { type: "text" as const, value: `$${node.value.trim()}$` } : undefined,
   };
   for (const type of DISCARDED_NODES) handlers[type] = () => undefined;
 
@@ -300,6 +450,8 @@ export async function MdxToFeedHtml(source: string, options: FeedHtmlOptions): P
     .use(remarkGfm)
     .use(remarkMath)
     .use(remarkRehype, { handlers: handlers as never })
+    .use(rehypeKatex, { output: "mathml" })
+    .use(rehypeCleanMathml)
     .use(rehypeAbsoluteUrls, siteUrl)
     .use(rehypeStringify)
     .process(source);

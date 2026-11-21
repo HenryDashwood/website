@@ -1,4 +1,3 @@
-import Date from "@/components/Date";
 import ResearchBreadcrumbs from "@/components/ResearchBreadcrumbs";
 import ResearchOutline from "@/components/ResearchOutline";
 import { ResearchNavNode } from "@/lib/research";
@@ -14,12 +13,6 @@ export default function ResearchTopicPage({ node }: { node: ResearchNavNode }) {
         <span aria-hidden="true">·</span>
         <span>
           {node.count} {node.count === 1 ? "note" : "notes"}
-          {node.lastUpdated && (
-            <>
-              {" "}
-              · updated <Date dateString={node.lastUpdated} />
-            </>
-          )}
         </span>
       </div>
 

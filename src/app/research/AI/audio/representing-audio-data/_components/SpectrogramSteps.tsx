@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { Axes, Chart, TextButton, toPath } from "../blog_components/shared/viz";
+import { Axes, Chart, TextButton, toPath } from "@/components/viz";
+
 import { FFT_SIZE, hann, magnitudes } from "./audio";
 import { SentencePlayback, useSentencePlayback } from "./SentencePlayback";
 import { Plot } from "./Spectra";

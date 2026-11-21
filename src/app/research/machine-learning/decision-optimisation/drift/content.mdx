@@ -2,7 +2,6 @@ export const metadata = {
   title: "Drift",
   description: "When the patterns in the training data stop holding, and what to do about it",
   created: "2023-08-12",
-  lastUpdated: "2026-11-01",
   tags: ["Machine Learning", "Decision Optimisation"],
   log: [
     {
@@ -18,7 +17,7 @@ export const metadata = {
 - **Covariate shift:** the distribution of the inputs, $P(x)$, changes, while the relationship stays the same.
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/drift/drift-types.png"
+  src="/media/research/machine-learning/decision-optimisation/drift/drift-types.png"
   alt="Left: the same inputs map to higher targets in production. Right: production inputs cover a shifted range on the same line."
   width={790}
   height={390}
@@ -39,7 +38,7 @@ The example uses the [Grupo Bimbo](https://www.kaggle.com/competitions/grupo-bim
 Gaps in the data change its composition over time. Restricting to a single product (ID 1238) still leaves the number of locations stocking it falling every week, from 194,927 rows in week 3 to 154,140 in week 9. Three quarters of store and client combinations have 5 weeks of records or fewer. Keeping only those with all 7 weeks removes most of the compositional change, and shows average demand falling from about 5.4 to about 4.6.
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/drift/average-demand.png"
+  src="/media/research/machine-learning/decision-optimisation/drift/average-demand.png"
   alt="Average demand per week, falling from about 5.4 in week 3 to about 4.6 in week 9"
   width={368}
   height={371}
@@ -66,7 +65,7 @@ for training_week in weeks[1:-1]:  # week 3 has no previous week to lag from
 The features are last week's demand, units sold and returns for each store and client, so the model only sees what it would know when ordering. Three seeds per week show how much of any difference is just training noise, and forecasting last week's demand gives a baseline.
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/drift/backtest-loss.png"
+  src="/media/research/machine-learning/decision-optimisation/drift/backtest-loss.png"
   alt="Validation MSE by training week: the model sits between 26 and 31 with overlapping error bars, and the last-week baseline between 16 and 20"
   width={500}
   height={400}

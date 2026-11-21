@@ -1,1 +1,1 @@
-export { default, NoteMeta, TopicPath } from "./ResearchNoteList";
+export { default, TopicPath } from "./ResearchNoteList";

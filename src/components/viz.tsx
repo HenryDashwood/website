@@ -4,6 +4,12 @@ import type { CSSProperties, ReactNode } from "react";
 
 export type Tone = "ink" | "series-1" | "series-2";
 
+/** Optional props read statically by `src/lib/feedHtml.ts` for RSS fallbacks. */
+export interface FeedFallbackProps {
+  feedLabel?: string;
+  feedImage?: string;
+}
+
 const toneText: Record<Tone, string> = {
   ink: "text-chart-ink",
   "series-1": "text-chart-series-1",

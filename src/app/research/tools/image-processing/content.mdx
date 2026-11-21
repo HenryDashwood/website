@@ -2,7 +2,6 @@ export const metadata = {
   title: "Image Processing",
   description: "Contours with OpenCV and geometric transforms with scikit-image",
   created: "2023-08-10",
-  lastUpdated: "2026-11-01",
   tags: ["Data Science", "Computer Vision"],
   log: [
     {
@@ -29,14 +28,14 @@ cv2.drawContours(img, contours, -1, (0, 255, 0), 3)  # -1 draws them all
 <LocalImageSideBySide
   images={[
     {
-      src: "/images/research/data-science/tools/image-processing/threshold.png",
+      src: "/media/research/tools/image-processing/threshold.png",
       alt: "Thresholded map: mostly white, with dark text and symbols",
       width: 454,
       height: 349,
       caption: "Thresholded at 127",
     },
     {
-      src: "/images/research/data-science/tools/image-processing/contours.png",
+      src: "/media/research/tools/image-processing/contours.png",
       alt: "Map with green contours drawn around the text labels",
       width: 454,
       height: 349,
@@ -74,7 +73,7 @@ approx = cv2.approxPolyDP(cnt, 0.1 * perimeter, True)  # Douglas–Peucker
 The example image is `skimage.data.text()`, a photo of handwriting on a page.
 
 <LocalImage
-  src="/images/research/data-science/tools/image-processing/text.png"
+  src="/media/research/tools/image-processing/text.png"
   alt="Greyscale photo of handwritten maths on paper"
   width={443}
   height={214}
@@ -91,7 +90,7 @@ rotated = warp(img, tform)
 That is a 45° rotation (π/4), not the 90° the original notes said.
 
 <LocalImage
-  src="/images/research/data-science/tools/image-processing/rotated.png"
+  src="/media/research/tools/image-processing/rotated.png"
   alt="The handwriting rotated by 45 degrees, with black corners"
   width={443}
   height={214}
@@ -116,14 +115,14 @@ warped = warp(img, tform, output_shape=(50, 300))
 <LocalImageSideBySide
   images={[
     {
-      src: "/images/research/data-science/tools/image-processing/control-points.png",
+      src: "/media/research/tools/image-processing/control-points.png",
       alt: "Original image with four red control points around a line of text",
       width: 443,
       height: 214,
       caption: "Control points on the photo",
     },
     {
-      src: "/images/research/data-science/tools/image-processing/warped.png",
+      src: "/media/research/tools/image-processing/warped.png",
       alt: "Warped image with the line of text straightened along the top",
       width: 443,
       height: 214,
@@ -133,7 +132,7 @@ warped = warp(img, tform, output_shape=(50, 300))
 />
 
 <LocalImage
-  src="/images/research/data-science/tools/image-processing/warped-cropped.png"
+  src="/media/research/tools/image-processing/warped-cropped.png"
   alt="A single straightened line of handwriting"
   width={434}
   height={130}

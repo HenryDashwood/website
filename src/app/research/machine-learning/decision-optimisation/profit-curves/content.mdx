@@ -2,7 +2,6 @@ export const metadata = {
   title: "Profit Curves",
   description: "Choosing a classification threshold by what the decisions are worth",
   created: "2023-08-10",
-  lastUpdated: "2026-11-01",
   tags: ["Machine Learning", "Decision Optimisation"],
   log: [
     {
@@ -25,7 +24,7 @@ Choosing a threshold from the distribution of predictions alone is not obvious. 
 A **payoff matrix** puts a value on each cell of the confusion matrix. Suppose a discount offered to a customer who would have churned keeps them, which is worth £200, and a discount offered to one who would have stayed anyway is £80 wasted. Not offering a discount costs nothing either way.
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/profit-curves/payoff-matrix.png"
+  src="/media/research/machine-learning/decision-optimisation/profit-curves/payoff-matrix.png"
   alt="Payoff matrix: 200 for a discount to a churner, minus 80 for a discount to a non-churner"
   width={315}
   height={316}
@@ -61,7 +60,7 @@ The best threshold is 0.22, which makes £32,360: about 38% more than at 0.5. Be
 The profit curve also compares models in money rather than metrics. Suppose a broken pipeline loses the `Contract` column and we retrain without it:
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/profit-curves/profit-curves.png"
+  src="/media/research/machine-learning/decision-optimisation/profit-curves/profit-curves.png"
   alt="Profit curves for the original model and the model without the Contract field"
   width={503}
   height={316}
@@ -80,7 +79,7 @@ The new model's best profit is £30,800 at a threshold of 0.24, so losing that f
 When some customers are worth much more than others, it makes sense to target them more aggressively. Suppose keeping a customer is worth three times their monthly charge, while a wasted discount still costs £80. Split customers into four bands by monthly charge (up to £20, £20 to £60, £60 to £100, over £100), give each band a payoff matrix based on its average charge, and find each band's best threshold:
 
 <LocalImage
-  src="/images/research/data-science/decision-optimisation/profit-curves/group-profit-curves.png"
+  src="/media/research/machine-learning/decision-optimisation/profit-curves/group-profit-curves.png"
   alt="Profit curves for four monthly-charge bands and their total"
   width={503}
   height={316}

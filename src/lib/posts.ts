@@ -10,7 +10,7 @@ interface Post {
 export async function GetPosts(withContent: boolean) {
   const postsPath = path.join(process.cwd(), "src/app/posts");
   const postDirectories = readdirSync(postsPath).filter(
-    (item) => statSync(path.join(postsPath, item)).isDirectory() && !item.startsWith("[")
+    (item) => statSync(path.join(postsPath, item)).isDirectory() && !item.startsWith("[") && !item.startsWith("_")
   );
 
   const posts: Post[] = [];

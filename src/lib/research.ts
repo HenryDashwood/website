@@ -11,7 +11,6 @@ import { cache } from "react";
  *     title: "Flash Attention",
  *     description: "",
  *     created: "2026-01-27",
- *     lastUpdated: "2026-01-27",
  *     tags: ["AI"],
  *     log: [{ date: "2026-01-27", note: "First notes" }], // optional
  *   };
@@ -31,7 +30,6 @@ export interface ResearchNoteMetadata {
   title: string;
   description?: string;
   created?: string;
-  lastUpdated?: string;
   tags?: string[];
   log?: ResearchLogEntry[];
 }
@@ -42,7 +40,6 @@ export interface ResearchNote {
   title: string;
   description: string | null;
   created: string | null;
-  lastUpdated: string | null;
   tags: string[];
   /** Newest first */
   log: ResearchLogEntry[];
@@ -58,8 +55,6 @@ export interface ResearchTopic {
   topics: ResearchTopic[];
   /** Number of notes in this topic and all its sub-topics */
   noteCount: number;
-  /** Most recent lastUpdated of any note in this topic or its sub-topics */
-  lastUpdated: string | null;
 }
 
 export interface ResearchHeading {
@@ -73,7 +68,12 @@ function absolute(...segments: string[]) {
 }
 
 function isContentDir(dir: string, name: string) {
-  return !name.startsWith("[") && !name.startsWith(".") && statSync(path.join(dir, name)).isDirectory();
+  return (
+    !name.startsWith("[") &&
+    !name.startsWith(".") &&
+    !name.startsWith("_") &&
+    statSync(path.join(dir, name)).isDirectory()
+  );
 }
 
 function listNotePaths(segments: string[] = []): string[][] {
@@ -116,7 +116,6 @@ function toNote(segments: string[], metadata: Partial<ResearchNoteMetadata> | un
     title: optionalString(metadata?.title) ?? humaniseSegment(segments.at(-1) ?? slug),
     description: optionalString(metadata?.description),
     created: optionalString(metadata?.created),
-    lastUpdated: optionalString(metadata?.lastUpdated) ?? optionalString(metadata?.created),
     tags: Array.isArray(metadata?.tags) ? metadata.tags.map(String) : [],
     log,
   };
@@ -133,12 +132,10 @@ async function loadNote(segments: string[]): Promise<ResearchNote | null> {
   }
 }
 
-/** All notes, most recently updated first. */
+/** All notes, newest first by created date. */
 export const getAllNotes = cache(async (): Promise<ResearchNote[]> => {
   const notes = (await Promise.all(listNotePaths().map(loadNote))).filter((n): n is ResearchNote => n !== null);
-  return notes.toSorted(
-    (a, b) => (b.lastUpdated ?? "").localeCompare(a.lastUpdated ?? "") || a.title.localeCompare(b.title)
-  );
+  return notes.toSorted((a, b) => (b.created ?? "").localeCompare(a.created ?? "") || a.title.localeCompare(b.title));
 });
 
 export async function getNote(slug: string): Promise<ResearchNote | null> {
@@ -175,11 +172,6 @@ async function buildTopic(segments: string[], notes: ResearchNote[]): Promise<Re
     notes: direct.toSorted(byTitle),
     topics: topics.toSorted(byTitle),
     noteCount: inside.length,
-    lastUpdated:
-      inside
-        .map((n) => n.lastUpdated ?? "")
-        .toSorted()
-        .at(-1) || null,
   };
 }
 
@@ -194,7 +186,6 @@ export const getResearchRoot = cache(async (): Promise<ResearchTopic> => {
       notes: [],
       topics: [],
       noteCount: 0,
-      lastUpdated: null,
     }
   );
 });
@@ -229,7 +220,6 @@ export interface ResearchNavNode {
   kind: "note" | "folder";
   /** Number of notes beneath this node */
   count: number;
-  lastUpdated: string | null;
   children: ResearchNavNode[];
 }
 
@@ -249,11 +239,6 @@ function buildNav(prefix: string[], notes: ResearchNote[], bySlug: Map<string, R
       title: note?.title ?? humaniseSegment(name),
       kind: note ? "note" : "folder",
       count: below.length,
-      lastUpdated:
-        [note, ...below]
-          .map((n) => n?.lastUpdated ?? "")
-          .toSorted()
-          .at(-1) || null,
       children,
     };
   });

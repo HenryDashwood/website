@@ -38,7 +38,7 @@ async function ResearchIndex() {
         <>
           <section className="max-w-3xl">
             <h2 className="mt-0! mb-1! border-0! font-mallory-book! text-xs! font-semibold tracking-wider text-text-muted uppercase">
-              Recently updated
+              Recent notes
             </h2>
             <ul className="m-0 list-none! divide-y divide-black/10 border-y border-black/10 pl-0!">
               {notes.slice(0, RECENT_COUNT).map((note) => (
@@ -47,7 +47,7 @@ async function ResearchIndex() {
                   href={`/research/${note.slug}`}
                   title={note.title}
                   meta={note.path.length > 1 ? <TopicPath note={note} /> : undefined}
-                  date={note.lastUpdated ? <Date dateString={note.lastUpdated} /> : undefined}
+                  date={note.created ? <Date dateString={note.created} /> : undefined}
                 />
               ))}
             </ul>

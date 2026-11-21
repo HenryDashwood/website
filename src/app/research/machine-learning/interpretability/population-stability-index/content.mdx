@@ -2,7 +2,6 @@ export const metadata = {
   title: "Population Stability Index",
   description: "A single number for how far a distribution has shifted, and its per-feature cousin CSI",
   created: "2023-02-21",
-  lastUpdated: "2026-11-01",
   tags: ["Machine Learning"],
   log: [
     {
@@ -73,7 +72,7 @@ So the model's predictions look stable between the two periods.
 Plotting the bin proportions side by side shows where the distributions differ (quantile bins, with the validation set as the reference):
 
 <LocalImage
-  src="/images/research/data-science/interpretability/population-stability-index/quantile-bins.png"
+  src="/media/research/machine-learning/interpretability/population-stability-index/quantile-bins.png"
   alt="Reference and target proportions in each quantile bin"
   width={615}
   height={329}
@@ -82,7 +81,7 @@ Plotting the bin proportions side by side shows where the distributions differ (
 A kernel density estimate shows the same without binning, though, as the [Seaborn docs](https://seaborn.pydata.org/generated/seaborn.kdeplot.html) warn, it can distort distributions that are bounded or not smooth:
 
 <LocalImage
-  src="/images/research/data-science/interpretability/population-stability-index/kde.png"
+  src="/media/research/machine-learning/interpretability/population-stability-index/kde.png"
   alt="KDE of training and validation predictions"
   width={386}
   height={278}

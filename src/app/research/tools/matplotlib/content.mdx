@@ -2,7 +2,6 @@ export const metadata = {
   title: "Matplotlib",
   description: "Figures and axes: the object-oriented way to use matplotlib",
   created: "2023-05-09",
-  lastUpdated: "2026-11-01",
   tags: ["Data Science", "Visualisation"],
   log: [
     {
@@ -39,7 +38,7 @@ fig.tight_layout()
 With more than one subplot, `ax` is a NumPy array of axes, so you can unpack it as above or index it (`ax[0]`, or `ax[0, 1]` for a grid).
 
 <LocalImage
-  src="/images/research/data-science/tools/matplotlib/two-subplots.png"
+  src="/media/research/tools/matplotlib/two-subplots.png"
   alt="Two side-by-side line charts: CO2 concentration and relative temperature from 1958 to 2016"
   width={930}
   height={431}
@@ -63,7 +62,7 @@ ax2.tick_params("y", colors="red")
 ```
 
 <LocalImage
-  src="/images/research/data-science/tools/matplotlib/twin-axes.png"
+  src="/media/research/tools/matplotlib/twin-axes.png"
   alt="CO2 in blue on the left axis and relative temperature in red on the right axis, sharing a date axis"
   width={604}
   height={455}
@@ -77,7 +76,7 @@ Twin axes are easy to misread, since the scales of the two y axes are arbitrary 
 Comparing the 1980s with the 1990s side by side, each subplot picks its own y range, which hides the rise:
 
 <LocalImage
-  src="/images/research/data-science/tools/matplotlib/separate-y.png"
+  src="/media/research/tools/matplotlib/separate-y.png"
   alt="CO2 in the 1980s and 1990s on separate y scales, looking similar"
   width={996}
   height={484}
@@ -90,7 +89,7 @@ fig, ax = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
 ```
 
 <LocalImage
-  src="/images/research/data-science/tools/matplotlib/shared-y.png"
+  src="/media/research/tools/matplotlib/shared-y.png"
   alt="The same two decades on a shared y scale, showing the 1990s higher"
   width={983}
   height={484}

@@ -18,9 +18,13 @@ export default async function sitemap() {
         lastModified: post.metadata.other.published,
       };
     }),
-    ...[...notes, ...topics].map((item) => ({
-      url: `${process.env.WEBSITE_URL}/research/${item.slug}`,
-      lastModified: item.lastUpdated ? new Date(item.lastUpdated) : new Date(),
+    ...notes.map((note) => ({
+      url: `${process.env.WEBSITE_URL}/research/${note.slug}`,
+      lastModified: note.created ? new Date(note.created) : new Date(),
+    })),
+    ...topics.map((topic) => ({
+      url: `${process.env.WEBSITE_URL}/research/${topic.slug}`,
+      lastModified: new Date(),
     })),
   ];
   return links;

@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 
-import { Axes, Chart, toPath } from "../blog_components/shared/viz";
+import { Axes, Chart, toPath } from "@/components/viz";
+
 import { decibels, FFT_SIZE, magnitudes } from "./audio";
 import { SUM, value } from "./Tones";
 import { AXIS, useSentence } from "./WaveformPlayer";
@@ -111,7 +112,7 @@ export const DecibelSpectra = () => <Row db />;
 
 // The same vowel from both voices, each from a 43 ms stretch where its pitch holds steady
 // (af_heart 170 Hz, af_river 167 Hz): the spikes line up, but their heights differ.
-const RIVER = "/audio/kokoro-sentence-river.wav";
+const RIVER = "/media/research/AI/audio/representing-audio-data/kokoro-sentence-river.wav";
 const vowelSpectrum = (sound: ReturnType<typeof useSentence>, start: number) =>
   sound ? magnitudes(sound.samples, 4096, Math.round(start * sound.sampleRate), FFT_SIZE) : null;
 export function VoiceSpectra() {

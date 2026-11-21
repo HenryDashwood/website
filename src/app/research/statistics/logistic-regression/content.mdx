@@ -2,7 +2,6 @@ export const metadata = {
   title: "Logistic Regression",
   description: "Odds, the logit, maximum likelihood and a from-scratch implementation",
   created: "2023-06-27",
-  lastUpdated: "2026-11-01",
   tags: ["Statistics", "Machine Learning"],
   log: [
     {
@@ -58,7 +57,7 @@ $$
 $$
 
 <LocalImage
-  src="/images/research/data-science/statistics/logistic-regression/logit.png"
+  src="/media/research/statistics/logistic-regression/logit.png"
   alt="The logit function"
   width={717}
   height={482}
@@ -79,7 +78,7 @@ $$
 This is the **sigmoid** or **logistic** function $\sigma(z)$. It maps any real input into the open interval $(0, 1)$, never quite reaching 0 or 1.
 
 <LocalImage
-  src="/images/research/data-science/statistics/logistic-regression/sigmoid.png"
+  src="/media/research/statistics/logistic-regression/sigmoid.png"
   alt="The sigmoid function"
   width={640}
   height={482}
@@ -139,7 +138,7 @@ predict_proba(X, weights)  # [0.002, 0.024, 0.248, 0.817, 0.984]
 ```
 
 <LocalImage
-  src="/images/research/data-science/statistics/logistic-regression/scratch-vs-sklearn.png"
+  src="/media/research/statistics/logistic-regression/scratch-vs-sklearn.png"
   alt="From-scratch and scikit-learn logistic regression predictions against the labels"
   width={458}
   height={393}
@@ -153,7 +152,7 @@ Both models classify all five points correctly, but ours is much more confident.
 A linear model treats the classes as the numbers 0 and 1 and fits the best straight line through them. That line is not a probability: it goes below 0 and above 1, and a few extreme $x$ values tilt it badly. Logistic regression stays bounded and behaves at both extremes.
 
 <LocalImage
-  src="/images/research/data-science/statistics/logistic-regression/linear-vs-logistic.png"
+  src="/media/research/statistics/logistic-regression/linear-vs-logistic.png"
   alt="Linear and logistic regression fitted to binary data"
   width={390}
   height={290}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Axes, Chart, Controls, Figure, Point, Slider, Sym, toPath } from "../shared/viz";
+import { Axes, Chart, Controls, type FeedFallbackProps, Figure, Point, Slider, Sym, toPath } from "@/components/viz";
 
 // Chart geometry: rent P runs from £5k to £50k, wages W from £0 to £100k
 const WIDTH = 680;
@@ -58,7 +58,7 @@ function findEquilibrium(utility: (P: number) => number, profit: (P: number) => 
 // Keeps a curve's end label inside the plot
 const clampLabel = (y: number) => Math.max(TOP + 4, Math.min(BOTTOM - 14, y));
 
-export default function LaborMarketDiagram() {
+export default function LaborMarketDiagram(_props: FeedFallbackProps) {
   const [productivity, setProductivity] = useState(100); // A: productivity index (100 = baseline)
   const [amenities, setAmenities] = useState(100); // Z: amenities index (100 = baseline)
   const [beta, setBeta] = useState(BASE_BETA); // Housing expenditure share

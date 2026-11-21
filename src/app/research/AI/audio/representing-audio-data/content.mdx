@@ -1,26 +1,26 @@
-import MelFilterbankAnimation from "@/components/AudioLab/MelFilterbankAnimation";
-import { LinearSpectrogram, MelSpectrogram } from "@/components/AudioLab/Spectrogram";
-import { HannSlidingWindow, SlidingWindow, WholeSentenceSpectrum } from "@/components/AudioLab/SpectrogramSteps";
-import { HighTone, LowTone, SumTone } from "@/components/AudioLab/Tones";
-import SoundZooms, { VoiceZooms } from "@/components/AudioLab/SoundZooms";
-import { DecibelSpectra, LinearSpectra, VoiceSpectra } from "@/components/AudioLab/Spectra";
-import WaveformPlayer from "@/components/AudioLab/WaveformPlayer";
+import MelFilterbankAnimation from "./_components/MelFilterbankAnimation";
+import SoundZooms, { VoiceZooms } from "./_components/SoundZooms";
+import { DecibelSpectra, LinearSpectra, VoiceSpectra } from "./_components/Spectra";
+import { LinearSpectrogram, MelSpectrogram } from "./_components/Spectrogram";
+import { HannSlidingWindow, SlidingWindow, WholeSentenceSpectrum } from "./_components/SpectrogramSteps";
+import { HighTone, LowTone, SumTone } from "./_components/Tones";
+import WaveformPlayer from "./_components/WaveformPlayer";
 
 export const metadata = {
   title: "Representing Audio Data",
-  description: "How sound is turned into numbers for AI models, from air pressure and waveforms to Fourier transforms and mel spectrograms.",
+  description:
+    "How sound is turned into numbers for AI models, from air pressure and waveforms to Fourier transforms and mel spectrograms.",
   created: "2026-09-23",
-  lastUpdated: "2026-11-20",
   tags: ["AI"],
 };
 
 We live, as they say, in a society. We also live in an atmosphere. The pressure of the air around us is, I am told, roughly 101,325 pascals. This air pressure is always changing though as the air swirls around us. Our ears have evolved to be sensitive to variations in the air pressure that happen at certain speeds, those that occur between 20 and 20,000 times a second.
 
-The number of occurrences of something per unit of time is called a *frequency*. The standard unit of frequency is the *hertz* (Hz). 1 hertz is defined as one event or cycle per second. So we can say that our ears are capable of hearing sounds between 20 and 20,000 Hz.
+The number of occurrences of something per unit of time is called a _frequency_. The standard unit of frequency is the _hertz_ (Hz). 1 hertz is defined as one event or cycle per second. So we can say that our ears are capable of hearing sounds between 20 and 20,000 Hz.
 
 Microphones are designed to produce a voltage that tracks how far the air pressure is above or below the norm, with a voltage of 0 meaning no deviation. When we record sound through a microphone we take samples of the value of the voltage at regular fixed intervals. The number of intervals per second (or frequency of intervals) is known as the sample rate. 24,000 is a typical sample rate when training text to speech models. CDs use 44,100. Videos tend to use 48,000.
 
-The value of the voltage is rounded to the nearest step on a fixed scale. This is known as *quantisation*. In a 16-bit file, that step could be between -32,768 and 32,767. The person or audio software doing the recording will set the input volume (known as "gain") so that typical sounds use a good deal of the range without actually hitting the ends.
+The value of the voltage is rounded to the nearest step on a fixed scale. This is known as _quantisation_. In a 16-bit file, that step could be between -32,768 and 32,767. The person or audio software doing the recording will set the input volume (known as "gain") so that typical sounds use a good deal of the range without actually hitting the ends.
 
 It might seem unintuitive that loud sounds can take the biggest or the smallest values but remember that a sound wave can push the pressure both ways. It can squeeze the air together in places, and thin it out in others.
 
@@ -88,6 +88,7 @@ $$\text{decibels} = 20 \log_{10}\left(\frac{\text{strength}}{\text{reference}}\r
 Every 20 dB is a factor of ten, so −20 dB is a tenth of the reference's strength, −40 dB a hundredth and −60 dB a thousandth.
 
 You may have seen decibels used for loudness, where a conversation is about 60 dB and a jet engine 120 dB. In that context 0 dB is defined as the quietest sound a human can hear. Because that reference is fixed and widely agreed on, it usually goes unmentioned.
+
 </details>
 
 <DecibelSpectra />
@@ -124,13 +125,14 @@ where $n$ is the sample's position in a window of length $N$.
 <HannSlidingWindow />
 
 This tapering squashes the ends of each slice, so adjacent windows are overlapped. In the spectrograms below, each 1,024-sample window steps forward by 256 samples (about 11 ms), so every part of the recording passes through the middle of a window.
+
 </details>
 
 To visualise all the data in that animation in a single picture, we can use colour. We plot every window's spectrum alongside one another, rotated. In a linear spectrogram like this:
 
-  - The horizontal axis is time.
-  - The vertical axis is frequency (0 to 12,000 Hz, split into 513 evenly spaced bins; a 24,000 Hz recording tops out at half its sample rate because capturing a wave takes at least two samples per cycle).
-  - The brightness is the strength of each frequency at that instant.
+- The horizontal axis is time.
+- The vertical axis is frequency (0 to 12,000 Hz, split into 513 evenly spaced bins; a 24,000 Hz recording tops out at half its sample rate because capturing a wave takes at least two samples per cycle).
+- The brightness is the strength of each frequency at that instant.
 
 <LinearSpectrogram />
 
@@ -155,4 +157,4 @@ $$\text{mel} = 2595 \log_{10}\left(1 + \frac{\text{frequency}}{700}\right)$$
 
 The frequencies below 4,000 Hz now take up roughly two thirds of the chart instead of one third. The harmonics and shifting formants are clearer.
 
-Mel spectrograms pack the parts of sound we actually notice into a compact grid. Speech recognition models often take mel spectrograms as input. Many text to speech models generate them as an intermediate step. Because discarding phase and averaging bins into mel bands throws information away, you can't mathematically invert a mel spectrogram back into audio. So systems based on mel spectrograms need a a separate neural network (a _vocoder_) to be trained to turn them back into a waveform.
+Mel spectrograms pack the parts of sound we actually notice into a compact grid. Speech recognition models often take mel spectrograms as input. Many text to speech models generate them as an intermediate step. Because discarding phase and averaging bins into mel bands throws information away, you can't mathematically invert a mel spectrogram back into audio. So systems based on mel spectrograms need a separate neural network (a _vocoder_) to be trained to turn them back into a waveform.
