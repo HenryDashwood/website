@@ -1,3 +1,7 @@
+import GriffinLimDemo from "./_components/GriffinLimDemo";
+import GriffinLimLoop from "./_components/GriffinLimLoop";
+import HarmonicPhase from "./_components/HarmonicPhase";
+import OverlapCancel from "./_components/OverlapCancel";
 import PhaseVisual from "./_components/PhaseVisual";
 import StftReconstruction from "./_components/StftReconstruction";
 
@@ -30,6 +34,22 @@ Rather than searching over every possible shift of a wave, the Fourier transform
 
 <PhaseVisual />
 
-This has big implications for how the reconstructed audio sounds.
+This has big implications for how the reconstructed audio sounds. In the diagram below, when we reconstruct the audio stream while retaining the phase, it sounds identical to the orginal. Because it is. But when we don't use the phase, and plug in random values for it instead the voice deterioates into gargley noise.
 
 <StftReconstruction />
+
+This didn't happen with the with the steady sine waves in the example. It happens with the speech example because real speech is made up of dozens of harmonics that line up to produce repeating puffs of air. Scrambling the phase angles melts the spikes into a flatter ripple.
+
+<HarmonicPhase />
+
+On top of this, with the phase angles scrambled the STFT windows interfere with the waveform in the window next they overlap with.
+
+<OverlapCancel />
+
+So we've thrown away our phase values, and damaged our audio quality. What can we do to ameliorate this?
+
+## Griffin-Lim
+
+<GriffinLimLoop />
+
+<GriffinLimDemo />
